@@ -211,7 +211,7 @@ The error columns need a reference scale. \citet{Blurton2017} recommend a trunca
 
 \begin{table*}[t]
 \centering
-\caption{Cost per evaluation in microseconds, single thread, 10\,000 response times drawn uniformly on $[0.1, 3]$ s, at $a = 1.2$, $\nu = 1$, $\eta = 1$, $w_1 = 0.4$, $w_2 = 0.6$, $t_0 = 0$, $s_t = 0.2$. Each package at the settings used for fitting: WienR at its default tolerance $10^{-12}$, rtdists at precision 3, HDDM at series tolerance $10^{-4}$ with Simpson tolerance $10^{-8}$ and recursion depth 10. Error is the maximum relative deviation from~\eqref{eq:result} (six parameters, the 400 sets of Section~\ref{sec:verify}) or~\eqref{eq:seven} (seven parameters, the 200 sets), for densities above $10^{-3}$; for the closed form the seven-parameter entry is the quadrature error of~\eqref{eq:seven} against adaptive integration, so the seven-parameter closed form is compared at $1.5\times10^{-9}$ with WienR at $10^{-12}$.}
+\caption{Cost per evaluation in microseconds, single thread, 10\,000 response times drawn uniformly on $[0.1, 3]$ s, at $a = 1.2$, $\nu = 1$, $\eta = 1$, $w_1 = 0.4$, $w_2 = 0.6$, $t_0 = 0$, $s_t = 0.2$. Each package at the settings used for fitting: WienR at its default tolerance $10^{-12}$, rtdists at precision 3, HDDM at series tolerance $10^{-4}$ with Simpson tolerance $10^{-8}$ and recursion depth 10. Error is the maximum relative deviation from~\eqref{eq:result} (six parameters, the 400 sets of Section~\ref{sec:verify}) or~\eqref{eq:seven} (seven parameters, the 200 sets), for densities above $10^{-3}$; for the closed form the seven-parameter entry is the quadrature error of~\eqref{eq:seven} against adaptive integration, which is why WienR is also shown at tolerance $10^{-9}$ for seven parameters.}
 \label{tab:timing}
 \footnotesize
 \begin{tabular}{lcccc}
@@ -221,7 +221,8 @@ The error columns need a reference scale. \citet{Blurton2017} recommend a trunca
  & Error & $\mu$s & Error & $\mu$s \\
 \midrule
 Closed form   & --                 & 0.33 & $1.5\times10^{-9}$ & 9.2 \\
-WienR         & $2.5\times10^{-12}$& 2.1  & $1.5\times10^{-9}$ & 1040 \\
+WienR, default $10^{-12}$ & $2.5\times10^{-12}$& 2.1  & $1.5\times10^{-9}$ & 1040 \\
+WienR, $10^{-9}$          & --                 & --   & $2.0\times10^{-8}$ & 103 \\
 rtdists       & $4.6\times10^{-3}$ & 0.45 & $9.2\times10^{-3}$ & 18 \\
 HDDM          & $3.9\times10^{-6}$ & 0.60 & $1.5\times10^{-7}$ & 46 \\
 \midrule
@@ -233,7 +234,7 @@ WienR, 5 gradients           & $3\times10^{-13}$ (abs.) & 15.7 & & \\
 \end{tabular}
 \end{table*}
 
-Two features of Table~\ref{tab:timing} stand out. First, the closed form is the cheapest of the four at every entry and the only one that involves no numerical integration for six parameters. The rtdists package costs 1.4 times as much for six parameters and twice as much for seven, at errors of $0.5\%$ and $0.9\%$. HDDM costs 1.8 and 5 times as much at $4\times10^{-6}$ and $1.5\times10^{-7}$. WienR costs 6 times as much at $10^{-12}$ for six parameters, and 110 times as much for seven, where it and the closed form are both at $1.5\times10^{-9}$. Because the cost of the closed form is fixed whereas that of the integrators is set by the accuracy asked of them, these ratios grow as the tolerance is tightened. Second, all five partial derivatives of~\eqref{eq:result} share the exponential factors of the density itself; an uncompiled vectorized implementation returns the density together with all five derivatives in $1.7~\mu$s, whereas WienR requires one further numerical integration per derivative. For reference, WienR's own closed form for drift variability alone \citep{Blurton2017} evaluates in $0.26~\mu$s on the same machine, so the closed form with starting-point variability costs 1.3 times the drift-only density.
+Two features of Table~\ref{tab:timing} stand out. First, the closed form is the cheapest of the four at every entry and the only one that involves no numerical integration for six parameters. The rtdists package costs 1.4 times as much for six parameters and twice as much for seven, at errors of $0.5\%$ and $0.9\%$. HDDM costs 1.8 and 5 times as much at $4\times10^{-6}$ and $1.5\times10^{-7}$. WienR costs 6 times as much at $10^{-12}$ for six parameters; for seven it costs 110 times as much at its default $10^{-12}$ and 11 times as much at $10^{-9}$, the accuracy of the closed form's quadrature. Because the cost of the closed form is fixed whereas that of the integrators is set by the accuracy asked of them, these ratios grow as the tolerance is tightened. Second, all five partial derivatives of~\eqref{eq:result} share the exponential factors of the density itself; an uncompiled vectorized implementation returns the density together with all five derivatives in $1.7~\mu$s, whereas WienR requires one further numerical integration per derivative. For reference, WienR's own closed form for drift variability alone \citep{Blurton2017} evaluates in $0.26~\mu$s on the same machine, so the closed form with starting-point variability costs 1.3 times the drift-only density.
 
 \section{Discussion}
 
