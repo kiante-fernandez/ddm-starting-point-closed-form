@@ -205,7 +205,7 @@ We checked the result in five independent ways. (i)~Every algebraic step, in par
 
 \subsection{Efficiency}
 
-Table~\ref{tab:timing} compares the cost of~\eqref{eq:result} and~\eqref{eq:seven}, compiled from a direct transcription of the formulae, with the three packages in common use: WienR, which evaluates the drift-integrated series by adaptive cubature over $w$; rtdists, whose diffusion code is that of fast-dm and integrates over $w$ and the non-decision window by adaptive Simpson's rule; and the HDDM likelihood, which does the same with the Navarro--Fuss series. All timings are single-threaded on one machine,\footnote{Apple M1 Pro; R 4.5.3 with WienR 0.3-15 and rtdists 0.11-6; Python 3.11 with NumPy 1.26.4, SciPy 1.13.1, Cython 3.1.4, and hddm-wfpt 0.1.4, the HDDM likelihood distributed as a standalone package.} for 10\,000 response times at one parameter set, which is the situation in a likelihood evaluation.
+Table~\ref{tab:timing} compares the cost of~\eqref{eq:result} and~\eqref{eq:seven}, compiled from a direct transcription of the formulae, with the three packages in common use: WienR, which evaluates the drift-integrated series by adaptive cubature over $w$; rtdists, whose diffusion code is that of fast-dm and integrates over $w$ and the non-decision window by adaptive Simpson's rule; and the HDDM likelihood, which does the same with the Navarro--Fuss series. All timings are single-threaded on one machine,\footnote{Apple M1 Pro; R 4.5.3 with WienR 0.3-15 and rtdists 0.12-0; Python 3.11 with NumPy 1.26.4, SciPy 1.13.1, Cython 3.1.4, and hddm-wfpt 0.1.4, the HDDM likelihood distributed as a standalone package.} for 10\,000 response times at one parameter set, which is the situation in a likelihood evaluation.
 
 The error columns need a reference scale. \citet{Blurton2017} recommend a truncation tolerance of $1.5\times10^{-8}$, the square root of single-precision machine epsilon, and \citet{Gondan2014} illustrate their term counts at $10^{-3}$. \citet[Table~1]{Tuerlinckx2004} reports differences of $2\times10^{-7}$ to $3\times10^{-4}$ between his quadrature-based algorithm and the classical one. Among current packages, rtdists (fast-dm) defaults to a precision of 3, documented as roughly the number of accurate decimals; the HDDM likelihood truncates its series at $10^{-4}$ and integrates over the starting point and the non-decision window by adaptive Simpson's rule with tolerance $10^{-8}$ and recursion depth 10; the Stan implementation of \citet{Henrich2024} fixes the density tolerance at $10^{-6}$ and defaults to $10^{-4}$ for the derivatives; WienR defaults to $10^{-12}$. The closed form is exact to double precision, and its seven-parameter quadrature at $1.5\times10^{-9}$ is below every one of these tolerances.
 
@@ -222,7 +222,7 @@ The error columns need a reference scale. \citet{Blurton2017} recommend a trunca
 \midrule
 Closed form   & --                 & 0.33 & $1.5\times10^{-9}$ & 9.2 \\
 WienR         & $2.5\times10^{-12}$& 2.1  & $1.5\times10^{-9}$ & 1040 \\
-rtdists       & $4.6\times10^{-3}$ & 0.43 & $9.2\times10^{-3}$ & 18 \\
+rtdists       & $4.6\times10^{-3}$ & 0.45 & $9.2\times10^{-3}$ & 18 \\
 HDDM          & $3.9\times10^{-6}$ & 0.60 & $1.5\times10^{-7}$ & 46 \\
 \midrule
 Closed form $+$ 5 gradients$^{\dagger}$ & --      & 1.7  & & \\

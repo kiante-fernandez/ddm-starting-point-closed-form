@@ -42,7 +42,7 @@ fits with. Error = max relative deviation from the closed form on the 400 + 200 
 |---|---|---|---|---|
 | closed form, compiled (`src/ddm_kernel.pyx`) | — | 0.33 | 1.5e-9 (quadrature) | 9.2 |
 | WienR (tol 1e-12) | 2.5e-12 | 2.1 | 1.5e-9 | 1040 |
-| rtdists / fast-dm (precision 3) | 4.6e-3 | 0.43 | 9.2e-3 | 18 |
+| rtdists / fast-dm 0.12-0 (precision 3) | 4.6e-3 | 0.45 | 9.2e-3 | 18 |
 | HDDM `wiener_like` (series 1e-4, Simpson 1e-8, depth 10) | 3.9e-6 | 0.60 | 1.5e-7 | 46 |
 | closed form + 5 gradients (numpy, uncompiled) | — | 1.7 | | |
 | WienR, 5 gradients (5 cubatures) | 1e-13 | 15.7 | | |
