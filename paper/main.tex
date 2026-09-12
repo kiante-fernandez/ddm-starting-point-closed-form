@@ -25,8 +25,16 @@
 \address{Department of Psychology, University of California, Los Angeles, United States}
 \cortext[cor1]{Corresponding author.}
 
+\begin{highlights}
+\item Closed-form density for the diffusion model with variable drift and starting point
+\item No closed form exists in the large-time series; the small-time series has one
+\item Analytic gradients; the seven-parameter likelihood needs one 1-D quadrature
+\item Verified symbolically, to 48 digits, against three packages, and in Lean 4
+\item Cheaper than every current package at the settings it fits with
+\end{highlights}
+
 \begin{abstract}
-The Ratcliff diffusion model is now arguably the most widely applied model for response time data. Its major advantage is its description of both response times and the probabilities for correct as well as incorrect responses. The model assumes a Wiener process with drift between two constant absorbing barriers. The first-passage times at the upper and lower boundary describe the responses in simple two-choice decision tasks, for example, in experiments with perceptual discrimination or memory search. In applications of the model, the drift rate and the starting point of the Wiener process are usually assumed to vary across trials, normally and uniformly respectively. This extra flexibility allows accounting for the slow and fast errors that often occur in response time experiments. The drift integral was solved analytically by Blurton, Kesselmeier and Gondan (2017); the starting-point integral has so far been evaluated numerically in every implementation, and Tuerlinckx (2004) concluded that no closed form exists. Here we show that this conclusion holds only for the large-time series representation. In the small-time representation the starting-point integral is an ordinary Gaussian moment, and we present a closed-form expression for the first-passage time density with normally distributed drift and uniformly distributed starting point, together with a large-time counterpart in terms of the Faddeeva function that is stable where the small-time series is not. The result is verified symbolically, to 48 digits against direct double integration, against two independent reference implementations, against process simulation, and is machine-checked in Lean~4. Every term is a combination of exponentials, the normal distribution function, and the Faddeeva function, so analytic gradients with respect to all parameters exist. The full seven-parameter likelihood then requires a single one-dimensional quadrature over the non-decision-time window in place of two-dimensional cubature.
+The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. The drift integral of the first-passage time density has been available in closed form; the starting-point integral has been evaluated numerically in every implementation, and Tuerlinckx (2004) concluded that no closed form exists. We show that this holds only for the large-time series representation. In the small-time representation the starting-point integral is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form, together with a large-time counterpart in terms of the Faddeeva function. All partial derivatives are closed form, and the seven-parameter likelihood needs a single one-dimensional quadrature. The result is verified symbolically, to 48 digits, against three reference implementations and process simulation, and is machine-checked in Lean~4.
 \end{abstract}
 
 \begin{keyword}
@@ -242,9 +250,21 @@ For practice the consequences are threefold. The density is exact up to a trunca
 
 The corresponding cumulative distribution function with both forms of variability does not follow by the same route. Starting from the drift-integrated distribution function of \citet{Blurton2017}, half of the series terms have a coefficient of $w^2$ that is exactly zero after the drift integral and close through the integral $\int\e^{cw}\Phinorm(\alpha w + \beta)\dd w$, which has a closed form; the other half carry the coefficient $+2a^2\eta^2$, a growing Gaussian times $\Phinorm$, and reduce to an integral of Owen-$T$ type that has no closed form in terms of $\exp$, $\Phinorm$, or Owen's $T$. For maximum likelihood and Bayesian estimation the density suffices, and we leave the distribution function open.
 
-\section*{Acknowledgments}
+\section*{Declaration of competing interest}
 
-% TODO: funding.
+The author declares no competing interests.
+
+\section*{Data availability}
+
+All code, reference values, comparison scripts, and the Lean~4 formalisation are available in the supplementary material and at [repository URL to be added on acceptance].
+
+\section*{Funding}
+
+% TODO: funding statement, or "This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors."
+
+\section*{Declaration of generative AI in the writing process}
+
+% TODO: Elsevier requires this section if AI tools were used in preparing the manuscript. Delete the section if none were used.
 
 \appendix
 
