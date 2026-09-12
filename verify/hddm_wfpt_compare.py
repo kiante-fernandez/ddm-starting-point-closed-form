@@ -4,7 +4,7 @@ sets of data/, and single-thread cost.  (The closed form itself matches WienR to
 pip install hddm-wfpt.  Run from the repo root with OMP_NUM_THREADS=1.
 hddm-wfpt conventions: signed RT (negative = lower barrier), relative z and sz, window t +- st/2."""
 import sys; sys.path.insert(0, "src")
-import numpy as np, pandas as pd, time
+import numpy as np, pandas as pd, timeit
 from hddm_wfpt import wfpt
 import ddm_kernel as K
 g = pd.read_csv("data/wienr_grid.csv"); f = pd.read_csv("data/wienr_full.csv")
@@ -18,11 +18,7 @@ def acc(**kw):
     return (np.abs(h6-k6).max(), np.max(np.abs(h6-k6)[b6]/k6[b6]),
             np.abs(h7-k7).max(), np.max(np.abs(h7-k7)[b7]/k7[b7]))
 tt = np.random.default_rng(1).uniform(0.1, 3, 2000)
-def tm(fn):
-    best = 1e9
-    for _ in range(3):
-        t0 = time.perf_counter(); fn(); best = min(best, time.perf_counter() - t0)
-    return 1e6*best/len(tt)
+tm = lambda fn: 1e6 * min(timeit.repeat(fn, number=1, repeat=3)) / len(tt)
 print("error of hddm-wfpt relative to the closed form; cost per evaluation, single thread")
 print(f"{'setting':40s} {'6p abs':>8s} {'6p rel':>8s} {'7p abs':>8s} {'7p rel':>8s} {'6p us':>8s} {'7p us':>8s}")
 # HDDM's fitting likelihood (wiener_like) settings: err=1e-4 (HDDM default), depth 10, simps_err=1e-8.

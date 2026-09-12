@@ -18,18 +18,11 @@ def _logPhi_diff(x1, x2):
 
 PARAMS = ("nu", "eta", "a", "w1", "w2")
 
-def _J(t, a, tol):
-    """terms so that the first dropped small-time term, O(exp(-J^2 a^2/(2t))), is below tol"""
-    return max(2, int(np.ceil(np.sqrt(2 * np.max(t) * np.log(1 / tol)) / a)) + 1)
-
-def _K(t, a, tol):
-    """terms so that the first dropped large-time term, O(exp(-K^2 pi^2 t/(2a^2))), is below tol"""
-    return max(1, int(np.ceil(a * np.sqrt(2 * np.log(1 / tol) / (np.pi**2 * np.min(t))))) + 1)
-
 def _small(t, nu, eta, a, w1, w2, tol=1e-12):
     """Small-time series: returns (g, dg) with g shape (T,), dg shape (5,T) in PARAMS order."""
     t = np.atleast_1d(np.asarray(t, float))[:, None]          # (T,1)
-    j = np.arange(_J(t, a, tol))[None, :]                      # (1,J)
+    J = max(2, int(np.ceil(np.sqrt(2 * np.max(t) * np.log(1 / tol)) / a)) + 1)   # first dropped term O(exp(-J^2 a^2/2t)) < tol
+    j = np.arange(J)[None, :]                                  # (1,J)
     S = 1 + eta**2 * t
     A = a*a/(t*S)
     even = (j % 2 == 0)
@@ -74,7 +67,8 @@ from scipy.special import wofz
 def _large(t, nu, eta, a, w1, w2, tol=1e-12):
     """Large-time series via Faddeeva w(z): returns (g, dg) as in _small.  Stable for large t/a^2."""
     t = np.atleast_1d(np.asarray(t, float))[:, None]
-    k = np.arange(1, _K(t, a, tol) + 1)[None, :]
+    K = max(1, int(np.ceil(a * np.sqrt(2 * np.log(1 / tol) / (np.pi**2 * np.min(t))))) + 1)   # first dropped term O(exp(-K^2 pi^2 t/2a^2)) < tol
+    k = np.arange(1, K + 1)[None, :]
     S = 1 + eta**2 * t
     kap = eta**2 * a**2 / (2 * S)                 # >= 0, coefficient of w^2 (growing)
     mu = -nu * a / S + 1j * np.pi * k              # complex linear coefficient
@@ -150,9 +144,7 @@ def grad_f7(t, nu, eta, a, w1, w2, t0, st0, **kw):
     if hi <= 0:
         return 0.0, np.zeros(7)
     if st0 == 0:
-        g, dg = grad_full_sz(hi, nu, eta, a, w1, w2, **kw)
-        # ponytail: d/dt0 = -dg/dt is not implemented; d/dst0 is undefined at st0 = 0
-        return g[0], np.concatenate([dg[:, 0], [np.nan, np.nan]])
+        raise ValueError("st0 = 0: use grad_full_sz(t - t0, ...); d/dt0 = -dg/dt is not implemented")
     lo = max(hi - st0, 0.0)
     s = (_X + 1) / 2
     u = lo + (hi - lo) * s**3

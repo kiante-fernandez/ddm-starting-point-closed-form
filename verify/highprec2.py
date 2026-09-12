@@ -18,36 +18,31 @@ def closed_small(t,nu,eta,a,w1,w2,J=40):
         tot+=(-1)**j*((p+q*m)*mp.sqrt(2*mp.pi)*sig*mp.e**K*(mp.ncdf((w2-m)/sig)-mp.ncdf((w1-m)/sig))
                       -(q/A)*(mp.e**(C+B*w2-A*w2**2/2)-mp.e**(C+B*w1-A*w1**2/2)))
     return tot/((w2-w1)*mp.sqrt(2*mp.pi*t**3*S))
-def closed_large(t,nu,eta,a,w1,w2,K=120):
-    S=1+eta**2*t; kap=eta**2*a**2/(2*S); lam=-nu*a/S; sk=mp.sqrt(kap); tot=mp.mpf(0)
-    for k in range(1,K+1):
+def closed_large(t,nu,eta,a,w1,w2,K=None,tol=mp.mpf(10)**-45):
+    """large-time form via erfi; K terms if given (shows the fixed-K blow-up), else stop when the
+    k-th damping factor is below tol.  Returns (value, terms used)."""
+    S=1+eta**2*t; kap=eta**2*a**2/(2*S); lam=-nu*a/S; sk=mp.sqrt(kap); tot=mp.mpf(0); k=1
+    while (k<=K) if K else True:
+        damp=mp.e**(-k**2*mp.pi**2*t/(2*a**2))
+        if K is None and damp<tol and k>3: break
         mu=lam+1j*mp.pi*k
-        F=lambda w: mp.sqrt(mp.pi)/(2*sk)*mp.e**(-mu**2/(4*kap))*mp.erfi(sk*w+mu/(2*sk))
-        tot+=k*mp.e**(-k**2*mp.pi**2*t/(2*a**2))*mp.im(F(w2)-F(w1))
-    return mp.pi/a**2/mp.sqrt(S)*mp.e**(-nu**2*t/(2*S))*tot/(w2-w1)
+        pref=mp.sqrt(mp.pi)/(2*sk)*mp.e**(-mu**2/(4*kap))
+        tot+=k*damp*mp.im(pref*(mp.erfi(sk*w2+mu/(2*sk))-mp.erfi(sk*w1+mu/(2*sk)))); k+=1
+    return mp.pi/a**2/mp.sqrt(S)*mp.e**(-nu**2*t/(2*S))*tot/(w2-w1), k-1
 cases=[(0.30,1.0,1.2,1.2,0.25,0.75),(0.90,-0.5,0.8,1.0,0.40,0.60),
        (0.15,3.0,2.0,2.5,0.30,0.70),(2.00,0.0,1.5,1.5,0.45,0.55),
        (0.60,2.0,0.3,0.8,0.20,0.80),(3.00,-1.0,1.0,0.8,0.35,0.65)]
 print(f"{'t':>5}{'t/a^2':>7} {'closed (small-time)':>26} {'|small-ref|':>11} {'|large-ref|':>11}")
 for c in cases:
     t,nu,eta,a,w1,w2=map(mp.mpf,c); R=ref(t,nu,eta,a,w1,w2)
-    cs=closed_small(t,nu,eta,a,w1,w2); cl=closed_large(t,nu,eta,a,w1,w2)
+    cs=closed_small(t,nu,eta,a,w1,w2); cl,_=closed_large(t,nu,eta,a,w1,w2,K=120)
     print(f"{float(t):5.2f}{float(t/a**2):7.2f} {mp.nstr(cs,22):>26} {mp.nstr(abs(cs-R),3):>11} {mp.nstr(abs(cl-R),3):>11}")
 
 # --- large-time form at 60 dps, truncated adaptively where the k-th damping factor < 1e-45
 mp.mp.dps = 60
-def closed_large_adaptive(t,nu,eta,a,w1,w2,tol=mp.mpf(10)**-45):
-    S=1+eta**2*t; kap=eta**2*a**2/(2*S); lam=-nu*a/S; sk=mp.sqrt(kap); tot=mp.mpf(0); k=1
-    while True:
-        damp=mp.e**(-k**2*mp.pi**2*t/(2*a**2))
-        if damp<tol and k>3: break
-        mu=lam+1j*mp.pi*k
-        pref=mp.sqrt(mp.pi)/(2*sk)*mp.e**(-mu**2/(4*kap))
-        tot+=k*damp*mp.im(pref*(mp.erfi(sk*w2+mu/(2*sk))-mp.erfi(sk*w1+mu/(2*sk)))); k+=1
-    return mp.pi/a**2/mp.sqrt(S)*mp.e**(-nu**2*t/(2*S))*tot/(w2-w1), k-1
 print()
 for c in [(2.00,0.0,1.5,1.5,0.45,0.55),(3.00,-1.0,1.0,0.8,0.35,0.65),
           (0.90,-0.5,0.8,1.0,0.40,0.60),(1.50,2.0,1.0,1.0,0.30,0.70)]:
     t,nu,eta,a,w1,w2=map(mp.mpf,c)
-    R=ref(t,nu,eta,a,w1,w2,J=60); cl,K=closed_large_adaptive(t,nu,eta,a,w1,w2)
+    R=ref(t,nu,eta,a,w1,w2,J=60); cl,K=closed_large(t,nu,eta,a,w1,w2)
     print(f"t={float(t):4.2f} t/a^2={float(t/a**2):5.2f}  K={K:3d}  large-time={mp.nstr(cl,20):>24}  |large-ref|={mp.nstr(abs(cl-R),3)}")

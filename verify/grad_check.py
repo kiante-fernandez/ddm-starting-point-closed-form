@@ -76,6 +76,8 @@ else:
     n7 = np.array([f7(r.t, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0) for r in f.itertuples()])
     print(f"compiled kernel f7 vs numpy, 200 sets: max abs {np.abs(k7 - n7).max():.1e};  vs WienR {np.abs(k7 - f.wienr).max():.1e}")
     assert np.abs(k7 - n7).max() < 1e-13
+    w9 = pd.read_csv("data/wienr_full_p9.csv").w9; big7 = k7 > 1e-3
+    print(f"WienR at tolerance 1e-9 vs closed form, 200 sets: max rel {np.max(np.abs(w9 - k7)[big7] / k7[big7]):.1e}   (Table 2 row)")
     print("KERNEL CHECK PASS")
 
 # --- seven-parameter quadrature: 32-node rule with the cubic edge map vs adaptive quadrature of

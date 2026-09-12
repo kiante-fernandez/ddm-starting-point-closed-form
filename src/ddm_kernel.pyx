@@ -5,7 +5,7 @@ from libc.math cimport exp, log, sqrt, ceil, cos, sin, M_PI
 from scipy.special.cython_special cimport erfcx, ndtr, wofz
 import numpy as np
 
-cdef double SQ2PI = sqrt(2 * M_PI), SQRT1_2 = sqrt(0.5)
+cdef double SQ2PI = sqrt(2 * M_PI), SQRT1_2 = sqrt(0.5), TOL = 1e-12   # series tolerance, as ddm_fast's default
 
 cdef inline double eK_dPhi(double x1, double x2, double K, double E1, double E2) noexcept nogil:
     """e^K [Phi(x2) - Phi(x1)] without forming e^K: uses e^K phi(x_i) sqrt(2 pi) = E_i and the
@@ -56,18 +56,18 @@ cdef inline double g1(double t, double nu, double eta, double a, double w1, doub
     if t/(a*a) <= 1: return g_small(t, nu, eta, a, w1, w2, tol)
     return g_large(t, nu, eta, a, w1, w2, tol)
 
-def g_full_sz(double[::1] t, double nu, double eta, double a, double w1, double w2, double tol=1e-12):
+def g_full_sz(double[::1] t, double nu, double eta, double a, double w1, double w2):
     """Six-parameter density at each t (one parameter set).  Same values as ddm_fast.g_full_sz."""
     out = np.empty(t.shape[0])
     cdef double[::1] o = out
     cdef Py_ssize_t i
-    for i in range(t.shape[0]): o[i] = g1(t[i], nu, eta, a, w1, w2, tol)
+    for i in range(t.shape[0]): o[i] = g1(t[i], nu, eta, a, w1, w2, TOL)
     return out
 
 _X, _W = np.polynomial.legendre.leggauss(32)
 cdef double[::1] GX = _X, GW = _W
 
-def f7(double[::1] t, double nu, double eta, double a, double w1, double w2, double t0, double st0, double tol=1e-12):
+def f7(double[::1] t, double nu, double eta, double a, double w1, double w2, double t0, double st0):
     """Seven-parameter density at each t (one parameter set).  Same values as ddm_fast.f7."""
     out = np.empty(t.shape[0])
     cdef double[::1] o = out
@@ -76,11 +76,11 @@ def f7(double[::1] t, double nu, double eta, double a, double w1, double w2, dou
     for i in range(t.shape[0]):
         hi = t[i] - t0
         if hi <= 0: o[i] = 0; continue
-        if st0 == 0: o[i] = g1(hi, nu, eta, a, w1, w2, tol); continue
+        if st0 == 0: o[i] = g1(hi, nu, eta, a, w1, w2, TOL); continue
         lo = hi - st0 if hi > st0 else 0
         acc = 0
         for n in range(32):
             s = (GX[n] + 1)/2
-            acc += GW[n] * (hi-lo)*3*s*s/2 * g1(lo + (hi-lo)*s*s*s, nu, eta, a, w1, w2, tol)
+            acc += GW[n] * (hi-lo)*3*s*s/2 * g1(lo + (hi-lo)*s*s*s, nu, eta, a, w1, w2, TOL)
         o[i] = acc/st0
     return out
