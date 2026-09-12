@@ -1,7 +1,7 @@
 Highlights
 
 - Closed-form density for the diffusion model with variable drift and starting point
-- No closed form exists in the large-time series; the small-time series has one
+- Each integral had closed on its own; here drift and starting point close together
 - Analytic gradients; the seven-parameter likelihood now only needs one 1-D quadrature
 - Verified symbolically, against three packages, and in Lean
-- Cheaper than every current package at the settings it fits with
+- Cheaper than WienR, rtdists, and HDDM at their own fitting settings
