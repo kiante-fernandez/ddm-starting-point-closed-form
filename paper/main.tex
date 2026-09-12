@@ -22,7 +22,7 @@
 \cortext[cor1]{Corresponding author.}
 
 \begin{abstract}
-The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. Each of the three integrals of the first-passage time density has been evaluated in closed form on its own, at fixed values of the other parameters, but no two of them together; in particular, every implementation we are aware of that starts from the drift-integrated density integrates the starting point numerically. We show that in the small-time series representation the starting-point integral of the drift-integrated density is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form in exponentials and the normal distribution function, together with a large-time counterpart in terms of the Faddeeva function. Where these implementations required two numerical integrations, over the starting point and the non-decision time, the seven-parameter likelihood now requires a single one-dimensional quadrature, and the partial derivatives with respect to all parameters follow in closed form. The result is verified symbolically, against three reference implementations and process simulation, and is machine-checked in Lean.
+The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. Each of the three integrals of the first-passage time density has been evaluated in closed form on its own, at fixed values of the other parameters, but no two of them together; in particular, every implementation we are aware of that starts from the drift-integrated density integrates the starting point numerically. We show that in the small-time series representation the starting-point integral of the drift-integrated density is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form in exponentials and the normal distribution function, together with a large-time counterpart in terms of the Faddeeva function. Where these implementations required two numerical integrations, over the starting point and the non-decision time, the seven-parameter likelihood now requires a single one-dimensional quadrature; the derivatives of the decision density with respect to all of its parameters follow in closed form, and the likelihood gradient reuses that one quadrature. The result is verified symbolically, against three reference implementations and process simulation, and is machine-checked in Lean.
 \end{abstract}
 
 \begin{keyword}
@@ -44,25 +44,25 @@ g\left(t \mid \nu, \eta^2, a, w\right)
  &\quad\times \sum_{j=0}^{\infty} (-1)^j\, r_j \exp\!\left(-\frac{r_j^2}{2t}\right),
 \label{eq:geta}
 \end{align}
-where $S := 1 + \eta^2 t$, $r_j = ja + aw$ for even $j$ and $r_j = ja + a(1-w)$ for odd $j$. \citet{Blurton2017} derived the corresponding cumulative distribution function. Both results are stated in the small-time representation of the first-passage time series \citep{NavarroFuss2009, Blurton2012, Gondan2014}, that is, as a sum over image charges $r_j$ with Gaussian factors $\exp(-r_j^2/2t)$.
+where $S := 1 + \eta^2 t$, $r_j = ja + aw$ for even $j$ and $r_j = ja + a(1-w)$ for odd $j$. \citet{Blurton2017} derived the corresponding cumulative distribution function. Both results are stated in the small-time series representation of the first-passage time density \citep{Hall1997, NavarroFuss2009, Blurton2012, Gondan2014}, that is, as a sum over image charges $r_j$ with Gaussian factors $\exp(-r_j^2/(2t))$.
 
 The other two integrals close at fixed drift. \citet[pp.~706--708]{Tuerlinckx2004} worked in the large-time representation of \citet{Ratcliff1978}, in which the starting point enters through $\sin(k\pi w)$, integrated the starting point and the non-decision time analytically at fixed drift, and found that the drift integral then has to be approximated by quadrature; DMAT \citep{VandekerckhoveTuerlinckx2008} follows this route. Every implementation we are aware of that starts instead from the drift-integrated density~\eqref{eq:geta} integrates the starting point numerically: fast-dm and rtdists \citep{VossVoss2007, Singmann2022}, HDDM \citep{Wiecki2013}, WienR \citep{HartmannKlauer2021, WienR}, and the Stan implementation of \citet{Henrich2024}, which follows the WienR derivations; the recent monograph of \citet[Section~4.5]{SmithRatcliff2025} likewise carries out only the drift integral analytically. \citet{Blurton2017} noted that adding starting-point and non-decision-time variability to their result ``requires numerical evaluation of two integrals'' (p.~11).
 
-In this note we show that the starting-point integral of the density~\eqref{eq:geta} has a closed form, and that what the integral turns into depends on the series representation. In the large-time series, once the drift has been integrated, the starting point appears in a Gaussian factor with a \emph{positive} coefficient of $w^2$, and the integral against $\sin(k\pi w)$ is an imaginary error function of complex argument, which has a closed form only through the Faddeeva function (Section~\ref{sec:large}). In the small-time series the factor $\exp(-r_j^2/2t)$ contributes a negative coefficient of $w^2$ that always dominates the positive one produced by the drift integral, so the integrand is a linear function times a decaying Gaussian, and the integral is a Gaussian moment with a closed form. Section~\ref{sec:result} gives the result and its derivation, Section~\ref{sec:large} the large-time counterpart that is needed for numerical stability at large $t$, Section~\ref{sec:conv} the truncation rule, Section~\ref{sec:grad} the partial derivatives, Section~\ref{sec:seven} the resulting seven-parameter likelihood, and Section~\ref{sec:verify} the numerical verification and a comparison of computational cost with existing software.
+In this note we show that the starting-point integral of the density~\eqref{eq:geta} has a closed form, and that what the integral turns into depends on the series representation. In the large-time series, once the drift has been integrated, the starting point appears in a Gaussian factor with a \emph{positive} coefficient of $w^2$, and the integral against $\sin(k\pi w)$ is an imaginary error function of complex argument, which has a closed form only through the Faddeeva function (Section~\ref{sec:large}). In the small-time series the factor $\exp(-r_j^2/(2t))$ contributes a negative coefficient of $w^2$ that always dominates the positive one produced by the drift integral, so the integrand is a linear function times a decaying Gaussian, and the integral is a Gaussian moment with a closed form. Section~\ref{sec:result} gives the result and its derivation, Section~\ref{sec:large} the large-time counterpart that is needed for numerical stability at large $t$, Section~\ref{sec:conv} the truncation rule, Section~\ref{sec:grad} the partial derivatives, Section~\ref{sec:seven} the resulting seven-parameter likelihood, and Section~\ref{sec:verify} the numerical verification and a comparison of computational cost with existing software.
 
 \section{The density with variable drift and variable starting point}
 \label{sec:result}
 
-Let the starting point be uniformly distributed on $[w_1, w_2]$, $0 \le w_1 < w_2 \le 1$. The lower-barrier first-passage time density of the resulting process is
+Let the starting point be uniformly distributed on $[w_1, w_2]$, $0 < w_1 < w_2 < 1$; the endpoints are excluded because at $w_1 = 0$ the mixed density behaves like $u^{-1/2}$ as $u \to 0$, which the quadrature of Section~\ref{sec:seven} does not cover. The lower-barrier first-passage time density of the resulting process is
 \begin{equation}
 g\left(t \mid \nu, \eta^2, a, w_1, w_2\right) := \frac{1}{w_2 - w_1}\int_{w_1}^{w_2} g\left(t \mid \nu, \eta^2, a, w\right) \dd w .
 \label{eq:def}
 \end{equation}
-Because $r_j \ge ja$ for $w \in [0,1]$, the $j$-th term of~\eqref{eq:geta} is bounded in absolute value by $(j+1)a\exp(-j^2a^2/2t)$ times a constant independent of $w$ and $j$ (\ref{app:bound}), so the series converges absolutely and uniformly on $[w_1, w_2]$ and summation and integration may be exchanged. It therefore suffices to integrate one term.
+Because $r_j \ge ja$ for $w \in [0,1]$, the $j$-th term of~\eqref{eq:geta} is bounded in absolute value by $(j+1)a\exp(-j^2a^2/(2t))$ times a constant independent of $w$ and $j$ (\ref{app:bound}), so the series converges absolutely and uniformly on $[w_1, w_2]$ and summation and integration may be exchanged. It therefore suffices to integrate one term.
 
 \subsection{The $j$-th term is a Gaussian moment}
 
-Write $r_j = p_j + q_j w$ with $p_j = ja$, $q_j = a$ for even $j$, and $p_j = (j+1)a$, $q_j = -a$ for odd $j$. Collecting the $w$-dependence of the $j$-th term of~\eqref{eq:geta}, that is, of $\exp[(-2\nu a w + \eta^2 a^2 w^2)/2S]\, r_j \exp(-r_j^2/2t)$, gives a quadratic exponent in $w$,
+Write $r_j = p_j + q_j w$ with $p_j = ja$, $q_j = a$ for even $j$, and $p_j = (j+1)a$, $q_j = -a$ for odd $j$. Collecting the $w$-dependence of the $j$-th term of~\eqref{eq:geta}, that is, of $\exp[(-2\nu a w + \eta^2 a^2 w^2)/2S]\, r_j \exp(-r_j^2/(2t))$, gives a quadratic exponent in $w$,
 \begin{equation}
 (p_j + q_j w)\exp\!\left(-\tfrac{1}{2} A w^2 + B_j w + C_j\right),
 \label{eq:term}
@@ -74,7 +74,7 @@ B_j = -\frac{\nu a}{S} \mp \frac{k_j a^2}{t}, \qquad
 C_j = -\frac{\nu^2 t}{2S} - \frac{k_j^2 a^2}{2t},
 \label{eq:coef}
 \end{align}
-where $k_j = j$ and the upper sign apply for even $j$, and $k_j = j+1$ and the lower sign apply for odd $j$. The coefficient of $w^2$ deserves attention. The drift integral contributes $+\eta^2 a^2/2S$, a growing Gaussian in $w$, whereas the image-charge factor contributes $-a^2/2t$, and
+where $k_j = j$ and the upper sign apply for even $j$, and $k_j = j+1$ and the lower sign apply for odd $j$. The coefficient of $w^2$ deserves attention. The drift integral contributes $+\eta^2 a^2/(2S)$, a growing Gaussian in $w$, whereas the image-charge factor contributes $-a^2/(2t)$, and
 \begin{equation}
 \frac{a^2}{2t} - \frac{\eta^2 a^2}{2S} = \frac{a^2 (S - \eta^2 t)}{2tS} = \frac{a^2}{2tS} > 0
 \label{eq:key}
@@ -86,7 +86,7 @@ for every $t > 0$, every $\eta$, and every $j$. The combined exponent is therefo
 For $A > 0$ and $m := B/A$,
 \begin{align}
 &\int_{w_1}^{w_2} (p + q w)\, \exp(-\tfrac12 A w^2 + B w + C) \dd w \notag\\
- &\quad = (p + q m)\sqrt{\frac{2\pi}{A}}\, \exp(C + B^2/2A) \notag\\
+ &\quad = (p + q m)\sqrt{\frac{2\pi}{A}}\, \exp(C + B^2/(2A)) \notag\\
  &\qquad\quad\times \left[\Phi\!\big(\sqrt{A}(w_2 - m)\big) - \Phi\!\big(\sqrt{A}(w_1 - m)\big)\right] \notag\\
  &\qquad - \frac{q}{A}\left[\exp(C + B w_2 - \tfrac12 A w_2^2) \right. \notag\\
  &\qquad\qquad\quad \left. - \exp(C + B w_1 - \tfrac12 A w_1^2)\right],
@@ -101,7 +101,7 @@ I_j &= \int_{w_1}^{w_2} (p_j + q_j w) \notag\\
 \end{align}
 with $I_j$ given in closed form by~\eqref{eq:lemma}. The density at the upper barrier is $g(t \mid -\nu, \eta^2, a, 1 - w_2, 1 - w_1)$. For $w_2 - w_1 \to 0$ the result reduces to~\eqref{eq:geta}, and for $\eta = 0$ it reduces to the starting-point integral of the constant-drift density, so it can be used in a fitting routine regardless of whether either form of variability is present in the data.
 
-Two remarks on evaluation. First, for large $j$ the center $m = B_j/A$ of the Gaussian in~\eqref{eq:lemma} lies far outside $[w_1, w_2]$, so that $\exp(C + B^2/2A)$ is very large and the bracketed difference of $\Phi$ values is very small. The product is stable if it is formed in logarithmic space with $\log\Phi$ and a tail-aware difference, or through the scaled complementary error function, since $\exp(C + B^2/2A)\,\Phi(-x_i) = \tfrac12 E_i\,\mathrm{erfcx}(x_i/\sqrt 2)$ with $x_i = \sqrt A(w_i - m)$ and $E_i$ as below; our vectorized implementation uses the former and the compiled kernel of Section~\ref{sec:verify} the latter, and they agree to $1.5\times10^{-14}$ on the grid of Section~\ref{sec:verify}. Second, the identity $\sqrt{2\pi}\,\exp(C + B^2/2A)\phi\big(\sqrt{A}(w_i - m)\big) = \exp(C + B w_i - \tfrac12 A w_i^2)$, where $\phi$ is the standard normal density, shows that the two brackets in~\eqref{eq:lemma} share their exponential factors; this is used in the derivatives of Section~\ref{sec:grad}.
+Two remarks on evaluation. First, for large $j$ the center $m = B_j/A$ of the Gaussian in~\eqref{eq:lemma} lies far outside $[w_1, w_2]$, so that $\exp(C + B^2/(2A))$ is very large and the bracketed difference of $\Phi$ values is very small. The product is stable if it is formed in logarithmic space with $\log\Phi$ and a tail-aware difference, or through the scaled complementary error function, since $\exp(C + B^2/(2A))\,\Phi(-x_i) = \tfrac12 E_i\,\mathrm{erfcx}(x_i/\sqrt 2)$ with $x_i = \sqrt A(w_i - m)$ and $E_i$ as below; our vectorized implementation uses the former and the compiled kernel of Section~\ref{sec:verify} the latter, and they agree to $1.5\times10^{-14}$ on the grid of Section~\ref{sec:verify}. Second, the identity $\sqrt{2\pi}\,\exp(C + B^2/(2A))\phi\big(\sqrt{A}(w_i - m)\big) = \exp(C + B w_i - \tfrac12 A w_i^2)$, where $\phi$ is the standard normal density, shows that the two brackets in~\eqref{eq:lemma} share their exponential factors; this is used in the derivatives of Section~\ref{sec:grad}.
 
 \section{Large-time representation}
 \label{sec:large}
@@ -110,11 +110,11 @@ Like every small-time series, \eqref{eq:result} loses precision through cancella
 \begin{align}
 g\left(t \mid \nu, \eta^2, a, w\right)
  &= \frac{\pi}{a^2\sqrt{S}}\exp\!\left[\frac{-\nu^2 t - 2\nu a w + \eta^2 (a w)^2}{2S}\right] \notag\\
- &\quad\times \sum_{k=1}^{\infty} k\, \exp(-k^2\pi^2 t/2a^2)\sin(k\pi w) .
+ &\quad\times \sum_{k=1}^{\infty} k\, \exp(-k^2\pi^2 t/(2a^2))\sin(k\pi w) .
 \label{eq:large}
 \end{align}
 \begin{sloppypar}
-Here there is no image-charge factor to compensate the growing Gaussian, and the starting-point integral of the $k$-th term is $\int_{w_1}^{w_2} \exp(\kappa w^2 + \lambda w)\sin(k\pi w)\dd w$ with $\kappa = \eta^2 a^2/2S > 0$ and $\lambda = -\nu a/S$. Written as the imaginary part of $\int \exp(\kappa w^2 + \mu_k w)\dd w$ with $\mu_k = \lambda + \I k\pi$, the antiderivative is an imaginary error function of complex argument, which overflows. It is, however, bounded when expressed through the Faddeeva function $\mathrm{w}(z) = \exp(-z^2)\operatorname{erfc}(-\I z)$ \citep[7.1.3]{AbramowitzStegun1964}:
+Here there is no image-charge factor to compensate the growing Gaussian, and the starting-point integral of the $k$-th term is $\int_{w_1}^{w_2} \exp(\kappa w^2 + \lambda w)\sin(k\pi w)\dd w$ with $\kappa = \eta^2 a^2/(2S) > 0$ and $\lambda = -\nu a/S$. Written as the imaginary part of $\int \exp(\kappa w^2 + \mu_k w)\dd w$ with $\mu_k = \lambda + \I k\pi$, the antiderivative is an imaginary error function of complex argument, which overflows. It is, however, bounded when expressed through the Faddeeva function $\mathrm{w}(z) = \exp(-z^2)\operatorname{erfc}(-\I z)$ \citep[7.1.3]{AbramowitzStegun1964}:
 \end{sloppypar}
 \begin{equation}
 \int_{w_1}^{w_2} \exp(\kappa w^2 + \mu_k w)\dd w
@@ -122,22 +122,22 @@ Here there is no image-charge factor to compensate the growing Gaussian, and the
    \Big[\exp(\kappa w^2 + \mu_k w)\, \mathrm{w}\!\big(z_k(w)\big)\Big]_{w_1}^{w_2},
 \label{eq:faddeeva}
 \end{equation}
-with $z_k(w) = \sqrt{\kappa}\, w + \mu_k/2\sqrt{\kappa}$.
-Since $\operatorname{Im} z_k = k\pi/2\sqrt{\kappa} > 0$, $\mathrm{w}(z_k)$ lies in the upper half plane where it is bounded by one, and the product with $\exp(\kappa w^2 + \mu_k w)$ is of the size of the integrand. For $\eta = 0$ the bracket reduces to $(\exp(\mu_k w_2) - \exp(\mu_k w_1))/\mu_k$. The large-time density with uniformly distributed starting point is then
+with $z_k(w) = \sqrt{\kappa}\, w + \mu_k/(2\sqrt{\kappa})$.
+Since $\operatorname{Im} z_k = k\pi/(2\sqrt{\kappa}) > 0$, $\mathrm{w}(z_k)$ lies in the upper half plane where it is bounded by one, and the product with $\exp(\kappa w^2 + \mu_k w)$ is of the size of the integrand. For $\eta = 0$ the bracket reduces to $(\exp(\mu_k w_2) - \exp(\mu_k w_1))/\mu_k$. The large-time density with uniformly distributed starting point is then
 \begin{align}
 g\left(t \mid \nu, \eta^2, a, w_1, w_2\right)
- &= \frac{\pi\, \exp(-\nu^2 t/2S)}{a^2\sqrt{S}\,(w_2 - w_1)}
-   \sum_{k=1}^{\infty} k\, \exp(-k^2\pi^2 t/2a^2) \notag\\
+ &= \frac{\pi\, \exp(-\nu^2 t/(2S))}{a^2\sqrt{S}\,(w_2 - w_1)} \notag\\
+ &\qquad\times \sum_{k=1}^{\infty} k\, \exp(-k^2\pi^2 t/(2a^2)) \notag\\
  &\qquad\times \operatorname{Im}\!\int_{w_1}^{w_2} \exp(\kappa w^2 + \mu_k w)\dd w .
 \label{eq:result_large}
 \end{align}
-Fast and accurate algorithms for $\mathrm{w}(z)$ are standard \citep{ZaghloulAli2011} and available in scientific libraries. In our implementation the two representations are switched at $t/a^2 = 1$; they agree to $1.5\times10^{-11}$ relative across the switch. We stress that~\eqref{eq:faddeeva} must be used in the Faddeeva form: written with the imaginary error function it loses of the order of $\pi^2 k^2/4\kappa$ nats to cancellation and returns meaningless values when the series is truncated at a fixed large $K$.
+Fast and accurate algorithms for $\mathrm{w}(z)$ are standard \citep{ZaghloulAli2011} and available in scientific libraries. In our implementation the two representations are switched at $t/a^2 = 1$; they agree to $1.5\times10^{-11}$ relative across the switch. We stress that~\eqref{eq:faddeeva} must be used in the Faddeeva form: written with the imaginary error function it loses of the order of $\pi^2 k^2/(4\kappa)$ nats to cancellation and returns meaningless values when the series is truncated at a fixed large $K$.
 
 \section{Convergence}
 \label{sec:conv}
 
 \begin{sloppypar}
-The $j$-th term of~\eqref{eq:result} is bounded in absolute value by $c\,(j+1)a\exp(-j^2 a^2/2t)$, and the $k$-th term of the large-time series~\eqref{eq:result_large} by $c'\,k\exp(-k^2\pi^2 t/2a^2)$, where the constants $c$ and $c'$ do not depend on the index (\ref{app:bound}). Both bounds decrease super-exponentially, so the truncation error is of the order of the first neglected term, and for a tolerance $\varepsilon$ the series may be cut at
+The $j$-th term of~\eqref{eq:result} is bounded in absolute value by $c\,(j+1)a\exp(-j^2 a^2/(2t))$, and the $k$-th term of the large-time series~\eqref{eq:result_large} by $c'\,k\exp(-k^2\pi^2 t/(2a^2))$, where the constants $c$ and $c'$ do not depend on the index (\ref{app:bound}). For $J \ge 2$ consecutive bounds decrease by a factor at most $\rho_J = \tfrac{J+2}{J+1}\exp(-(2J+1)a^2/(2t)) < 1$, so the tail is at most $b_J/(1-\rho_J)$ with $b_J$ the bound on the first neglected term, and likewise for $K$. The rule below controls the Gaussian factor of $b_J$ and $b_K$ for a tolerance $\varepsilon$; the polynomial factors and the constants are absorbed by the added term, and the check that follows is empirical:
 \end{sloppypar}
 \begin{equation}
 J = \left\lceil \frac{\sqrt{2 t \log(1/\varepsilon)}}{a} \right\rceil + 1,
@@ -145,12 +145,12 @@ J = \left\lceil \frac{\sqrt{2 t \log(1/\varepsilon)}}{a} \right\rceil + 1,
 K = \left\lceil a\sqrt{\frac{2\log(1/\varepsilon)}{\pi^2 t}} \right\rceil + 1 .
 \label{eq:JK}
 \end{equation}
-With $\varepsilon = 10^{-12}$ the small-time series needs $J \le 9$ terms for $t/a^2 \le 1$, and the large-time series needs $K \le 4$ terms for $t/a^2 \ge 1$. Evaluating~\eqref{eq:result} with $\varepsilon = 10^{-12}$ and with $\varepsilon = 10^{-40}$ on the 400 parameter sets of Section~\ref{sec:verify} gives results that differ by at most $2.2\times10^{-16}$.
+We take $J \ge 2$ always. With $\varepsilon = 10^{-12}$ the small-time series needs $J \le 9$ terms for $t/a^2 \le 1$, and the large-time series needs $K \le 4$ terms for $t/a^2 \ge 1$. Evaluating~\eqref{eq:result} with $\varepsilon = 10^{-12}$ and with $\varepsilon = 10^{-40}$ on the 400 parameter sets of Section~\ref{sec:verify} gives results that differ by at most $2.2\times10^{-16}$.
 
 \section{Partial derivatives}
 \label{sec:grad}
 
-Gradient information is required by Hamiltonian Monte Carlo and by gradient-based optimizers. \citet{HartmannKlauer2021} derived it in closed form for the constant-parameter model; for the variability parameters $\eta$ and $w_2 - w_1$, and for $\nu$, $a$, and $w$ when those are present, WienR obtains it by one numerical integration per derivative. With~\eqref{eq:result} these derivatives follow in closed form as a corollary. Every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phi$, and $\mathrm{w}$, so the partial derivatives with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are again in closed form. For the small-time representation it is convenient to differentiate $I_j$ with respect to its seven coefficients and to apply the chain rule. Writing $G := \sqrt{2\pi/A}\,\exp(C+B^2/2A)[\Phi(\sqrt A(w_2-m)) - \Phi(\sqrt A(w_1-m))]$ and $E_i := \exp(C + Bw_i - \tfrac12 A w_i^2)$, so that $I = (p+qm)G - (q/A)(E_2 - E_1)$, the total differential of $I$ under $(\dd A, \dd B, \dd C, \dd p, \dd q, \dd w_1, \dd w_2)$ is
+Gradient information is required by Hamiltonian Monte Carlo and by gradient-based optimizers. \citet{HartmannKlauer2021} derived it in closed form for the constant-parameter model; for the variability parameters $\eta$ and $w_2 - w_1$, and for $\nu$, $a$, and $w$ when those are present, WienR obtains it by one numerical integration per derivative. With~\eqref{eq:result} these derivatives follow in closed form as a corollary. Every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phi$, and $\mathrm{w}$, so the partial derivatives with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are again in closed form; differentiating the series term by term is justified by the same Gaussian bounds as the exchange of summation and integration (\ref{app:bound}), since each derivative multiplies the $j$-th bound by a polynomial in $j$. For the small-time representation it is convenient to differentiate $I_j$ with respect to its seven coefficients and to apply the chain rule. Writing $G := \sqrt{2\pi/A}\,\exp(C+B^2/(2A))[\Phi(\sqrt A(w_2-m)) - \Phi(\sqrt A(w_1-m))]$ and $E_i := \exp(C + Bw_i - \tfrac12 A w_i^2)$, so that $I = (p+qm)G - (q/A)(E_2 - E_1)$, the total differential of $I$ under $(\dd A, \dd B, \dd C, \dd p, \dd q, \dd w_1, \dd w_2)$ is
 \begin{align}
 \dd I &= (\dd p + m\,\dd q + q\,\dd m)\,G + (p + qm)\,\dd G \notag\\
       &\quad - \Big(\frac{\dd q}{A} - \frac{q\,\dd A}{A^2}\Big)(E_2 - E_1) - \frac{q}{A}(\dd E_2 - \dd E_1), \notag\\
@@ -168,7 +168,7 @@ in which the identity noted at the end of Section~\ref{sec:result} has been used
 \ddx{\mathcal I}{\kappa} &= \frac{(w_2\mathcal E_2 - w_1\mathcal E_1) - \mathcal I - \mu\,\partial\mathcal I/\partial\mu}{2\kappa}.
 \label{eq:dlarge}
 \end{align}
-The derivatives with respect to $w_1$ and $w_2$ are, by the fundamental theorem of calculus, the integrand evaluated at the endpoints, corrected for the factor $1/(w_2 - w_1)$. All of~\eqref{eq:dI} and~\eqref{eq:dlarge}, and every chain-rule coefficient, are verified as exact symbolic identities in the supplementary code; the resulting gradients agree with those of \citet{HartmannKlauer2021} as implemented in WienR to $3\times10^{-13}$ absolute on the parameter grid of Section~\ref{sec:verify}.
+For $\eta = 0$, where $\kappa = 0$, $\mathcal I = (\mathcal E_2 - \mathcal E_1)/\mu$ and $\partial\mathcal I/\partial\mu = (w_2\mathcal E_2 - w_1\mathcal E_1 - \mathcal I)/\mu$, and $\partial\mathcal I/\partial\kappa$ is not needed because $\partial\kappa/\partial\eta = \eta a^2/S^2$ vanishes there. The derivatives with respect to $w_1$ and $w_2$ are, by the fundamental theorem of calculus, the integrand evaluated at the endpoints, corrected for the factor $1/(w_2 - w_1)$. All of~\eqref{eq:dI} and~\eqref{eq:dlarge}, and every chain-rule coefficient, are verified as exact symbolic identities in the supplementary code; the resulting gradients agree with those of \citet{HartmannKlauer2021} as implemented in WienR to $3\times10^{-13}$ absolute on the parameter grid of Section~\ref{sec:verify}.
 
 \section{The seven-parameter likelihood}
 \label{sec:seven}
@@ -178,7 +178,7 @@ With the non-decision time uniformly distributed on $[t_0, t_0 + s_t]$, the dens
 f(t) = \frac{1}{s_t}\int_{t - t_0 - s_t}^{t - t_0} g\left(u \mid \nu, \eta^2, a, w_1, w_2\right)\dd u ,
 \label{eq:seven}
 \end{equation}
-where the lower limit is replaced by $0$ if negative. We have not found a closed form for this integral. In the small-time form the non-decision time shifts the time argument, which enters every term of~\eqref{eq:result} through $\sqrt t$ and $1/t$; in the large-time form it enters through $S$, and only for $\eta = 0$ does the window integrate \citep[Eq.~9]{Tuerlinckx2004}. What~\eqref{eq:result} achieves is to reduce the seven-parameter likelihood from a two-dimensional cubature over $(w, u)$ to a one-dimensional quadrature over $u$ of a smooth closed-form integrand on a short interval. Because $g(u)$ rises steeply from zero at $u = 0$ and the window may include that leading edge, a plain Gauss--Legendre rule converges slowly; the substitution $u = u_{\mathrm{lo}} + (u_{\mathrm{hi}} - u_{\mathrm{lo}})\,s^3$, which clusters nodes at the lower limit, fixes this. Table~\ref{tab:nodes} gives the maximum relative error of the rule against adaptive quadrature over the 200 seven-parameter sets of Section~\ref{sec:verify}. A 32-node rule with the cubic map reaches $1.5\times10^{-9}$ at a fixed cost of 32 evaluations of~\eqref{eq:result}. The gradient of~\eqref{eq:seven} with respect to the five parameters of $g$ is the same rule applied to the gradient of $g$, and $\partial f/\partial t_0 = [g(u_{\mathrm{lo}}) - g(u_{\mathrm{hi}})]/s_t$ and $\partial f/\partial s_t = [g(u_{\mathrm{lo}}) - f]/s_t$ follow from the endpoints. All seven derivatives of~\eqref{eq:seven} agree with central finite differences to $3\times10^{-11}$ relative, on a window that lies inside $u > 0$ and on one that is clamped at $0$.
+where the lower limit is replaced by $0$ if negative and $f(t) = 0$ for $t \le t_0$. We have not found a closed form for this integral. In the small-time form the non-decision time shifts the time argument, which enters every term of~\eqref{eq:result} through $\sqrt t$ and $1/t$; in the large-time form it enters through $S$, and only for $\eta = 0$ does the window integrate \citep[Eq.~9]{Tuerlinckx2004}. What~\eqref{eq:result} achieves is to reduce the seven-parameter likelihood from a two-dimensional cubature over $(w, u)$ to a one-dimensional quadrature over $u$ of a smooth closed-form integrand on a short interval. Because $g(u)$ rises steeply from zero at $u = 0$ and the window may include that leading edge, a plain Gauss--Legendre rule converges slowly; the substitution $u = u_{\mathrm{lo}} + (u_{\mathrm{hi}} - u_{\mathrm{lo}})\,s^3$, which clusters nodes at the lower limit, fixes this. Table~\ref{tab:nodes} gives the maximum relative error of the rule against adaptive quadrature over the 200 seven-parameter sets of Section~\ref{sec:verify}. A 32-node rule with the cubic map reaches $1.5\times10^{-9}$ at a fixed cost of 32 evaluations of~\eqref{eq:result}. The gradient of~\eqref{eq:seven} with respect to the five parameters of $g$ is the same rule applied to the gradient of $g$, and $\partial f/\partial t_0 = [g(u_{\mathrm{lo}}) - g(u_{\mathrm{hi}})]/s_t$ and $\partial f/\partial s_t = [g(u_{\mathrm{lo}}) - f]/s_t$ follow from the endpoints when both limits move with the parameters; when the lower limit is clamped at $0$ it no longer moves, and since $g(0) = 0$ for $w_1 > 0$ the same expressions give the correct values $-g(u_{\mathrm{hi}})/s_t$ and $-f/s_t$. All seven derivatives of~\eqref{eq:seven} agree with central finite differences to $3\times10^{-11}$ relative, on a window that lies inside $u > 0$ and on one that is clamped at $0$.
 
 \begin{table}[t]
 \centering
@@ -211,7 +211,7 @@ The error columns need a reference scale. \citet{Blurton2017} recommend a trunca
 
 \begin{table*}[t]
 \centering
-\caption{Cost per evaluation in microseconds, single thread, 10\,000 response times at $a = 1.2$, $\nu = 1$, $\eta = 1$, $w_1 = 0.4$, $w_2 = 0.6$, $s_t = 0.2$. Each package at the settings used for fitting: WienR at its default tolerance $10^{-12}$, rtdists at precision 3, HDDM at series tolerance $10^{-4}$ with Simpson tolerance $10^{-8}$ and recursion depth 10. Error is the maximum relative deviation from~\eqref{eq:result} (six parameters, the 400 sets of Section~\ref{sec:verify}) or~\eqref{eq:seven} (seven parameters, the 200 sets), for densities above $10^{-3}$; for the closed form the seven-parameter entry is the quadrature error of~\eqref{eq:seven} against adaptive integration, so the seven-parameter closed form is compared at $1.5\times10^{-9}$ with WienR at $10^{-12}$.}
+\caption{Cost per evaluation in microseconds, single thread, 10\,000 response times drawn uniformly on $[0.1, 3]$ s, at $a = 1.2$, $\nu = 1$, $\eta = 1$, $w_1 = 0.4$, $w_2 = 0.6$, $t_0 = 0$, $s_t = 0.2$. Each package at the settings used for fitting: WienR at its default tolerance $10^{-12}$, rtdists at precision 3, HDDM at series tolerance $10^{-4}$ with Simpson tolerance $10^{-8}$ and recursion depth 10. Error is the maximum relative deviation from~\eqref{eq:result} (six parameters, the 400 sets of Section~\ref{sec:verify}) or~\eqref{eq:seven} (seven parameters, the 200 sets), for densities above $10^{-3}$; for the closed form the seven-parameter entry is the quadrature error of~\eqref{eq:seven} against adaptive integration, so the seven-parameter closed form is compared at $1.5\times10^{-9}$ with WienR at $10^{-12}$.}
 \label{tab:timing}
 \footnotesize
 \begin{tabular}{lcccc}
@@ -237,9 +237,9 @@ Two features of Table~\ref{tab:timing} stand out. First, the closed form is the 
 
 \section{Discussion}
 
-We have shown that the first-passage time density of the diffusion model with normally distributed drift and uniformly distributed starting point has a closed form, and that what makes the integral a Gaussian moment is the factor $\exp(-r_j^2/2t)$ of the small-time series, which the large-time series lacks. The result completes the analytic treatment of the drift and starting-point integrals of the seven-parameter model and leaves only the non-decision-time integral, which is a one-dimensional quadrature of a smooth function on a short interval and for which we have given a fixed 32-node rule accurate to $1.5\times10^{-9}$ on our test sets.
+We have shown that the first-passage time density of the diffusion model with normally distributed drift and uniformly distributed starting point has a closed form, and that what makes the integral a Gaussian moment is the factor $\exp(-r_j^2/(2t))$ of the small-time series, which the large-time series lacks. The result completes the analytic treatment of the drift and starting-point integrals of the seven-parameter model and leaves only the non-decision-time integral, which is a one-dimensional quadrature of a smooth function on a short interval and for which we have given a fixed 32-node rule accurate to $1.5\times10^{-9}$ on our test sets.
 
-For practice the consequences are threefold. The density is exact up to a truncation error that is controlled by~\eqref{eq:JK}; it is evaluated at a fixed cost that, in our benchmark, is below that of each of the three packages timed at their own fitting settings; and its partial derivatives are closed form and nearly free, which is what hierarchical Bayesian and Hamiltonian Monte Carlo implementations \citep{Wiecki2013, Henrich2024} need. The across-trial variability parameters are the hardest of the model to estimate \citep{Boehm2018}; a likelihood free of integration over the starting point, with closed-form gradients, removes one source of integration error and gradient noise from that problem, though not its statistical difficulty. The result is directly usable in the packages built on the drift-integrated density~\eqref{eq:geta}, which already contain it as a building block and need only replace the quadrature over $w$ by~\eqref{eq:lemma}.
+For practice the consequences are threefold. The density is exact up to a truncation error that is controlled by~\eqref{eq:JK}; it is evaluated at a fixed cost that, in our benchmark, is below that of each of the three packages timed at their own fitting settings; and its partial derivatives are closed form and nearly free, which is what hierarchical Bayesian and Hamiltonian Monte Carlo implementations \citep{Wiecki2013, Henrich2024} need. The across-trial variability parameters are the hardest of the model to estimate \citep{Boehm2018}; a likelihood free of integration over the starting point, with closed-form gradients, removes one source of integration error and gradient noise from that problem, though not its statistical difficulty. The result is directly usable in the packages built on the drift-integrated density~\eqref{eq:geta}, which already contain it as a building block; replacing the quadrature over $w$ by~\eqref{eq:lemma} covers the small-time regime, and a complete implementation also needs the large-time form~\eqref{eq:result_large}, the switch at $t/a^2 = 1$, the stable evaluation of Section~\ref{sec:result}, and the truncation rule~\eqref{eq:JK}.
 
 The corresponding cumulative distribution function with both forms of variability does not follow by the same route. If one starts from the drift-integrated distribution function of \citet{Blurton2017}, half of the series terms have a coefficient of $w^2$ that is exactly zero after the drift integral and integrate in closed form through $\int\exp(cw)\Phi(\alpha w + \beta)\dd w$; the other half carry the coefficient $+2a^2\eta^2$, a growing Gaussian times $\Phi$, and reduce to an integral of Owen's-$T$ type that we have not been able to express in terms of $\exp$, $\Phi$, or Owen's $T$ function. For maximum likelihood and Bayesian estimation the density suffices, and we leave the distribution function open.
 
@@ -249,7 +249,7 @@ The corresponding cumulative distribution function with both forms of variabilit
 
 \section*{Declaration of competing interest}
 
-The author is a co-author of the rtdists package, which is one of the packages compared in Table~\ref{tab:timing}, and declares no other competing interests.
+The author declares no competing interests.
 
 \section*{Data availability}
 
@@ -270,12 +270,12 @@ This research did not receive any specific grant from funding agencies in the pu
 
 Let $A > 0$, $m = B/A$, and
 \begin{align*}
-F(w) &:= (p + q m)\sqrt{\frac{2\pi}{A}}\,\exp(C + B^2/2A)\,\Phi\!\big(\sqrt{A}(w - m)\big) \\
+F(w) &:= (p + q m)\sqrt{\frac{2\pi}{A}}\,\exp(C + B^2/(2A))\,\Phi\!\big(\sqrt{A}(w - m)\big) \\
      &\qquad - \frac{q}{A}\,\exp(C + B w - \tfrac12 A w^2).
 \end{align*}
-Using $\Phi' = \phi$ and $-\tfrac12 A(w - m)^2 + C + B^2/2A = C + Bw - \tfrac12 A w^2$,
+Using $\Phi' = \phi$ and $-\tfrac12 A(w - m)^2 + C + B^2/(2A) = C + Bw - \tfrac12 A w^2$,
 \begin{align*}
-F'(w) &= (p + q m)\sqrt{2\pi}\,\exp(C + B^2/2A)\,\phi\!\big(\sqrt{A}(w - m)\big) \\
+F'(w) &= (p + q m)\sqrt{2\pi}\,\exp(C + B^2/(2A))\,\phi\!\big(\sqrt{A}(w - m)\big) \\
       &\qquad - \frac{q}{A}(B - A w)\,\exp(C + B w - \tfrac12 A w^2) \\
       &= \big[(p + q m) - q(m - w)\big]\,\exp(C + B w - \tfrac12 A w^2) \\
       &= (p + q w)\,\exp(C + B w - \tfrac12 A w^2),
@@ -285,7 +285,7 @@ which is the integrand of~\eqref{eq:lemma}. The definite integral~\eqref{eq:lemm
 \section{Term bounds}
 \label{app:bound}
 
-For $w \in [0, 1]$, $ja \le r_j \le (j+1)a$, and the prefactor of~\eqref{eq:geta} is bounded by $\exp[(2|\nu|a + \eta^2 a^2)/2S]$. Hence the $j$-th term of the series in~\eqref{eq:geta}, and therefore $|I_j|/(w_2 - w_1)$ in~\eqref{eq:result}, is at most $(j+1)a\exp(-j^2 a^2/2t)$ times a constant independent of $j$ and $w$. Since $\sum_j (j+1)\exp(-j^2 c)$ converges for every $c > 0$, the series converges absolutely and uniformly in $w$, which justifies the exchange of summation and integration and gives the truncation rule for $J$ in~\eqref{eq:JK}. For the large-time series~\eqref{eq:result_large}, $|\mathrm{w}(z)| \le 1$ in the upper half plane and $|\exp(\kappa w^2 + \mu_k w)| \le \exp(\kappa + |\lambda|)$ on $[0,1]$, so the $k$-th term is at most a constant times $k\exp(-k^2\pi^2 t/2a^2)$, which gives the rule for $K$.
+For $w \in [0, 1]$, $ja \le r_j \le (j+1)a$, and the prefactor of~\eqref{eq:geta} is bounded by $\exp[(2|\nu|a + \eta^2 a^2)/2S]$. Hence the $j$-th term of the series in~\eqref{eq:geta}, and therefore $|I_j|/(w_2 - w_1)$ in~\eqref{eq:result}, is at most $(j+1)a\exp(-j^2 a^2/(2t))$ times a constant independent of $j$ and $w$. Since $\sum_j (j+1)\exp(-j^2 c)$ converges for every $c > 0$, the series converges absolutely and uniformly in $w$, which justifies the exchange of summation and integration and gives the truncation rule for $J$ in~\eqref{eq:JK}. For the large-time series~\eqref{eq:result_large}, $|\mathrm{w}(z)| \le 1$ in the upper half plane and $|\exp(\kappa w^2 + \mu_k w)| \le \exp(\kappa + |\lambda|)$ on $[0,1]$, so the $k$-th term is at most a constant times $k\exp(-k^2\pi^2 t/(2a^2))$, which gives the rule for $K$.
 
 \section{Supplementary material}
 

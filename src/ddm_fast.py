@@ -112,9 +112,9 @@ def grad_full_sz(t, nu, eta, a, w1, w2, upper=False, tol=1e-12):
     """(g, dg) for the density with drift ~ N(nu, eta^2) and start ~ U(w1, w2).
     dg has shape (5, T), rows = d/d(nu, eta, a, w1, w2).  upper=True gives the upper-barrier
     density via (nu, w1, w2) -> (-nu, 1-w2, 1-w1)."""
-    if not (a > 0 and eta >= 0 and 0 <= w1 < w2 <= 1):
+    if not (a > 0 and eta >= 0 and 0 < w1 < w2 < 1):
         # ponytail: w1 == w2 (sw = 0) is Blurton et al. 2017's density, not implemented here
-        raise ValueError("need a > 0, eta >= 0, 0 <= w1 < w2 <= 1")
+        raise ValueError("need a > 0, eta >= 0, 0 < w1 < w2 < 1")
     if upper:
         g, dg = grad_full_sz(t, -nu, eta, a, 1 - w2, 1 - w1, False, tol)
         return g, -dg[[0, 1, 2, 4, 3]] * np.array([1, -1, -1, 1, 1])[:, None]

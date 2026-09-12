@@ -13,6 +13,14 @@ for name, F, t in [("small", _small, np.linspace(0.05, a0*a0, 40)), ("large", _l
         rel = np.abs(dg[i][m] - fd[m]) / np.abs(fd[m])
         print(f"{name:5s} d/d{pn:3s} vs FD  max rel {rel.max():.1e}")
         assert rel.max() < 1e-6
+# eta = 0: the large-time branch takes its elementary path; check the five gradients there too
+t0_ = np.linspace(a0*a0, 6.0, 20); th0 = dict(nu=0.7, eta=0.0, a=a0, w1=0.35, w2=0.65)
+dg0 = _large(t0_, **th0)[1]
+for i, pn in enumerate(PARAMS):
+    fd = (_large(t0_, **{**th0, pn: th0[pn] + h})[0] - _large(t0_, **{**th0, pn: th0[pn] - h})[0]) / (2*h)
+    m = np.abs(fd) > 1e-12
+    if m.any(): assert np.max(np.abs(dg0[i][m] - fd[m]) / np.abs(fd[m])) < 1e-6, pn
+print("eta = 0 large-time gradients vs FD ok")
 g = pd.read_csv("data/wienr_grad.csv")
 ours = np.array([grad_full_sz(r.t, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2)[1][:, 0] for r in g.itertuples()])  # (400,5)
 dnu, deta, da, dw1, dw2 = ours.T
