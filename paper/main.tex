@@ -44,7 +44,7 @@ g\left(t \mid \nu, \eta^2, a, w\right)
  &\quad\times \sum_{j=0}^{\infty} (-1)^j\, r_j \exp\!\left(-\frac{r_j^2}{2t}\right),
 \label{eq:geta}
 \end{align}
-where $S := 1 + \eta^2 t$, $r_j = ja + aw$ for even $j$ and $r_j = ja + a(1-w)$ for odd $j$. \citet{Blurton2017} derived the corresponding cumulative distribution function. Both results are stated in the small-time series representation of the first-passage time density \citep{Hall1997, VanZandt2000, NavarroFuss2009, Blurton2012, Gondan2014}, that is, as a sum over image charges $r_j$ with Gaussian factors $\exp(-r_j^2/(2t))$.
+where $S := 1 + \eta^2 t$, $r_j = ja + aw$ for even $j$ and $r_j = ja + a(1-w)$ for odd $j$. \citet{Blurton2017} derived the corresponding cumulative distribution function. Both results are stated in the small-time series representation of the first-passage time density \citep{Hall1997, VanZandt2000, NavarroFuss2009, Blurton2012, Gondan2014}, that is, as a series whose $j$th term carries the standard normal density evaluated at $r_j/\sqrt t$, the factor $\exp(-r_j^2/(2t))$ in~\eqref{eq:geta}.
 
 The other two integrals close at fixed drift. \citet[pp.~706--708]{Tuerlinckx2004} worked in the large-time representation of \citet{Ratcliff1978}, in which the starting point enters through $\sin(k\pi w)$, integrated the starting point and the non-decision time analytically at fixed drift, and found that the drift integral then has to be approximated by quadrature; DMAT \citep{VandekerckhoveTuerlinckx2008} follows this route. Every implementation we are aware of that starts instead from the drift-integrated density~\eqref{eq:geta} integrates the starting point numerically: fast-dm and rtdists \citep{VossVoss2007, Singmann2022}, HDDM \citep{Wiecki2013}, WienR \citep{HartmannKlauer2021, WienR}, and the Stan implementation of \citet{Henrich2024}, which follows the WienR derivations; the recent monograph of \citet[Section~4.5]{SmithRatcliff2025} likewise carries out only the drift integral analytically. \citet{Blurton2017} noted that adding starting-point and non-decision-time variability to their result ``requires numerical evaluation of two integrals'' (p.~11).
 
@@ -74,7 +74,7 @@ B_j = -\frac{\nu a}{S} \mp \frac{k_j a^2}{t}, \qquad
 C_j = -\frac{\nu^2 t}{2S} - \frac{k_j^2 a^2}{2t},
 \label{eq:coef}
 \end{align}
-where $k_j = j$ and the upper sign apply for even $j$, and $k_j = j+1$ and the lower sign apply for odd $j$. The coefficient of $w^2$ deserves attention. The drift integral contributes $+\eta^2 a^2/(2S)$, a growing Gaussian in $w$, whereas the image-charge factor contributes $-a^2/(2t)$, and
+where $k_j = j$ and the upper sign apply for even $j$, and $k_j = j+1$ and the lower sign apply for odd $j$. The coefficient of $w^2$ deserves attention. The drift integral contributes $+\eta^2 a^2/(2S)$, a growing Gaussian in $w$, whereas the factor $\exp(-r_j^2/(2t))$ contributes $-a^2/(2t)$, and
 \begin{equation}
 \frac{a^2}{2t} - \frac{\eta^2 a^2}{2S} = \frac{a^2 (S - \eta^2 t)}{2tS} = \frac{a^2}{2tS} > 0
 \label{eq:key}
@@ -114,7 +114,7 @@ g\left(t \mid \nu, \eta^2, a, w\right)
 \label{eq:large}
 \end{align}
 \begin{sloppypar}
-Here there is no image-charge factor to compensate the growing Gaussian, and the starting-point integral of the $k$-th term is $\int_{w_1}^{w_2} \exp(\kappa w^2 + \lambda w)\sin(k\pi w)\dd w$ with $\kappa = \eta^2 a^2/(2S) > 0$ and $\lambda = -\nu a/S$. Written as the imaginary part of $\int \exp(\kappa w^2 + \mu_k w)\dd w$ with $\mu_k = \lambda + \I k\pi$, the antiderivative is an imaginary error function of complex argument, which overflows. It is, however, bounded when expressed through the Faddeeva function $W(z) = \exp(-z^2)\operatorname{erfc}(-\I z)$ \citep[Eq.~7.1.3]{AbramowitzStegun1964}, written $W$ here rather than the usual $w$ to keep it apart from the starting point:
+Here no term carries a factor $\exp(-r_j^2/(2t))$ to compensate the growing Gaussian, and the starting-point integral of the $k$-th term is $\int_{w_1}^{w_2} \exp(\kappa w^2 + \lambda w)\sin(k\pi w)\dd w$ with $\kappa = \eta^2 a^2/(2S) > 0$ and $\lambda = -\nu a/S$. Written as the imaginary part of $\int \exp(\kappa w^2 + \mu_k w)\dd w$ with $\mu_k = \lambda + \I k\pi$, the antiderivative is an imaginary error function of complex argument, which overflows. It is, however, bounded when expressed through the Faddeeva function $W(z) = \exp(-z^2)\operatorname{erfc}(-\I z)$ \citep[Eq.~7.1.3]{AbramowitzStegun1964}, written $W$ here rather than the usual $w$ to keep it apart from the starting point:
 \end{sloppypar}
 \begin{equation}
 \int_{w_1}^{w_2} \exp(\kappa w^2 + \mu_k w)\dd w
