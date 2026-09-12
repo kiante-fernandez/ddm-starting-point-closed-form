@@ -1,6 +1,6 @@
 # cython: boundscheck=False, wraparound=False, cdivision=True, language_level=3
 """Compiled scalar kernel for Result 1 (density only): the same arithmetic as ddm_fast.py,
-using scipy's own log_ndtr / ndtr / wofz.  Build:  python setup.py build_ext --inplace"""
+using scipy's own log_ndtr / ndtr / wofz.  Build:  cythonize -3 -i src/ddm_kernel.pyx"""
 from libc.math cimport exp, log, sqrt, ceil, cos, sin, M_PI
 from scipy.special.cython_special cimport erfcx, ndtr, wofz
 import numpy as np

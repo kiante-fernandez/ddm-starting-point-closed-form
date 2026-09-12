@@ -4,8 +4,6 @@
 \usepackage{booktabs}
 \usepackage[hidelinks]{hyperref}
 
-\newcommand{\Phinorm}{\Phi}
-\newcommand{\phinorm}{\phi}
 \newcommand{\ddx}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\dd}{\,\mathrm{d}}
 \newcommand{\I}{\mathrm{i}}
@@ -24,7 +22,7 @@
 \cortext[cor1]{Corresponding author.}
 
 \begin{abstract}
-The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. The drift integral of the first-passage time density has been available in closed form; the starting-point integral has been evaluated numerically in every implementation, and Tuerlinckx (2004) concluded that no closed form exists. We show that this holds only for the large-time series representation. In the small-time representation the starting-point integral is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form, together with a large-time counterpart in terms of the Faddeeva function. All partial derivatives are closed form, and the seven-parameter likelihood needs a single one-dimensional quadrature. The result is verified symbolically, to 48 digits, against three reference implementations and process simulation, and is machine-checked in Lean~4.
+The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. The drift integral of the first-passage time density has been available in closed form; the starting-point integral has been evaluated numerically in every implementation, and Tuerlinckx (2004) concluded that no closed form exists. We show that this holds only for the large-time series representation. In the small-time representation the starting-point integral is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form, together with a large-time counterpart in terms of the Faddeeva function. Where previous implementations required two numerical integrations, over the starting point and the non-decision time, the seven-parameter likelihood now requires a single one-dimensional quadrature, and the partial derivatives with respect to all parameters follow in closed form. The result is verified symbolically, to 48 digits, against three reference implementations and process simulation, and is machine-checked in Lean~4.
 \end{abstract}
 
 \begin{keyword}
@@ -81,7 +79,7 @@ where $k_j = j$ and the upper sign apply for even $j$, and $k_j = j+1$ and the l
 \frac{a^2}{2t} - \frac{\eta^2 a^2}{2S} = \frac{a^2 (S - \eta^2 t)}{2tS} = \frac{a^2}{2tS} > 0
 \label{eq:key}
 \end{equation}
-for every $t > 0$, every $\eta$, and every $j$. The combined exponent is therefore a decaying Gaussian with $A > 0$. This is the whole content of the result: in the small-time representation the starting-point integrand is a linear function times a proper Gaussian, and such integrals have closed forms in terms of $\exp$ and $\Phinorm$.
+for every $t > 0$, every $\eta$, and every $j$. The combined exponent is therefore a decaying Gaussian with $A > 0$. This is the whole content of the result: in the small-time representation the starting-point integrand is a linear function times a proper Gaussian, and such integrals have closed forms in terms of $\exp$ and $\Phi$.
 
 \subsection{The result}
 
@@ -89,12 +87,12 @@ For $A > 0$ and $m := B/A$,
 \begin{align}
 &\int_{w_1}^{w_2} (p + q w)\, \exp(-\tfrac12 A w^2 + B w + C) \dd w \notag\\
  &\quad = (p + q m)\sqrt{\frac{2\pi}{A}}\, \exp(C + B^2/2A) \notag\\
- &\qquad\quad\times \left[\Phinorm\!\big(\sqrt{A}(w_2 - m)\big) - \Phinorm\!\big(\sqrt{A}(w_1 - m)\big)\right] \notag\\
+ &\qquad\quad\times \left[\Phi\!\big(\sqrt{A}(w_2 - m)\big) - \Phi\!\big(\sqrt{A}(w_1 - m)\big)\right] \notag\\
  &\qquad - \frac{q}{A}\left[\exp(C + B w_2 - \tfrac12 A w_2^2) \right. \notag\\
  &\qquad\qquad\quad \left. - \exp(C + B w_1 - \tfrac12 A w_1^2)\right],
 \label{eq:lemma}
 \end{align}
-where $\Phinorm$ denotes the standard normal distribution function (\ref{app:lemma}). Applying~\eqref{eq:lemma} term by term with the coefficients~\eqref{eq:coef} gives the lower-barrier first-passage time density with normally distributed drift and uniformly distributed starting point,
+where $\Phi$ denotes the standard normal distribution function (\ref{app:lemma}). Applying~\eqref{eq:lemma} term by term with the coefficients~\eqref{eq:coef} gives the lower-barrier first-passage time density with normally distributed drift and uniformly distributed starting point,
 \begin{align}
 g\left(t \mid \nu, \eta^2, a, w_1, w_2\right)
  &= \frac{1}{(w_2 - w_1)\sqrt{2\pi t^3 S}}\sum_{j=0}^{\infty} (-1)^j I_j , \label{eq:result}\\
@@ -103,7 +101,7 @@ I_j &= \int_{w_1}^{w_2} (p_j + q_j w) \notag\\
 \end{align}
 with $I_j$ given in closed form by~\eqref{eq:lemma}. The density at the upper barrier is $g(t \mid -\nu, \eta^2, a, 1 - w_2, 1 - w_1)$. For $w_2 - w_1 \to 0$ the result reduces to~\eqref{eq:geta}, and for $\eta = 0$ it reduces to the starting-point integral of the constant-drift density, so it can be used in a fitting routine regardless of whether either form of variability is present in the data.
 
-Two remarks on evaluation. First, for large $j$ the center $m = B_j/A$ of the Gaussian in~\eqref{eq:lemma} lies far outside $[w_1, w_2]$, so that $\exp(C + B^2/2A)$ is very large and the bracketed difference of $\Phinorm$ values is very small. The product must be formed in logarithmic space, using $\log\Phinorm$ and a tail-aware difference; with that precaution the expression is stable for all parameter values we have tested. Second, the identity $\sqrt{2\pi}\,\exp(C + B^2/2A)\phinorm\big(\sqrt{A}(w_i - m)\big) = \exp(C + B w_i - \tfrac12 A w_i^2)$, where $\phinorm$ is the standard normal density, shows that the two brackets in~\eqref{eq:lemma} share their exponential factors; this is used in the derivatives of Section~\ref{sec:grad}.
+Two remarks on evaluation. First, for large $j$ the center $m = B_j/A$ of the Gaussian in~\eqref{eq:lemma} lies far outside $[w_1, w_2]$, so that $\exp(C + B^2/2A)$ is very large and the bracketed difference of $\Phi$ values is very small. The product must be formed in logarithmic space, using $\log\Phi$ and a tail-aware difference; with that precaution the expression is stable for all parameter values we have tested. Second, the identity $\sqrt{2\pi}\,\exp(C + B^2/2A)\phi\big(\sqrt{A}(w_i - m)\big) = \exp(C + B w_i - \tfrac12 A w_i^2)$, where $\phi$ is the standard normal density, shows that the two brackets in~\eqref{eq:lemma} share their exponential factors; this is used in the derivatives of Section~\ref{sec:grad}.
 
 \section{Large-time representation}
 \label{sec:large}
@@ -152,7 +150,7 @@ With $\varepsilon = 10^{-12}$ the small-time series needs $J \le 9$ terms for $t
 \section{Partial derivatives}
 \label{sec:grad}
 
-Gradient information is required by Hamiltonian Monte Carlo and by gradient-based optimizers, and \citet{HartmannKlauer2021} derived it for the constant-parameter model. Every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phinorm$, and $\mathrm{w}$, so the partial derivatives with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are again closed form. For the small-time representation it is convenient to differentiate $I_j$ with respect to its seven coefficients and to apply the chain rule. Writing $G := \sqrt{2\pi/A}\,\exp(C+B^2/2A)[\Phinorm(\sqrt A(w_2-m)) - \Phinorm(\sqrt A(w_1-m))]$ and $E_i := \exp(C + Bw_i - \tfrac12 A w_i^2)$, so that $I = (p+qm)G - (q/A)(E_2 - E_1)$, the total differential of $I$ under $(\dd A, \dd B, \dd C, \dd p, \dd q, \dd w_1, \dd w_2)$ is
+Gradient information is required by Hamiltonian Monte Carlo and by gradient-based optimizers. \citet{HartmannKlauer2021} derived it in closed form for the constant-parameter model; for $\eta$ and for the starting-point range, and for $\nu$, $a$, $w$ in their presence, WienR obtains it by one numerical integration per derivative. With~\eqref{eq:result} these derivatives follow in closed form as a corollary. Every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phi$, and $\mathrm{w}$, so the partial derivatives with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are again closed form. For the small-time representation it is convenient to differentiate $I_j$ with respect to its seven coefficients and to apply the chain rule. Writing $G := \sqrt{2\pi/A}\,\exp(C+B^2/2A)[\Phi(\sqrt A(w_2-m)) - \Phi(\sqrt A(w_1-m))]$ and $E_i := \exp(C + Bw_i - \tfrac12 A w_i^2)$, so that $I = (p+qm)G - (q/A)(E_2 - E_1)$, the total differential of $I$ under $(\dd A, \dd B, \dd C, \dd p, \dd q, \dd w_1, \dd w_2)$ is
 \begin{align}
 \dd I &= (\dd p + m\,\dd q + q\,\dd m)\,G + (p + qm)\,\dd G \notag\\
       &\quad - \Big(\frac{\dd q}{A} - \frac{q\,\dd A}{A^2}\Big)(E_2 - E_1) - \frac{q}{A}(\dd E_2 - \dd E_1), \notag\\
@@ -164,7 +162,7 @@ Gradient information is required by Hamiltonian Monte Carlo and by gradient-base
 \dd E_i &= E_i\Big[\dd C + w_i\,\dd B - \tfrac12 w_i^2\,\dd A + (B - A w_i)\,\dd w_i\Big],
 \label{eq:dI}
 \end{align}
-in which the identity noted at the end of Section~\ref{sec:result} has been used to express $\dd G$ through $E_1$ and $E_2$ rather than through $\phinorm$. The coefficient differentials follow from~\eqref{eq:coef}; for instance $\partial B_j/\partial\nu = -a/S$ and $\partial C_j/\partial\nu = -\nu t/S$, and $A$, $p_j$, $q_j$ do not depend on $\nu$. For the large-time representation only two identities are needed, both immediate from $\frac{\dd}{\dd w}\exp(\kappa w^2+\mu w) = (2\kappa w + \mu)\exp(\kappa w^2+\mu w)$: with $\mathcal I := \int_{w_1}^{w_2}\exp(\kappa w^2+\mu w)\dd w$ and $\mathcal E_i := \exp(\kappa w_i^2 + \mu w_i)$,
+in which the identity noted at the end of Section~\ref{sec:result} has been used to express $\dd G$ through $E_1$ and $E_2$ rather than through $\phi$. The coefficient differentials follow from~\eqref{eq:coef}; for instance $\partial B_j/\partial\nu = -a/S$ and $\partial C_j/\partial\nu = -\nu t/S$, and $A$, $p_j$, $q_j$ do not depend on $\nu$. For the large-time representation only two identities are needed, both immediate from $\frac{\dd}{\dd w}\exp(\kappa w^2+\mu w) = (2\kappa w + \mu)\exp(\kappa w^2+\mu w)$: with $\mathcal I := \int_{w_1}^{w_2}\exp(\kappa w^2+\mu w)\dd w$ and $\mathcal E_i := \exp(\kappa w_i^2 + \mu w_i)$,
 \begin{align}
 \ddx{\mathcal I}{\mu} &= \frac{(\mathcal E_2 - \mathcal E_1) - \mu\,\mathcal I}{2\kappa}, \notag\\
 \ddx{\mathcal I}{\kappa} &= \frac{(w_2\mathcal E_2 - w_1\mathcal E_1) - \mathcal I - \mu\,\partial\mathcal I/\partial\mu}{2\kappa}.
@@ -242,7 +240,7 @@ We have shown that the first-passage time density of the diffusion model with no
 
 For practice the consequences are threefold. The density is exact up to a truncation error that is controlled by~\eqref{eq:JK}; it is evaluated at a fixed cost that is below that of each existing package at the settings the package fits with; and its partial derivatives are closed form and nearly free, which is what hierarchical Bayesian and Hamiltonian Monte Carlo implementations \citep{Wiecki2013, Henrich2024} need. The result is directly usable in any of the existing packages, which already contain the drift-integrated density~\eqref{eq:geta} as a building block and need only replace the quadrature over $w$ by~\eqref{eq:lemma}.
 
-The corresponding cumulative distribution function with both forms of variability does not follow by the same route. Starting from the drift-integrated distribution function of \citet{Blurton2017}, half of the series terms have a coefficient of $w^2$ that is exactly zero after the drift integral and close through the integral $\int\exp(cw)\Phinorm(\alpha w + \beta)\dd w$, which has a closed form; the other half carry the coefficient $+2a^2\eta^2$, a growing Gaussian times $\Phinorm$, and reduce to an integral of Owen-$T$ type that has no closed form in terms of $\exp$, $\Phinorm$, or Owen's $T$. For maximum likelihood and Bayesian estimation the density suffices, and we leave the distribution function open.
+The corresponding cumulative distribution function with both forms of variability does not follow by the same route. Starting from the drift-integrated distribution function of \citet{Blurton2017}, half of the series terms have a coefficient of $w^2$ that is exactly zero after the drift integral and close through the integral $\int\exp(cw)\Phi(\alpha w + \beta)\dd w$, which has a closed form; the other half carry the coefficient $+2a^2\eta^2$, a growing Gaussian times $\Phi$, and reduce to an integral of Owen-$T$ type that has no closed form in terms of $\exp$, $\Phi$, or Owen's $T$. For maximum likelihood and Bayesian estimation the density suffices, and we leave the distribution function open.
 
 \section*{CRediT authorship contribution statement}
 
@@ -271,12 +269,12 @@ This research did not receive any specific grant from funding agencies in the pu
 
 Let $A > 0$, $m = B/A$, and
 \begin{align*}
-F(w) &:= (p + q m)\sqrt{\frac{2\pi}{A}}\,\exp(C + B^2/2A)\,\Phinorm\!\big(\sqrt{A}(w - m)\big) \\
+F(w) &:= (p + q m)\sqrt{\frac{2\pi}{A}}\,\exp(C + B^2/2A)\,\Phi\!\big(\sqrt{A}(w - m)\big) \\
      &\qquad - \frac{q}{A}\,\exp(C + B w - \tfrac12 A w^2).
 \end{align*}
-Using $\Phinorm' = \phinorm$ and $-\tfrac12 A(w - m)^2 + C + B^2/2A = C + Bw - \tfrac12 A w^2$,
+Using $\Phi' = \phi$ and $-\tfrac12 A(w - m)^2 + C + B^2/2A = C + Bw - \tfrac12 A w^2$,
 \begin{align*}
-F'(w) &= (p + q m)\sqrt{2\pi}\,\exp(C + B^2/2A)\,\phinorm\!\big(\sqrt{A}(w - m)\big) \\
+F'(w) &= (p + q m)\sqrt{2\pi}\,\exp(C + B^2/2A)\,\phi\!\big(\sqrt{A}(w - m)\big) \\
       &\qquad - \frac{q}{A}(B - A w)\,\exp(C + B w - \tfrac12 A w^2) \\
       &= \big[(p + q m) - q(m - w)\big]\,\exp(C + B w - \tfrac12 A w^2) \\
       &= (p + q w)\,\exp(C + B w - \tfrac12 A w^2),

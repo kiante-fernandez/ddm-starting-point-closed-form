@@ -18,7 +18,7 @@ in Lean 4.
 
 ```
 src/       ddm_fast.py     vectorized Result 1, gradient, seven-parameter density f7 (use this one)
-           ddm_kernel.pyx  compiled density kernel (same arithmetic; build with setup.py)
+           ddm_kernel.pyx  compiled density kernel (same arithmetic; build with cythonize)
            ddm_closed.py   scalar reference implementation, kept independent on purpose
 verify/    symbolic_proof.py    SymPy: exact verification of every algebraic step
            highprec2.py         mpmath: 40–60 digit verification
@@ -42,7 +42,7 @@ python verify/symbolic_proof.py     # should print ALL SYMBOLIC CHECKS PASS
 python verify/highprec2.py          # slow (minutes); background it
 PYTHONPATH=src python verify/validate_sim2.py   # slow
 python verify/grad_check.py         # GRAD CHECK PASS ... ALL CHECKS PASS
-(cd src && python setup.py build_ext --inplace)   # optional compiled kernel; needs Cython + a C compiler
+cythonize -3 -i src/ddm_kernel.pyx    # optional compiled kernel; needs Cython + a C compiler
 lake exe cache get && lake build    # Lean; needs elan/lake, Mathlib v4.28.0
 ```
 

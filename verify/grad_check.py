@@ -54,7 +54,7 @@ print(f"truncation tol=1e-12 vs tol=1e-40: max abs {np.abs(loose-tight).max():.1
 assert np.abs(loose - tight).max() < 1e-12
 print("ALL CHECKS PASS")
 
-# --- compiled kernel (optional: python src/setup.py build_ext --inplace): same values as numpy
+# --- compiled kernel (optional: cythonize -3 -i src/ddm_kernel.pyx): same values as numpy
 try:
     import ddm_kernel as K
 except ImportError:

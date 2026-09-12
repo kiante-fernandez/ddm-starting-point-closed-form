@@ -12,3 +12,4 @@ paper/main.fdb_latexmk
 paper/main.fls
 paper/main.spl
 .DS_Store
+paper/main.pdf

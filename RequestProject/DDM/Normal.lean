@@ -41,7 +41,6 @@ def Phi (x : ℝ) : ℝ := ∫ u in Iic x, phi u
 lemma phi_pos (x : ℝ) : 0 < phi x :=
   div_pos (Real.exp_pos _) (Real.sqrt_pos.mpr (by positivity))
 
-lemma phi_nonneg (x : ℝ) : 0 ≤ phi x := (phi_pos x).le
 
 /-- `φ` is continuous. -/
 @[continuity, fun_prop]

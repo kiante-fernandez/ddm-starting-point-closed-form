@@ -2,7 +2,7 @@
 
 Every number below was recomputed from the code and data in this repo (Sept 2026). Re-run:
 `python verify/symbolic_proof.py`, `python verify/grad_check.py`, `Rscript verify/timing.R`,
-`python verify/timing.py`, `python verify/hddm_wfpt_compare.py`, `lake build`. Build the compiled kernel first with `cd src && python setup.py build_ext --inplace`.
+`python verify/timing.py`, `python verify/hddm_wfpt_compare.py`, `lake build`. Build the compiled kernel first with `cythonize -3 -i src/ddm_kernel.pyx`.
 
 ## Done
 
