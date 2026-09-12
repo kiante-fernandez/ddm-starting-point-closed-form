@@ -1,9 +1,8 @@
-\documentclass[preprint,12pt,authoryear]{elsarticle}
+\documentclass[final,5p,times,twocolumn,authoryear]{elsarticle}
 
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage[hidelinks]{hyperref}
-\usepackage{lineno}
 
 \newcommand{\Phinorm}{\Phi}
 \newcommand{\phinorm}{\phi}
@@ -42,7 +41,6 @@ Diffusion model \sep Response time modeling \sep First-passage time \sep Startin
 
 \end{frontmatter}
 
-\linenumbers
 
 \section{Background}
 
@@ -98,16 +96,18 @@ for every $t > 0$, every $\eta$, and every $j$. The combined exponent is therefo
 For $A > 0$ and $m := B/A$,
 \begin{align}
 &\int_{w_1}^{w_2} (p + q w)\, \exp(-\tfrac12 A w^2 + B w + C) \dd w \notag\\
- &\quad = (p + q m)\sqrt{\frac{2\pi}{A}}\, \exp(C + B^2/2A)
-   \left[\Phinorm\!\big(\sqrt{A}(w_2 - m)\big) - \Phinorm\!\big(\sqrt{A}(w_1 - m)\big)\right] \notag\\
- &\quad - \frac{q}{A}\left[\exp(C + B w_2 - \tfrac12 A w_2^2) - \exp(C + B w_1 - \tfrac12 A w_1^2)\right],
+ &\quad = (p + q m)\sqrt{\frac{2\pi}{A}}\, \exp(C + B^2/2A) \notag\\
+ &\qquad\quad\times \left[\Phinorm\!\big(\sqrt{A}(w_2 - m)\big) - \Phinorm\!\big(\sqrt{A}(w_1 - m)\big)\right] \notag\\
+ &\qquad - \frac{q}{A}\left[\exp(C + B w_2 - \tfrac12 A w_2^2) \right. \notag\\
+ &\qquad\qquad\quad \left. - \exp(C + B w_1 - \tfrac12 A w_1^2)\right],
 \label{eq:lemma}
 \end{align}
 where $\Phinorm$ denotes the standard normal distribution function (\ref{app:lemma}). Applying~\eqref{eq:lemma} term by term with the coefficients~\eqref{eq:coef} gives the lower-barrier first-passage time density with normally distributed drift and uniformly distributed starting point,
 \begin{align}
 g\left(t \mid \nu, \eta^2, a, w_1, w_2\right)
  &= \frac{1}{(w_2 - w_1)\sqrt{2\pi t^3 S}}\sum_{j=0}^{\infty} (-1)^j I_j , \label{eq:result}\\
-I_j &= \int_{w_1}^{w_2} (p_j + q_j w)\, \exp(-\tfrac12 A w^2 + B_j w + C_j) \dd w , \notag
+I_j &= \int_{w_1}^{w_2} (p_j + q_j w) \notag\\
+    &\qquad\times \exp(-\tfrac12 A w^2 + B_j w + C_j)\, \dd w , \notag
 \end{align}
 with $I_j$ given in closed form by~\eqref{eq:lemma}. The density at the upper barrier is $g(t \mid -\nu, \eta^2, a, 1 - w_2, 1 - w_1)$. For $w_2 - w_1 \to 0$ the result reduces to~\eqref{eq:geta}, and for $\eta = 0$ it reduces to the starting-point integral of the constant-drift density, so it can be used in a fitting routine regardless of whether either form of variability is present in the data.
 
@@ -173,11 +173,11 @@ Gradient information is required by Hamiltonian Monte Carlo and by gradient-base
 \label{eq:dI}
 \end{align}
 in which the identity noted at the end of Section~\ref{sec:result} has been used to express $\dd G$ through $E_1$ and $E_2$ rather than through $\phinorm$. The coefficient differentials follow from~\eqref{eq:coef}; for instance $\partial B_j/\partial\nu = -a/S$ and $\partial C_j/\partial\nu = -\nu t/S$, and $A$, $p_j$, $q_j$ do not depend on $\nu$. For the large-time representation only two identities are needed, both immediate from $\frac{\dd}{\dd w}\exp(\kappa w^2+\mu w) = (2\kappa w + \mu)\exp(\kappa w^2+\mu w)$: with $\mathcal I := \int_{w_1}^{w_2}\exp(\kappa w^2+\mu w)\dd w$ and $\mathcal E_i := \exp(\kappa w_i^2 + \mu w_i)$,
-\begin{equation}
-\ddx{\mathcal I}{\mu} = \frac{(\mathcal E_2 - \mathcal E_1) - \mu\,\mathcal I}{2\kappa}, \qquad
-\ddx{\mathcal I}{\kappa} = \frac{(w_2\mathcal E_2 - w_1\mathcal E_1) - \mathcal I - \mu\,\partial\mathcal I/\partial\mu}{2\kappa}.
+\begin{align}
+\ddx{\mathcal I}{\mu} &= \frac{(\mathcal E_2 - \mathcal E_1) - \mu\,\mathcal I}{2\kappa}, \notag\\
+\ddx{\mathcal I}{\kappa} &= \frac{(w_2\mathcal E_2 - w_1\mathcal E_1) - \mathcal I - \mu\,\partial\mathcal I/\partial\mu}{2\kappa}.
 \label{eq:dlarge}
-\end{equation}
+\end{align}
 The derivatives with respect to $w_1$ and $w_2$ are, by the fundamental theorem of calculus, the integrand evaluated at the endpoints, corrected for the factor $1/(w_2 - w_1)$. All of~\eqref{eq:dI} and~\eqref{eq:dlarge}, and every chain-rule coefficient, are verified as exact symbolic identities in the supplementary code; the resulting gradients agree with those of \citet{HartmannKlauer2021} as implemented in WienR to $3\times10^{-13}$ absolute on the parameter grid of Section~\ref{sec:verify}.
 
 \section{The seven-parameter likelihood}
@@ -219,7 +219,7 @@ Table~\ref{tab:timing} compares the cost of~\eqref{eq:result} and~\eqref{eq:seve
 
 The error columns need a reference scale. \citet{Blurton2017} recommend a truncation tolerance of $1.5\times10^{-8}$, the square root of single-precision machine epsilon, and \citet{Gondan2014} illustrate their term counts at $10^{-3}$. \citet[Table~1]{Tuerlinckx2004} reports differences of $2\times10^{-7}$ to $3\times10^{-4}$ between his quadrature-based algorithm and the classical one. Among current packages, rtdists (fast-dm) defaults to a precision of 3, documented as roughly the number of accurate decimals; the HDDM likelihood truncates its series at $10^{-4}$ and integrates over the starting point and the non-decision window by adaptive Simpson's rule with tolerance $10^{-8}$ and recursion depth 10; the Stan implementation of \citet{Henrich2024} fixes the density tolerance at $10^{-6}$ and defaults to $10^{-4}$ for the derivatives; WienR defaults to $10^{-12}$. The closed form is exact to double precision, and its seven-parameter quadrature at $1.5\times10^{-9}$ is below every one of these tolerances.
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \caption{Cost per evaluation in microseconds, single thread, 10\,000 response times at $a = 1.2$, $\nu = 1$, $w = 0.5$, $\eta = 1$, $w_2 - w_1 = 0.2$, $s_t = 0.2$. Each package at the settings its fitting routine uses: WienR at tolerance $10^{-12}$, rtdists at precision 3, HDDM at series tolerance $10^{-4}$ with Simpson tolerance $10^{-8}$ and recursion depth 10. Error is the maximum relative deviation from~\eqref{eq:result} or~\eqref{eq:seven} over the parameter sets of Section~\ref{sec:verify} (densities above $10^{-3}$); for the closed form the seven-parameter entry is the quadrature error of~\eqref{eq:seven} against adaptive integration.}
 \label{tab:timing}
@@ -240,7 +240,7 @@ WienR, 5 gradients           & $10^{-13}$         & 15.7 & & \\
 \bottomrule
 \multicolumn{5}{l}{\footnotesize $^{\dagger}$Uncompiled vectorized implementation.}
 \end{tabular}
-\end{table}
+\end{table*}
 
 Two features of Table~\ref{tab:timing} are worth stating. First, the closed form is the cheapest of the four at every entry and the only one that is exact for six parameters. rtdists costs 1.3 times as much for six parameters and twice as much for seven, and deviates from the density by $0.5\%$ and $0.9\%$. HDDM costs 1.8 and 5 times as much and agrees to $4\times10^{-6}$ and $1.5\times10^{-7}$; its series tolerance of $10^{-4}$ leaves a floor near $10^{-7}$ that tightening its integration settings does not remove. WienR reaches $10^{-12}$ at 6 and 110 times the cost. Because the cost of the closed form is fixed whereas that of the integrators is set by the accuracy asked of them, these ratios grow with the tolerance. Second, the gradient comes almost free: all five partial derivatives of~\eqref{eq:result} share the exponential factors of the density itself, and an uncompiled vectorized implementation returns the density together with all five derivatives in $1.7~\mu$s, whereas WienR requires one further cubature per derivative. For reference, WienR's own closed form for drift variability alone \citep{Blurton2017} evaluates in $0.26~\mu$s on the same machine, so the closed form with starting-point variability costs 1.3 times the drift-only density.
 
