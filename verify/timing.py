@@ -1,0 +1,15 @@
+"""Closed-form cost per evaluation, single thread, 10 000 RTs at one parameter set.
+Same parameter set as verify/timing.R.  Needs the compiled kernel (cd src && python setup.py build_ext --inplace)."""
+import sys; sys.path.insert(0, "src")
+import numpy as np, time
+import ddm_kernel as K, ddm_fast as F
+t = np.random.default_rng(1).uniform(0.1, 3, 10000)
+a, v, w1, w2, sv, st0 = 1.2, 1.0, 0.4, 0.6, 1.0, 0.2
+def us(fn, reps=5):
+    best = np.inf
+    for _ in range(reps):
+        t0 = time.perf_counter(); fn(); best = min(best, time.perf_counter() - t0)
+    return 1e6 * best / len(t)
+print(f"closed form, compiled  {'six-parameter density':38s} {us(lambda: K.g_full_sz(t, v, sv, a, w1, w2)):8.2f} us/eval")
+print(f"closed form, numpy     {'six-parameter density + five gradients':38s} {us(lambda: F.grad_full_sz(t, v, sv, a, w1, w2)):8.2f} us/eval")
+print(f"closed form, compiled  {'seven-parameter density':38s} {us(lambda: K.f7(t, v, sv, a, w1, w2, 0.0, st0)):8.2f} us/eval")
