@@ -10,9 +10,9 @@ in Lean 4.
 
 ## Read these in order
 
-1. `STATUS.md` — what is done (with recomputed numbers), what to do next, what not to retry.
-2. `notes/closed_forms_sz_st.md` — the mathematical note: every formula and derivation.
-3. `FORMALIZATION.md` — the Lean 4 / Mathlib formalization in `RequestProject/`.
+1. `paper/main.tex` — the manuscript.
+2. `notes/closed_forms_sz_st.md` — the working note the Lean files cite.
+3. The Lean formalization section below.
 
 ## Layout
 
@@ -25,11 +25,11 @@ verify/    symbolic_proof.py    SymPy: exact verification of every algebraic ste
            validate_sim2.py     Euler–Maruyama process simulation check
            grad_check.py        gradient in (nu, eta, a, w1, w2) vs finite differences and WienR
            hddm_wfpt_compare.py accuracy/cost vs hddm-wfpt (pip install hddm-wfpt; optional)
-           timing.R, timing.py  the STATUS.md timing table (WienR / closed form)
+           timing.R, timing.py  the timing table of the manuscript (WienR / closed form)
            *.R                  WienR and rtdists reference-value generation
 data/      *.csv           per-row comparison data (regenerate with the .R scripts)
 notes/     the mathematical note
-RequestProject/DDM/*.lean   Lean formalization (see FORMALIZATION.md)
+RequestProject/DDM/*.lean   Lean formalization (see below)
 ```
 
 ## Quick start
@@ -72,3 +72,40 @@ Gotchas that cost time:
 - rtdists takes **absolute** `z` and `sz`; WienR and this code take **relative** `w` and `sw`.
 - Simulation check: the discrete barrier must sit *inside* the continuous one
   (`shift = +0.5826*sqrt(dt)`). The opposite sign looks plausible and is wrong.
+
+## Lean formalization
+
+The Lean 4 / Mathlib development in `RequestProject/` is a machine-checked formalization of
+Result 1 of the note. Every theorem compiles with no `sorry` and no axioms beyond Lean's
+standard three (`propext`, `Classical.choice`, `Quot.sound`).
+
+Build with `lake exe cache get && lake build` (Mathlib v4.28.0).
+
+### Files
+
+| file | content |
+|---|---|
+| `RequestProject/DDM/Normal.lean` | the standard normal density `φ` and CDF `Φ` (absent from Mathlib), integrability of `φ`, and `Φ' = φ` |
+| `RequestProject/DDM/Setup.lean` | the Setup section: `r_j`, `S`, the series `(g)`, `(gη)`, the drift density, and the bounds `j a ≤ r_j ≤ (j+1) a` |
+| `RequestProject/DDM/Algebra.lean` | Lemmas L4 (the inequality Result 1 rests on), L5e/L5o (the coefficient tables), L6 (the drift integral reproduces `(gη)`) |
+| `RequestProject/DDM/Antiderivatives.lean` | Lemma L1 |
+| `RequestProject/DDM/Exchange.lean` | the dominated-convergence tool used to exchange summation and integration, and the summability of the `O(exp(−j²a²/2t))` bounds |
+| `RequestProject/DDM/Result1.lean` | `theorem result1` (density with normal drift and uniform starting point) and `density_nondecision_window` (its consequence for the seven-parameter likelihood) |
+| `RequestProject/DDM/Faddeeva.lean` | the complex error function and the Faddeeva function `w(z)` (both absent from Mathlib), with their derivatives |
+| `RequestProject/DDM/LargeTime.lean` | the starting-point integral of the large-time representation in Faddeeva form, and its `η = 0` degeneration |
+
+### What is proved, and what is assumed
+
+The starting representations `(g)` and `(gη)` of the Setup section are *definitions* here,
+exactly as the note takes them from the literature (Hall 1997 / Gondan et al. 2014; Horrocks &
+Thompson 2004; Blurton et al. 2017). Everything the note derives from them is proved:
+
+* the antiderivative claim L1 and the algebraic identities L4, L5, L6;
+* Result 1 in full, including the exchange of summation with integration, proved from the
+  note's own Gaussian bounds;
+* the starting-point integral underlying the large-time (Faddeeva) representation.
+
+Not formalized: the large-time series representation itself (quoted from the literature by
+the note), the boundedness of `w(z)` in the upper half plane behind the note's numerical
+remark, the gradient formulas, and the numerical and empirical comparisons.
+

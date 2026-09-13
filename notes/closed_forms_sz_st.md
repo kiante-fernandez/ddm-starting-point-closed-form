@@ -3,7 +3,7 @@
 Working note, September 2026. Every formula below is verified symbolically
 (`verify/symbolic_proof.py`), to 30–48 digits (`verify/highprec2.py`), against WienR and
 rtdists (`data/`), against process simulation (`verify/validate_sim2.py`), and is
-machine-checked in Lean 4 (`RequestProject/`, see `FORMALIZATION.md`).
+machine-checked in Lean 4 (`RequestProject/`, see the README).
 
 ## Setup
 
@@ -134,7 +134,7 @@ is 2.2e-16.
 ### Verification and timing
 
 All checks, reference comparisons, and timings, with the numbers and the scripts that
-regenerate them, are in `STATUS.md` (and in the manuscript, `paper/main.tex`, Section 7).
+regenerate them, are in the manuscript, `paper/main.tex`, Section 6.
 
 ---
 

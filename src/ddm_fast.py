@@ -133,7 +133,7 @@ def g_full_sz(t, nu, eta, a, w1, w2, **kw):
 # quadrature over the non-decision-time window with an edge-clustering map.
 # WienR convention: t0 ~ U(t0, t0 + st0).
 # ---------------------------------------------------------------------------
-_X, _W = np.polynomial.legendre.leggauss(32)   # fewer nodes fail at the leading edge (STATUS.md)
+_X, _W = np.polynomial.legendre.leggauss(32)   # fewer nodes fail near u = 0 (Table 1 of the manuscript)
 PARAMS7 = PARAMS + ("t0", "st0")
 
 def grad_f7(t, nu, eta, a, w1, w2, t0, st0, **kw):

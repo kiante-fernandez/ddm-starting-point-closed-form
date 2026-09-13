@@ -29,4 +29,4 @@ t7 = tm(lambda: wfpt.pdf_array(-tt, 1.0, 1.0, 1.2, 0.5, 0.2, 0.1, 0.2, 1e-4, **k
 print(f"{'hddm-wfpt (wiener_like settings)':40s} {a6:8.1e} {r6:8.1e} {a7:8.1e} {r7:8.1e} {t6:8.2f} {t7:8.2f}")
 print(f"{'closed form, compiled (ddm_kernel)':40s} {'0':>8s} {'0':>8s} {'0':>8s} {'0':>8s} "
       f"{tm(lambda: K.g_full_sz(tt, 1.0, 1.0, 1.2, 0.4, 0.6)):8.2f} {tm(lambda: K.f7(tt, 1.0, 1.0, 1.2, 0.4, 0.6, 0.0, 0.2)):8.2f}")
-print("(closed form's own error: 6p exact to ~1e-14; 7p quadrature 1.5e-9 relative, see STATUS.md)")
+print("(closed form's own error: 6p exact to ~1e-14; 7p quadrature 1.5e-9 relative)")
