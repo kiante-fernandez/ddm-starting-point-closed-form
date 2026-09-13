@@ -3,3 +3,5 @@ scipy>=1.10
 sympy>=1.12
 mpmath>=1.3
 pandas>=2.0
+cython>=3.0        # only to build the compiled kernel: cythonize -3 -i src/ddm_kernel.pyx
+# optional, for verify/hddm_wfpt_compare.py:  hddm-wfpt

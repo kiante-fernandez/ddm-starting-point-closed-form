@@ -13,3 +13,5 @@ paper/main.fls
 paper/main.spl
 .DS_Store
 paper/main.pdf
+docs/
+CLAUDE.md

@@ -29,8 +29,6 @@ verify/    symbolic_proof.py    SymPy: exact verification of every algebraic ste
            *.R                  WienR and rtdists reference-value generation
 data/      *.csv           per-row comparison data (regenerate with the .R scripts)
 notes/     the mathematical note
-docs/      source papers: Blurton et al. 2017, Gondan et al. 2014, Hartmann & Klauer 2021,
-           Tuerlinckx 2004, Henrich et al. 2024 (Stan), WienR manual, Cambridge chapter
 RequestProject/DDM/*.lean   Lean formalization (see FORMALIZATION.md)
 ```
 
