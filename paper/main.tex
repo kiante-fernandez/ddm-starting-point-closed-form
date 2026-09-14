@@ -48,12 +48,12 @@ where $S := 1 + \eta^2 t$, $r_j = ja + aw$ for even $j$ and $r_j = ja + a(1-w)$ 
 
 The other two integrals close at fixed drift. \citet[pp.~706--708]{Tuerlinckx2004} worked in the large-time representation of \citet{Ratcliff1978}, in which the starting point enters through $\sin(k\pi w)$, integrated the starting point and the non-decision time analytically at fixed drift, and found that the drift integral then has to be approximated by quadrature; DMAT \citep{VandekerckhoveTuerlinckx2008} follows this route. Every implementation we are aware of that starts instead from the drift-integrated density~\eqref{eq:geta} integrates the starting point numerically: fast-dm and rtdists \citep{VossVoss2007, Singmann2022}, HDDM \citep{Wiecki2013}, WienR \citep{HartmannKlauer2021, WienR}, and the Stan implementation of \citet{Henrich2024}, which follows the WienR derivations; the recent monograph of \citet[Section~4.5]{SmithRatcliff2025} likewise carries out only the drift integral analytically. \citet{Blurton2017} noted that adding starting-point and non-decision-time variability to their result ``requires numerical evaluation of two integrals'' (p.~11).
 
-In this note we show that the starting-point integral of the density~\eqref{eq:geta} has a closed form, and that what the integral turns into depends on the series representation. In the large-time series, once the drift has been integrated, the starting point appears in a Gaussian factor with a \emph{positive} coefficient of $w^2$, and the integral against $\sin(k\pi w)$ is an imaginary error function of complex argument, which has a closed form only through the Faddeeva function (Section~\ref{sec:large}). In the small-time series the factor $\exp(-r_j^2/(2t))$ contributes a negative coefficient of $w^2$ that always dominates the positive one produced by the drift integral, so the integrand is a linear function times a decaying Gaussian, and the integral is a Gaussian moment with a closed form. Section~\ref{sec:result} gives the result and its derivation, Section~\ref{sec:large} the large-time counterpart that is needed for numerical stability at large $t$, Section~\ref{sec:conv} the truncation rule, Section~\ref{sec:seven} the resulting seven-parameter likelihood and its gradient, and Section~\ref{sec:verify} the numerical verification and a comparison of computational cost with existing software.
+In this note we show that the starting-point integral of the density~\eqref{eq:geta} has a closed form, and that what the integral turns into depends on the series representation. In the large-time series, once the drift has been integrated, the starting point appears in a Gaussian factor with a \emph{positive} coefficient of $w^2$, and the integral against $\sin(k\pi w)$ is an imaginary error function of complex argument, which has a closed form only through the Faddeeva function (Section~\ref{sec:large}). In the small-time series the factor $\exp(-r_j^2/(2t))$ contributes a negative coefficient of $w^2$ that always dominates the positive one produced by the drift integral, so the integrand is a linear function times a decaying Gaussian, and the integral is a Gaussian moment with a closed form. Section~\ref{sec:result} gives the result and its derivation, Section~\ref{sec:large} the large-time counterpart that is needed for numerical stability at large $t$, Section~\ref{sec:conv} the truncation rule, and Section~\ref{sec:verify} the numerical verification and a comparison of computational cost with existing software; the seven-parameter likelihood and the partial derivatives are in \ref{app:seven} and \ref{app:grad}.
 
 \section{The density with variable drift and variable starting point}
 \label{sec:result}
 
-Let the starting point be uniformly distributed on $[w_1, w_2]$, $0 < w_1 < w_2 < 1$; the endpoints are excluded because at $w_1 = 0$ the mixed density behaves like $u^{-1/2}$ as $u \to 0$, which the quadrature of Section~\ref{sec:seven} does not cover. The lower-barrier first-passage time density of the resulting process is
+Let the starting point be uniformly distributed on $[w_1, w_2]$, $0 < w_1 < w_2 < 1$; the endpoints are excluded because at $w_1 = 0$ the mixed density behaves like $u^{-1/2}$ as $u \to 0$, which the quadrature of \ref{app:seven} does not cover. The lower-barrier first-passage time density of the resulting process is
 \begin{equation}
 g\left(t \mid \nu, \eta^2, a, w_1, w_2\right) := \frac{1}{w_2 - w_1}\int_{w_1}^{w_2} g\left(t \mid \nu, \eta^2, a, w\right) \dd w .
 \label{eq:def}
@@ -147,32 +147,6 @@ K = \left\lceil a\sqrt{\frac{2\log(1/\varepsilon)}{\pi^2 t}} \right\rceil + 1 .
 \end{equation}
 We take $J \ge 2$ always. With $\varepsilon = 10^{-12}$ the small-time series needs $J \le 9$ terms for $t/a^2 \le 1$, and the large-time series needs $K \le 4$ terms for $t/a^2 \ge 1$. Evaluating~\eqref{eq:result} with $\varepsilon = 10^{-12}$ and with $\varepsilon = 10^{-40}$ on the 400 parameter sets of Section~\ref{sec:verify} gives results that differ by at most $2.2\times10^{-16}$.
 
-\section{The seven-parameter likelihood}
-\label{sec:seven}
-
-With the non-decision time uniformly distributed on $[t_0, t_0 + s_t]$, the density of an observed response time is
-\begin{equation}
-f(t) = \frac{1}{s_t}\int_{t - t_0 - s_t}^{t - t_0} g\left(u \mid \nu, \eta^2, a, w_1, w_2\right)\dd u ,
-\label{eq:seven}
-\end{equation}
-where the lower limit is replaced by $0$ if negative and $f(t) = 0$ for $t \le t_0$. We have not found a closed form for this integral. In the small-time form the non-decision time shifts the time argument, which enters every term of~\eqref{eq:result} through $\sqrt t$ and $1/t$; in the large-time form it enters through $S$, and only for $\eta = 0$ does the window integrate \citep[Eq.~9]{Tuerlinckx2004}. What~\eqref{eq:result} achieves is to reduce the seven-parameter likelihood from a two-dimensional numerical integration over $(w, u)$ to a one-dimensional quadrature over $u$ of a smooth closed-form integrand on a short interval. Because $g(u)$ rises steeply from zero at $u = 0$ and the window may include that region, a plain Gauss--Legendre rule converges slowly; the substitution $u = u_{\mathrm{lo}} + (u_{\mathrm{hi}} - u_{\mathrm{lo}})\,\xi^3$, $\xi \in [0, 1]$, with $u_{\mathrm{lo}} = \max(t - t_0 - s_t, 0)$, $u_{\mathrm{hi}} = t - t_0$, and Jacobian $3(u_{\mathrm{hi}} - u_{\mathrm{lo}})\xi^2$, which clusters nodes at the lower limit, fixes this. Table~\ref{tab:nodes} gives the maximum relative error of the rule against adaptive quadrature over the 200 seven-parameter sets of Section~\ref{sec:verify}. A 32-node rule with the cubic map reaches $1.5\times10^{-9}$ at a fixed cost of 32 evaluations of~\eqref{eq:result}. Every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phi$, and $W$, so the partial derivatives of $g$ with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are in closed form (\ref{app:grad}); \citet{HartmannKlauer2021} derived them for the constant-parameter model, and WienR obtains those involving the variability parameters by one numerical integration per derivative. The gradient of~\eqref{eq:seven} with respect to the five parameters of $g$ is therefore the same rule applied to the closed-form gradient of $g$, and $\partial f/\partial t_0 = [g(u_{\mathrm{lo}}) - g(u_{\mathrm{hi}})]/s_t$ and $\partial f/\partial s_t = [g(u_{\mathrm{lo}}) - f]/s_t$ follow from the endpoints when both limits move with the parameters; when the lower limit has been replaced by $0$ it no longer moves, and since $g(0) = 0$ for $w_1 > 0$ the same expressions give the correct values $-g(u_{\mathrm{hi}})/s_t$ and $-f/s_t$. All seven derivatives of~\eqref{eq:seven} agree with central finite differences to $3\times10^{-11}$ relative, on a window that lies inside $u > 0$ and on one whose lower limit is replaced by $0$.
-
-\begin{table}[t]
-\centering
-\caption{Maximum relative error of Gauss--Legendre quadrature for~\eqref{eq:seven} against adaptive quadrature, 200 random parameter sets, densities above $10^{-3}$.}
-\label{tab:nodes}
-\begin{tabular}{rcc}
-\toprule
-Nodes & Plain & With cubic map \\
-\midrule
- 8 & $4.1\times10^{-3}$ & $4.3\times10^{-3}$ \\
-16 & $7.3\times10^{-5}$ & $3.5\times10^{-6}$ \\
-24 & $4.1\times10^{-6}$ & $2.7\times10^{-8}$ \\
-32 & $1.1\times10^{-8}$ & $1.5\times10^{-9}$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \section{Verification and efficiency}
 \label{sec:verify}
 
@@ -215,7 +189,9 @@ Two features of Table~\ref{tab:timing} stand out. First, the closed form is the 
 
 \section{Discussion}
 
-We have shown that the first-passage time density of the diffusion model with normally distributed drift and uniformly distributed starting point has a closed form, and that what makes the integral a Gaussian moment is the factor $\exp(-r_j^2/(2t))$ of the small-time series, which the large-time series lacks. The result completes the analytic treatment of the drift and starting-point integrals of the seven-parameter model and leaves only the non-decision-time integral, which is a one-dimensional quadrature of a smooth function on a short interval and for which we have given a fixed 32-node rule with quadrature error $1.5\times10^{-9}$ on our test sets.
+We have shown that the first-passage time density of the diffusion model with normally distributed drift and uniformly distributed starting point has a closed form, and that what makes the integral a Gaussian moment is the factor $\exp(-r_j^2/(2t))$ of the small-time series, which the large-time series lacks. The result completes the analytic treatment of the drift and starting-point integrals of the seven-parameter model.
+
+For the seven-parameter model itself, with the non-decision time uniformly distributed on $[t_0, t_0 + s_t]$, the likelihood is the integral of~\eqref{eq:result} over the non-decision window, Eq.~\eqref{eq:seven} in \ref{app:seven}. We have not found a closed form for that integral, but the reduction is from a two-dimensional numerical integration over starting point and non-decision time to a one-dimensional quadrature of a smooth closed-form integrand on a short interval; a fixed 32-node rule reaches a quadrature error of $1.5\times10^{-9}$ on our test sets (\ref{app:seven}). Because every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phi$, and $W$, the derivatives of $g$ with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are in closed form (\ref{app:grad}), where \citet{HartmannKlauer2021} derived them for the constant-parameter model and WienR obtains those involving the variability parameters by one numerical integration per derivative; the gradient of the seven-parameter likelihood reuses the same quadrature (\ref{app:seven}).
 
 For practice the consequences are threefold. The density is exact up to a truncation error that is controlled by~\eqref{eq:JK}; it is evaluated at a fixed cost that, in our benchmark, is below that of each of the three packages timed at their own fitting settings; and its partial derivatives are closed form and nearly free, which is what hierarchical Bayesian and Hamiltonian Monte Carlo implementations \citep{Wiecki2013, Henrich2024} need. The across-trial variability parameters are the hardest of the model to estimate \citep{Boehm2018}; a likelihood free of integration over the starting point, with closed-form gradients, removes one source of integration error and gradient noise from that problem, though not its statistical difficulty. The result is directly usable in the packages built on the drift-integrated density~\eqref{eq:geta}, which already contain it as a building block; replacing the quadrature over $w$ by~\eqref{eq:lemma} covers the small-time regime, and a complete implementation also needs the large-time form~\eqref{eq:result_large}, the switch at $t/a^2 = 1$, the stable evaluation of Section~\ref{sec:result}, and the truncation rule~\eqref{eq:JK}.
 
@@ -264,6 +240,32 @@ which is the integrand of~\eqref{eq:lemma}. The definite integral~\eqref{eq:lemm
 \label{app:bound}
 
 For $w \in [0, 1]$, $ja \le r_j \le (j+1)a$, and the prefactor of~\eqref{eq:geta} is bounded by $\exp[(2|\nu|a + \eta^2 a^2)/2S]$. Hence the $j$-th term of the series in~\eqref{eq:geta}, and therefore $|I_j|/(w_2 - w_1)$ in~\eqref{eq:result}, is at most $(j+1)a\exp(-j^2 a^2/(2t))$ times a constant independent of $j$ and $w$. Since $\sum_j (j+1)\exp(-j^2 c)$ converges for every $c > 0$, the series converges absolutely and uniformly in $w$, which justifies the exchange of summation and integration and gives the truncation rule for $J$ in~\eqref{eq:JK}. For the large-time series~\eqref{eq:result_large}, $|W(z)| \le 1$ in the upper half plane and $|\exp(\kappa w^2 + \mu_k w)| \le \exp(\kappa + |\lambda|)$ on $[0,1]$, so the $k$-th term is at most a constant times $k\exp(-k^2\pi^2 t/(2a^2))$, which gives the rule for $K$.
+
+\section{The seven-parameter likelihood}
+\label{app:seven}
+
+With the non-decision time uniformly distributed on $[t_0, t_0 + s_t]$, the density of an observed response time is
+\begin{equation}
+f(t) = \frac{1}{s_t}\int_{t - t_0 - s_t}^{t - t_0} g\left(u \mid \nu, \eta^2, a, w_1, w_2\right)\dd u ,
+\label{eq:seven}
+\end{equation}
+where the lower limit is replaced by $0$ if negative and $f(t) = 0$ for $t \le t_0$. We have not found a closed form for this integral. In the small-time form the non-decision time shifts the time argument, which enters every term of~\eqref{eq:result} through $\sqrt t$ and $1/t$; in the large-time form it enters through $S$, and only for $\eta = 0$ does the window integrate \citep[Eq.~9]{Tuerlinckx2004}. What~\eqref{eq:result} achieves is to reduce the seven-parameter likelihood from a two-dimensional numerical integration over $(w, u)$ to a one-dimensional quadrature over $u$ of a smooth closed-form integrand on a short interval. Because $g(u)$ rises steeply from zero at $u = 0$ and the window may include that region, a plain Gauss--Legendre rule converges slowly; the substitution $u = u_{\mathrm{lo}} + (u_{\mathrm{hi}} - u_{\mathrm{lo}})\,\xi^3$, $\xi \in [0, 1]$, with $u_{\mathrm{lo}} = \max(t - t_0 - s_t, 0)$, $u_{\mathrm{hi}} = t - t_0$, and Jacobian $3(u_{\mathrm{hi}} - u_{\mathrm{lo}})\xi^2$, which clusters nodes at the lower limit, fixes this. Table~\ref{tab:nodes} gives the maximum relative error of the rule against adaptive quadrature over the 200 seven-parameter sets of Section~\ref{sec:verify}. A 32-node rule with the cubic map reaches $1.5\times10^{-9}$ at a fixed cost of 32 evaluations of~\eqref{eq:result}. The gradient of~\eqref{eq:seven} with respect to the five parameters of $g$ is the same rule applied to the closed-form gradient of $g$ (\ref{app:grad}), and $\partial f/\partial t_0 = [g(u_{\mathrm{lo}}) - g(u_{\mathrm{hi}})]/s_t$ and $\partial f/\partial s_t = [g(u_{\mathrm{lo}}) - f]/s_t$ follow from the endpoints when both limits move with the parameters; when the lower limit has been replaced by $0$ it no longer moves, and since $g(0) = 0$ for $w_1 > 0$ the same expressions give the correct values $-g(u_{\mathrm{hi}})/s_t$ and $-f/s_t$. All seven derivatives of~\eqref{eq:seven} agree with central finite differences to $3\times10^{-11}$ relative, on a window that lies inside $u > 0$ and on one whose lower limit is replaced by $0$.
+
+\begin{table}[t]
+\centering
+\caption{Maximum relative error of Gauss--Legendre quadrature for~\eqref{eq:seven} against adaptive quadrature, 200 random parameter sets, densities above $10^{-3}$.}
+\label{tab:nodes}
+\begin{tabular}{rcc}
+\toprule
+Nodes & Plain & With cubic map \\
+\midrule
+ 8 & $4.1\times10^{-3}$ & $4.3\times10^{-3}$ \\
+16 & $7.3\times10^{-5}$ & $3.5\times10^{-6}$ \\
+24 & $4.1\times10^{-6}$ & $2.7\times10^{-8}$ \\
+32 & $1.1\times10^{-8}$ & $1.5\times10^{-9}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Partial derivatives}
 \label{app:grad}
