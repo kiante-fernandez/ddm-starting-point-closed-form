@@ -5,7 +5,7 @@
 ## Abstract
 The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. Each of the three integrals of the first-passage time density has been evaluated in closed form on its own, at fixed values of the other parameters, but no two of them together; in particular, every implementation we are aware of that starts from the drift-integrated density integrates the starting point numerically. We show that in the small-time series representation the starting-point integral of the drift-integrated density is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form in exponentials and the normal distribution function, together with a large-time counterpart in terms of the Faddeeva function. Where these implementations required two numerical integrations, over the starting point and the non-decision time, the seven-parameter likelihood now requires a single one-dimensional quadrature; the derivatives of the decision density with respect to all of its parameters follow in closed form, and the likelihood gradient reuses that one quadrature. The result is verified symbolically, against three reference implementations and process simulation, and is machine-checked in Lean.
 
-This repository holds the code, reference data, manuscript source, and Lean 4 proof.
+This repository holds the code, reference data, manuscript source, and Lean proof.
 
 ## Layout
 
@@ -39,13 +39,7 @@ The `.R` scripts in `verify/` regenerate `data/`; run them from `data/` with Wie
 installed. rtdists takes absolute `z = a*w` and `sz = a*(w2-w1)`; WienR and this code take
 relative `w` and `w2-w1`.
 
-## Conventions
-
-Unit diffusion coefficient, barriers at 0 and `a`, relative starting point `w`, lower barrier;
-upper barrier by `(v, w) -> (-v, 1-w)`. Drift `v ~ N(nu, eta^2)`, starting point uniform on
-`[w1, w2]`, `S = 1 + eta^2 t`.
-
-## Lean formalization
+## Lean
 
 `lake build` checks every theorem with no `sorry` and only Lean's standard axioms.
 
@@ -58,7 +52,3 @@ upper barrier by `(v, w) -> (-v, 1-w)`. Drift `v ~ N(nu, eta^2)`, starting point
 | `Exchange.lean` | exchange of summation and integration |
 | `Result1.lean` | the closed-form density and the non-decision window |
 | `Faddeeva.lean`, `LargeTime.lean` | the Faddeeva function and the large-time starting-point integral |
-
-The drift-integrated small-time density is a definition, as it is taken from the literature in
-the manuscript. Not formalized: the large-time series itself, the bound on the Faddeeva
-function, and the gradient formulas.
