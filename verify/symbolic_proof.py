@@ -160,6 +160,24 @@ for name, (expr, var, coef) in coded.items():
     results[f'L9  chain rule {name}'] = sp.simplify(sp.diff(expr, var) - coef)
 
 # ---------------------------------------------------------------------------
+# L10. CDF remark in the Discussion.  Constant-drift lower-barrier CDF term
+#      (Blurton et al. 2012): each j contributes two pieces exp(-v a w) exp(c v) Phi(.)
+#      with c = -(a w + r_j) and c = r_j - a w.  Its drift integral over v ~ N(nu, eta^2)
+#      carries exp(c nu + c^2 eta^2 / 2) (Blurton et al. 2017), so the w^2 coefficient
+#      is eta^2 (dc/dw)^2 / 2: claimed 2 a^2 eta^2 for one piece and 0 for the other.
+# ---------------------------------------------------------------------------
+v = sp.Symbol('v', real=True)
+jj = sp.Symbol('j', integer=True, nonnegative=True)
+for parity, r in [('even', jj*a + a*w), ('odd', (jj + 1)*a - a*w)]:
+    Fterm = sp.exp(-v*a*w)*(sp.exp(-v*r)*Phi((v*tp - r)/sp.sqrt(tp)) + sp.exp(v*r)*Phi((-v*tp - r)/sp.sqrt(tp)))
+    dens = sp.exp(-v*a*w - v**2*tp/2)*r*sp.exp(-r**2/(2*tp))/sp.sqrt(2*sp.pi*tp**3)
+    results[f'L10a CDF term derivative ({parity} j)'] = sp.simplify(sp.diff(Fterm, tp) - dens)
+    for piece, c, claim in [('exp(-v(aw+r))', -(a*w + r), 2*a**2*eta**2 if parity == 'even' else 0),
+                            ('exp(v(r-aw))', r - a*w, 0 if parity == 'even' else 2*a**2*eta**2)]:
+        coef = sp.Poly(sp.expand(c*nu + c**2*eta**2/2), w).coeff_monomial(w**2)
+        results[f'L10b w^2 coefficient after drift integral ({parity} j, {piece})'] = sp.simplify(coef - claim)
+
+# ---------------------------------------------------------------------------
 if __name__ == '__main__':
     ok = True
     for name, res in results.items():

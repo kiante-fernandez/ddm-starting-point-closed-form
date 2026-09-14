@@ -25,7 +25,7 @@ paper/                   manuscript source
 ```bash
 pip install -r requirements.txt
 cythonize -3 -i src/ddm_kernel.pyx        # compiled implementation
-python verify/symbolic_proof.py           # 32 exact identities
+python verify/symbolic_proof.py           # 38 exact identities
 python verify/grad_check.py               # gradients, quadrature, kernel, WienR comparisons
 python verify/timing.py                   # Table 2, closed-form rows (single thread)
 Rscript verify/timing.R                   # Table 2, WienR and rtdists rows
