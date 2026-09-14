@@ -16,7 +16,7 @@ src/ddm_closed.py        independent scalar reference implementation
 verify/                  every check and every number in the manuscript (see below)
 data/                    WienR and rtdists reference values used by verify/
 notes/                   working note the Lean files cite
-RequestProject/DDM/      Lean 4 formalization
+RequestProject/DDM/      Lean formalization
 paper/                   manuscript source
 ```
 
