@@ -8,7 +8,7 @@ import numpy as np, timeit
 from hddm_wfpt import wfpt
 import ddm_kernel as K
 csv = lambda p: np.genfromtxt(p, delimiter=",", names=True).view(np.recarray)
-g = csv("data/wienr_grid.csv"); f = csv("data/wienr_full.csv")
+g = csv("data/wienr_grad.csv"); f = csv("data/wienr_full.csv")
 # reference = the closed form
 k6 = np.array([K.g_full_sz(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2)[0] for r in g])
 k7 = np.array([K.f7(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0)[0] for r in f])

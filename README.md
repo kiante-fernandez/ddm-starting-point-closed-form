@@ -26,7 +26,7 @@ paper/                   manuscript source
 pip install -r requirements.txt
 cythonize -3 -i src/ddm_kernel.pyx        # compiled implementation
 python verify/symbolic_proof.py           # 38 exact identities
-python verify/grad_check.py               # gradients, quadrature, kernel, WienR comparisons
+python verify/grad_check.py               # gradients, small-Delta branch, quadrature, kernel, scalar reference, WienR comparisons
 python verify/timing.py                   # Table 2, closed-form rows (single thread)
 Rscript verify/timing.R                   # Table 2, WienR and rtdists rows
 python verify/hddm_wfpt_compare.py        # Table 2, HDDM row (pip install hddm-wfpt)
@@ -36,12 +36,15 @@ lake exe cache get && lake build          # Lean proof (Mathlib v4.28.0)
 ```
 
 The `.R` scripts in `verify/` regenerate `data/`; run them from `data/` with WienR and rtdists
-installed. rtdists takes absolute `z = a*w` and `sz = a*(w2-w1)`; WienR and this code take
+installed. `tran_grid.R` draws the literature grid: 2000 parameter sets from the informative
+priors of Tran et al. (2021, Front. Psychol.), truncated at that review's empirical bounds,
+plus fixed points at the bounds. rtdists takes absolute `z = a*w` and `sz = a*(w2-w1)`; WienR and this code take
 relative `w` and `w2-w1`.
 
 ## Lean
 
-`lake build` checks every theorem with no `sorry` and only Lean's standard axioms.
+`lake build` checks every theorem with no `sorry`. `#print axioms DDM.result1` reports
+`propext, Classical.choice, Quot.sound` and nothing else.
 
 | file | content |
 |---|---|

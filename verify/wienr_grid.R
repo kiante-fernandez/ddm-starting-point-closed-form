@@ -15,6 +15,11 @@ res <- WienerPDF(grid$t, "lower", grid$a, grid$v, grid$w, t0 = 0,
 el <- as.numeric(Sys.time() - t0, units = "secs")
 grid$wienr <- res$value
 grid$err   <- res$err
-write.csv(grid, "wienr_grid.csv", row.names = FALSE)
+for (nm in c("v", "sv", "a", "w", "sw")) {
+  f <- get(paste0("d", nm, "WienerPDF"))
+  grid[[paste0("d", nm)]] <- f(grid$t, "lower", grid$a, grid$v, grid$w, t0 = 0,
+                               sv = grid$sv, sw = grid$sw, st0 = 0, precision = 1e-12, n.evals = 0)$deriv
+}
+write.csv(grid, "wienr_grad.csv", row.names = FALSE)
 cat(sprintf("WienR: %d evaluations in %.2f s (%.0f us each); max reported integration err %.1e\n",
             n, el, 1e6*el/n, max(res$err)))

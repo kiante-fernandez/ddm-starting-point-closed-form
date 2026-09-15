@@ -67,6 +67,20 @@ implementation (Henrich et al. 2024), and fast-dm / rtdists (`src/Density.h`:
 (`_logPhi_diff` in `ddm_fast.py`); for large j the Gaussian centre m sits far outside
 [w₁, w₂] and naive evaluation overflows or cancels.
 
+**Small Δ = w₂ − w₁.** Every I_j is F(w₂) − F(w₁) over Δ, so relative error grows like 1/Δ:
+the density holds to ~1e-10 down to Δ = 1e-6, but ∂g/∂w₁ and ∂g/∂w₂, themselves differences
+over Δ, are wrong in the 3rd digit by Δ = 1e-6 and meaningless by 1e-8, and Δ = 0 is 0/0.
+Optimizers and samplers do walk s_z to zero, and Tran et al. (2021) report published s_z/a
+down to 0.01, so the limit has to work. For Δ < 1e-2 `grad_full_sz` therefore switches to
+`_avg`: a 5-node Gauss-Legendre average over [w₁, w₂] of the fixed-start density (Eq. 1) and
+its gradient (`_small_pt` / `_large_pt`), a sum rather than a difference, exact for degree-9
+polynomials in w. Accurate to 1e-13 relative in g and all five rows from the threshold down to
+Δ = 0 inclusive (`highprec2.py`, small-Δ block, vs a 40-dps reference); at the threshold the
+two routes agree to 6e-11 (density) and 4e-9 (gradient). The same branch is in the Cython
+kernel (`g_pt`). Δ = 0 returns Eq. 1 with ∂/∂w₁ = ∂/∂w₂, i.e. zero derivative in the width.
+The 5-node count is the smallest that holds 1e-13 at the hard corners (t = 0.05, a = 2.5);
+3 nodes reach only 2e-7 at Δ = 3e-2.
+
 ### Large-time representation
 
 The small-time series loses precision to cancellation for t/a² ≳ 2. With κ = η²a²/(2S),
@@ -80,7 +94,10 @@ formally an erfi of complex argument; this is what Tuerlinckx's route was missin
 the bracket reduces to (e^{μw₂} − e^{μw₁})/μ. Written with `erfi` instead of `w(z)` the form
 loses roughly π²k²/(4κ) nats to cancellation and returns garbage at fixed large K
 (`highprec2.py`, first block). Switch between the two representations at t/a² = 1
-(`g_full_sz`); they agree to 1.5e-11 relative across the switch.
+(`g_full_sz`). The threshold is not tuned: at a=1, ν=η=1, w=[0.4,0.6] the two forms agree to
+2e-16 at t/a²=0.1, 2e-15 at 0.5, 4e-14 at 1, 2e-12 at 2, then the small-time form degrades
+(3e-9 at 3, 4e-5 at 5) while the large-time one does not. Any threshold in [0.3, 2] would do;
+1 sits mid-band with few terms needed on both sides (`grad_check.py`, switch block).
 
 ### Gradient
 
@@ -129,7 +146,9 @@ the k-th large-time term by k·exp(−k²π²t/(2a²)). For a tolerance τ the s
 
 evaluated at the largest (J) or smallest (K) t in the batch. With τ = 1e-12 and t/a² ≤ 1 this
 gives J ≤ 9; with t/a² ≥ 1 it gives K ≤ 4. Against τ = 1e-40 on the 400-set grid the difference
-is 2.2e-16.
+is 2.2e-16. The constants in the term bounds carry all the ν- and η-dependence and are common
+to every term, so they cancel in the ratio of the tail bound to the j = 0 bound: the rule is a
+relative-error criterion, the same one Navarro & Fuss (2009) and Gondan et al. (2014) use.
 
 ### Verification and timing
 
@@ -143,5 +162,8 @@ regenerate them, are in the manuscript, `paper/main.tex`, Section 6.
 The corresponding **cumulative** distribution with η and s_z does not follow by the same
 route: after the drift integral, half of the series terms carry a w²-coefficient of exactly
 +2a²η² (a growing Gaussian times Φ) and reduce to an Owen-T-type integral with no elementary
-form; the other half close via ∫ e^{cw} Φ(αw + β) dw. For maximum-likelihood and Bayesian
-fitting the density suffices, so this is left open.
+form; the other half close via ∫ e^{cw} Φ(αw + β) dw. Differentiating J(β) = ∫ e^{κ'w²+λ'w}
+Φ(αw+β) dw in β leaves a Gaussian integral with w²-coefficient κ' − α²/2: Owen's T when that
+is negative, the Faddeeva object of §3 when positive (Owen 1980). Either way it is one more
+1-D integral, not a closed form in exp and Φ. For maximum-likelihood and Bayesian fitting the
+density suffices, so this is left open.

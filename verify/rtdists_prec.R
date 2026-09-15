@@ -1,5 +1,5 @@
 suppressMessages(library(rtdists))
-g <- read.csv("wienr_grid.csv")
+g <- read.csv("wienr_grad.csv")
 out <- data.frame(prec = c(3,4,5,6,8), us = NA, stringsAsFactors = FALSE)
 for (i in seq_len(nrow(out))) {
   p <- out$prec[i]; t0 <- Sys.time()

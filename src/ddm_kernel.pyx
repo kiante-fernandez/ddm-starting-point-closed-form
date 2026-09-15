@@ -51,8 +51,34 @@ cdef double g_large(double t, double nu, double eta, double a, double w1, double
         series += k*exp(-k*k*M_PI*M_PI*t/(2*a*a)) * Iw.imag
     return M_PI/(a*a)/sqrt(S)*exp(-nu*nu*t/(2*S))*series/(w2-w1)
 
+cdef double g_pt(double t, double nu, double eta, double a, double w, double tol) noexcept nogil:
+    """Fixed-start density (Blurton et al. 2017 Eq. 1), small- or large-time form."""
+    cdef double S = 1 + eta*eta*t, pre = exp((-nu*nu*t - 2*nu*a*w + eta*eta*a*a*w*w)/(2*S)), r, tot = 0
+    cdef int j, J, k, K
+    if t/(a*a) <= 1:
+        J = <int>ceil(sqrt(2*t*log(1/tol))/a) + 1
+        if J < 2: J = 2
+        for j in range(J):
+            r = j*a + a*w if j % 2 == 0 else (j + 1)*a - a*w
+            tot += (1 - 2*(j % 2)) * r * exp(-r*r/(2*t))
+        return pre*tot/sqrt(2*M_PI*t*t*t*S)
+    K = <int>ceil(a*sqrt(2*log(1/tol)/(M_PI*M_PI*t)))
+    for k in range(1, K + 1):
+        tot += k*exp(-k*k*M_PI*M_PI*t/(2*a*a))*sin(M_PI*k*w)
+    return M_PI/(a*a)/sqrt(S)*pre*tot
+
+cdef double GX5[5]
+cdef double GW5[5]
+GX5[:] = [-0.9061798459386641, -0.5384693101056831, 0.0, 0.5384693101056831, 0.9061798459386641]
+GW5[:] = [0.11846344252809454, 0.23931433524968312, 0.2844444444444445, 0.23931433524968312, 0.11846344252809454]
+
 cdef inline double g1(double t, double nu, double eta, double a, double w1, double w2, double tol) noexcept nogil:
+    cdef int n
+    cdef double acc = 0
     if t <= 0: return 0
+    if w2 - w1 < 1e-2:      # small-Delta branch: 5-node Gauss-Legendre average of the fixed-start density (ddm_fast._avg)
+        for n in range(5): acc += GW5[n]*g_pt(t, nu, eta, a, (w1 + w2)/2 + (w2 - w1)*GX5[n]/2, tol)
+        return acc
     if t/(a*a) <= 1: return g_small(t, nu, eta, a, w1, w2, tol)
     return g_large(t, nu, eta, a, w1, w2, tol)
 
