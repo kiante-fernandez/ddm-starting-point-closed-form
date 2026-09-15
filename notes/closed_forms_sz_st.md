@@ -2,8 +2,7 @@
 
 Working note, September 2026. Every formula below is verified symbolically
 (`verify/symbolic_proof.py`), to 30–48 digits (`verify/highprec2.py`), against WienR and
-rtdists (`data/`), against process simulation (`verify/validate_sim2.py`), and is
-machine-checked in Lean (`RequestProject/`, see the README).
+rtdists (`data/`), and is machine-checked in Lean (`RequestProject/`, see the README).
 
 ## Setup
 

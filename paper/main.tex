@@ -117,12 +117,13 @@ g\left(t \mid \nu, \eta^2, a, w\right)
 \begin{sloppypar}
 Here no term carries a factor $\exp(-r_j^2/(2t))$ to compensate the growing Gaussian, and the starting-point integral of the $k$-th term is $\int_{w_1}^{w_2} \exp(\kappa w^2 + \lambda w)\sin(k\pi w)\dd w$ with $\kappa = \eta^2 a^2/(2S) > 0$ and $\lambda = -\nu a/S$. Written as the imaginary part of $\int \exp(\kappa w^2 + \mu_k w)\dd w$ with $\mu_k = \lambda + \I k\pi$, the antiderivative is an imaginary error function of complex argument, whose direct evaluation overflows in double precision and loses digits to cancellation. It is, however, bounded when expressed through the Faddeeva function $W(z) = \exp(-z^2)\operatorname{erfc}(-\I z)$ \citep[Eq.~7.1.3]{AbramowitzStegun1964}, written $W$ here rather than the usual $w$ to keep it apart from the starting point:
 \end{sloppypar}
+{\small
 \begin{equation}
 \int_{w_1}^{w_2} \exp(\kappa w^2 + \mu_k w)\dd w
  = \frac{-\I\sqrt{\pi}}{2\sqrt{\kappa}}
    \Big[\exp(\kappa w^2 + \mu_k w)\, W\!\big(z_k(w)\big)\Big]_{w_1}^{w_2},
 \label{eq:faddeeva}
-\end{equation}
+\end{equation}}%
 with $z_k(w) = \sqrt{\kappa}\, w + \mu_k/(2\sqrt{\kappa})$.
 Since $\operatorname{Im} z_k = k\pi/(2\sqrt{\kappa}) > 0$, $z_k$ lies in the upper half plane, where $|W(z)| \le 1$ (\ref{app:bound}), and the product with $\exp(\kappa w^2 + \mu_k w)$ is of the size of the integrand. For $\eta = 0$, where $\kappa = 0$, the right-hand side of~\eqref{eq:faddeeva} is replaced by its $\kappa \to 0$ limit, $(\exp(\mu_k w_2) - \exp(\mu_k w_1))/\mu_k$, which follows from $W(z) \sim \I/(\sqrt\pi z)$ for large $|z|$. The large-time density with uniformly distributed starting point is then
 \begin{align}
@@ -329,7 +330,7 @@ We find that on this grid the closed form and WienR agree to ten digits in the d
 
 \emph{A vanishing starting-point range.} Each $I_j$ in~\eqref{eq:result} is a difference of the antiderivative at the two endpoints divided by their separation. As the starting-point range closes, that difference is taken between ever closer values and relative accuracy is lost in proportion. The density degrades slowly, but the derivatives with respect to $w_1$ and $w_2$ are themselves such differences and degrade faster. They are what drives the second column of Table~\ref{tab:width}, which has lost every correct digit at the smallest ranges in the table and is undefined at $w_2 = w_1$. Because $s_z$ is one of the parameters that optimizers and samplers drive towards zero, this is a limit an implementation has to cover.
 
-Below a range of $0.01$ we therefore evaluate $\gbar$ and its gradient not from~\eqref{eq:result} but as a five-node Gauss--Legendre average of the fixed-start density~\eqref{eq:geta} and its derivatives over $[w_1, w_2]$. The average is a sum rather than a difference, and is exact for polynomials of degree nine in $w$, so it does not degrade as the range closes. It holds fourteen digits at every width down to $w_2 = w_1$ inclusive, where it returns~\eqref{eq:geta} itself with equal derivatives in $w_1$ and $w_2$, that is, a zero derivative in the width. The first row of Table~\ref{tab:width} is the threshold itself, where the two routes agree to eleven digits.
+Existing implementations also treat a vanishing range as a special case. WienR and the Stan implementation skip the integration over the starting point when its range is zero \citep{HartmannKlauer2021, Henrich2024}, and the HDDM likelihood sets any range below $0.001$ to zero and returns the fixed-start density \citep{hddmwfpt}. For those implementations the special case saves time. For~\eqref{eq:result} it is also needed for accuracy. Below a range of $0.01$ we therefore compute $\gbar$ and its gradient as a five-node Gauss--Legendre average of the fixed-start density~\eqref{eq:geta} and its derivatives over $[w_1, w_2]$. The average is a sum rather than a difference, so it loses no digits as the range closes. It holds thirteen digits at every width down to $w_2 = w_1$, where it returns~\eqref{eq:geta} itself. At the threshold it agrees with~\eqref{eq:result} to eleven digits (first row of Table~\ref{tab:width}), whereas setting the range to zero, as HDDM does, would change the density by an amount of the order of the range squared.
 
 \begin{table}[t]
 \centering
@@ -361,7 +362,7 @@ $0.01$     & $5\times10^{-12}$ & $3\times10^{-15}$ \\
 $0.001$    & $7\times10^{-10}$ & $3\times10^{-15}$ \\
 $10^{-6}$  & $8\times10^{-4}$  & $3\times10^{-15}$ \\
 $10^{-8}$  & $4$               & $3\times10^{-15}$ \\
-$0$        & undefined         & $3\times10^{-15}$ \\
+$0$        & undefined         & $1\times10^{-13}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
