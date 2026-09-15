@@ -63,6 +63,7 @@ def _small(t, nu, eta, a, w1, w2, tol=1e-12):
 # Large-time counterpart of Result 1 (for t/a^2 large), via the Faddeeva function
 # ---------------------------------------------------------------------------
 from scipy.special import wofz
+from math import factorial
 
 def _large(t, nu, eta, a, w1, w2, tol=1e-12):
     """Large-time series via Faddeeva w(z): returns (g, dg) as in _small.  Stable for large t/a^2."""
@@ -73,16 +74,19 @@ def _large(t, nu, eta, a, w1, w2, tol=1e-12):
     kap = eta**2 * a**2 / (2 * S)                 # >= 0, coefficient of w^2 (growing)
     mu = -nu * a / S + 1j * np.pi * k              # complex linear coefficient
     E1 = np.exp(kap * w1 * w1 + mu * w1); E2 = np.exp(kap * w2 * w2 + mu * w2)
-    if np.all(kap > 0):
+    with np.errstate(all='ignore'):
         sk = np.sqrt(kap)
         z = lambda w: sk * w + mu / (2 * sk)       # Im z > 0  ->  wofz bounded
         Iw = (-1j) * np.sqrt(np.pi) / (2 * sk) * (E2 * wofz(z(w2)) - E1 * wofz(z(w1)))
         dmu = ((E2 - E1) - mu * Iw) / (2 * kap)                    # int w e^{...} dw
         dkap = ((w2 * E2 - w1 * E1) - Iw - mu * dmu) / (2 * kap)   # int w^2 e^{...} dw
-    else:                                          # eta == 0: elementary; kappa-derivatives are multiplied by 0
-        Iw = (E2 - E1) / mu
-        dmu = ((w2 * E2 - w1 * E1) - Iw) / mu
-        dkap = 0 * Iw
+    e1, e2 = np.exp(mu * w1), np.exp(mu * w2)
+    P = [(e2 - e1) / mu]
+    for n in range(1, 23):
+        P.append(((w2**n * e2 - w1**n * e1) - n * P[-1]) / mu)
+    T0, T1, T2 = (sum(kap**m / factorial(m) * P[2 * m + i] for m in range(11)) for i in range(3))
+    small = kap < 0.1
+    Iw, dmu, dkap = np.where(small, T0, Iw), np.where(small, T1, dmu), np.where(small, T2, dkap)
     damp = k * np.exp(-k**2 * np.pi**2 * t / (2 * a**2))
     P = np.pi / a**2 / np.sqrt(S[:, 0]) * np.exp(-nu**2 * t[:, 0] / (2 * S[:, 0])) / (w2 - w1)
     g = P * np.sum(damp * Iw.imag, axis=1)
