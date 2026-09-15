@@ -2,7 +2,6 @@
 __pycache__/
 *.so
 *.c
-build/
 paper/main.aux
 paper/main.bbl
 paper/main.blg
@@ -15,8 +14,4 @@ paper/main.spl
 paper/main.pdf
 docs/
 CLAUDE.md
-STATUS.md
-FORMALIZATION.md
 
-# latexdiff review copy (regenerate with latexdiff, not tracked)
-paper/main_marked.*

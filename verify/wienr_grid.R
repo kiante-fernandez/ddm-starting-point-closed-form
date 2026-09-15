@@ -8,13 +8,11 @@ grid <- data.frame(
   w  = sample(c(0.3, 0.5, 0.7), n, TRUE),
   sv = sample(c(0.5, 1.0, 2.0), n, TRUE),
   sw = sample(c(0.05, 0.2, 0.4), n, TRUE))
-grid$sw <- pmin(grid$sw, 2*pmin(grid$w, 1-grid$w)*0.95)
 t0 <- Sys.time()
 res <- WienerPDF(grid$t, "lower", grid$a, grid$v, grid$w, t0 = 0,
                  sv = grid$sv, sw = grid$sw, st0 = 0, precision = 1e-12, n.evals = 0)
 el <- as.numeric(Sys.time() - t0, units = "secs")
 grid$wienr <- res$value
-grid$err   <- res$err
 for (nm in c("v", "sv", "a", "w", "sw")) {
   f <- get(paste0("d", nm, "WienerPDF"))
   grid[[paste0("d", nm)]] <- f(grid$t, "lower", grid$a, grid$v, grid$w, t0 = 0,

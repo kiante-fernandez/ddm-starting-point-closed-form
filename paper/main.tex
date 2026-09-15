@@ -155,7 +155,28 @@ We take $J \ge 2$ always. With $\varepsilon = 10^{-12}$ the small-time series ne
 
 \subsection{Verification}
 
-We checked the result in four independent ways. (i)~Every algebraic step, in particular the antiderivative~\eqref{eq:lemma}, the inequality~\eqref{eq:key}, the coefficient table~\eqref{eq:coef}, the drift integral leading to~\eqref{eq:geta}, and all derivative formulas of \ref{app:grad}, is verified as an exact symbolic identity in a computer algebra system, that is, as $\mathrm{simplify}(\dd F/\dd x - f) = 0$ rather than by numerical agreement. (ii)~In arbitrary-precision arithmetic, \eqref{eq:result} agrees with a brute-force double integral of the constant-parameter density over $(v, w)$ on six parameter sets, and \eqref{eq:result_large} with quadrature of~\eqref{eq:geta} at $t/a^2 = 0.9$, $1.5$, and $4.7$, that is, at $(t, \nu, \eta, a, w_1, w_2) = (0.9, -0.5, 0.8, 1, 0.4, 0.6)$, $(1.5, 2, 1, 1, 0.3, 0.7)$, and $(3, -1, 1, 0.8, 0.35, 0.65)$, to more than thirty digits in every case. (iii)~On 400 random parameter sets with $a \in \{0.6, 1, 1.5, 2.5\}$, $\nu \in \{-3, -1, -0.2, 0, 0.5, 1.5, 4\}$, $\eta \in \{0.5, 1, 2\}$, $(w_1 + w_2)/2 \in \{0.3, 0.5, 0.7\}$, $w_2 - w_1 \in \{0.05, 0.2, 0.4\}$, and $t \in [0.05, 3]$ spanning twenty orders of magnitude in density, the switched representation agrees with WienR \citep{HartmannKlauer2021}, called at its default precision setting, to nine relative digits, an absolute figure being uninformative over that range, and its five partial derivatives agree with WienR's derivative functions to seven relative digits. Furthermore rtdists \citep{Singmann2022}, whose diffusion code is that of fast-dm, converges to the same values as its precision setting is raised (Table~\ref{tab:timing}). On 200 seven-parameter sets, drawn with $t \in [0.35, 3]$, $a \in \{0.8, 1.2, 2\}$, $\nu \in \{-2, -0.5, 0, 1, 3\}$, $(w_1 + w_2)/2 \in \{0.35, 0.5, 0.65\}$, $\eta \in \{0.5, 1.5\}$, $w_2 - w_1 \in \{0.1, 0.3\}$, $t_0 = 0.3$, and $s_t \in \{0.1, 0.25\}$, \eqref{eq:seven} agrees with WienR to nine digits, which is the integration error WienR itself reports and the quadrature error of~\eqref{eq:seven} (\ref{app:seven}). To further verify across other ranges of relevant parameters sets we also considered second grid drawn from the parameter ranges that \citet{tran2021systematic} report from a review of published fits, and a sweep of $w_2 - w_1$ down to zero, give the same agreement and no negative density (\ref{app:grids}).  (iv)~The derivation of~\eqref{eq:result}, including the antiderivative, the coefficient table, the exchange of summation and integration, and the Faddeeva integral~\eqref{eq:faddeeva}, is formalized and machine-checked in Lean with Mathlib \citep{deMouraUllrich2021, mathlib2020}; the development contains no unproved statement and relies on no axioms beyond Lean's standard ones. The scope is as follows. The representation~\eqref{eq:geta} is a definition there, as it is taken from the literature here; the large-time series~\eqref{eq:large} itself is not formalized, only the identity~\eqref{eq:faddeeva}; the normal distribution function, the complex error function, and $W(z)$ are defined within the development.
+We checked the result in four independent ways. (i)~Every algebraic step, in particular the antiderivative~\eqref{eq:lemma}, the inequality~\eqref{eq:key}, the coefficient table~\eqref{eq:coef}, the drift integral leading to~\eqref{eq:geta}, and all derivative formulas of \ref{app:grad}, is verified as an exact symbolic identity in a computer algebra system, that is, as $\mathrm{simplify}(\dd F/\dd x - f) = 0$ rather than by numerical agreement. (ii)~In arbitrary-precision arithmetic, \eqref{eq:result} and~\eqref{eq:result_large} agree with quadrature over $w$ of~\eqref{eq:geta} to at least twenty relative digits, at six and four parameter sets respectively. (iii)~On the 400 parameter sets of Table~\ref{tab:grid}, which span twenty orders of magnitude in density, the switched representation agrees with WienR \citep{HartmannKlauer2021} to nine relative digits, and its five partial derivatives agree with WienR's derivative functions to seven. With $t_0$ and $s_t$ added, \eqref{eq:seven} agrees with WienR to ten relative digits, except at the smallest densities, where the two agree to four digits and adaptive quadrature of~\eqref{eq:seven} shows the difference to be WienR's integration error. The parameter values of published fits \citep{tran2021systematic} and a sweep of $w_2 - w_1$ down to zero give the same agreement and no negative density (\ref{app:grids}). (iv)~The derivation of~\eqref{eq:result}, including the antiderivative, the coefficient table, the exchange of summation and integration, and the Faddeeva integral~\eqref{eq:faddeeva}, is formalized and machine-checked in Lean with Mathlib \citep{deMouraUllrich2021, mathlib2020}; the development contains no unproved statement and relies on no axioms beyond Lean's standard ones. The scope is as follows. The representation~\eqref{eq:geta} is a definition there, as it is taken from the literature here; the large-time series~\eqref{eq:large} itself is not formalized, only the identity~\eqref{eq:faddeeva}; the normal distribution function, the complex error function, and $W(z)$ are defined within the development.
+
+\begin{table}[t]
+\centering
+\caption{The 400 parameter sets of Section~\ref{sec:verify}, drawn with a fixed seed. $t$ is uniform on its interval and every other parameter uniform over its listed values. The seven-parameter sets add $t_0$ and $s_t$ and shift $t$ by $t_0$.}
+\label{tab:grid}
+\begin{tabular}{ll}
+\toprule
+Parameter & Values \\
+\midrule
+$a$ & $0.6$, $1$, $1.5$, $2.5$ \\
+$\nu$ & $-3$, $-1$, $-0.2$, $0$, $0.5$, $1.5$, $4$ \\
+$\eta$ & $0.5$, $1$, $2$ \\
+$(w_1 + w_2)/2$ & $0.3$, $0.5$, $0.7$ \\
+$w_2 - w_1$ & $0.05$, $0.2$, $0.4$ \\
+$t$ & $[0.05, 3]$ \\
+\midrule
+$t_0$ & $0.3$ \\
+$s_t$ & $0.1$, $0.25$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Efficiency}
 
@@ -165,7 +186,7 @@ The difference columns need a reference scale. \citet{Blurton2017} recommend a t
 
 \begin{table*}[t]
 \centering
-\caption{Cost per evaluation in microseconds, single thread, 10\,000 response times drawn uniformly on $[0.1, 3]$ s, at $a = 1.2$, $\nu = 1$, $\eta = 1$, $w_1 = 0.4$, $w_2 = 0.6$, $t_0 = 0$, $s_t = 0.2$. Each package at the settings used for fitting: WienR at its default precision setting $10^{-12}$, rtdists at precision 3, HDDM at series precision $10^{-4}$ with Simpson precision $10^{-8}$ and recursion depth 10. Difference is the maximum relative difference from~\eqref{eq:result} (six parameters, the 400 sets of Section~\ref{sec:verify}) or~\eqref{eq:seven} (seven parameters, the 200 sets), for densities above $10^{-3}$; for the closed form the seven-parameter entry is the quadrature error of~\eqref{eq:seven} against adaptive integration, which is why WienR is also shown at precision setting $10^{-9}$ for seven parameters.}
+\caption{Cost and accuracy of the closed form and three packages. Cost is microseconds per evaluation on one thread, over 10\,000 response times drawn uniformly between 0.1 and 3~s, at $a = 1.2$, $\nu = \eta = 1$, $w_1 = 0.4$, $w_2 = 0.6$, and $s_t = 0.2$. Difference is the largest relative difference from the closed form over the 400 parameter sets of Table~\ref{tab:grid}, counting densities above $0.001$. For the closed form itself, the seven-parameter entry is its quadrature error against adaptive integration. Each package runs at the settings used for fitting. WienR runs at precision $10^{-12}$, rtdists at precision 3, and HDDM at series precision $10^{-4}$ and Simpson precision $10^{-8}$ with recursion depth 10.}
 \label{tab:timing}
 \footnotesize
 \begin{tabular}{lcccc}
@@ -174,27 +195,26 @@ The difference columns need a reference scale. \citet{Blurton2017} recommend a t
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}
  & Difference & $\mu$s & Difference & $\mu$s \\
 \midrule
-Closed form   & --                 & 0.33 & $1.5\times10^{-9}$ & 9.2 \\
-WienR, default $10^{-12}$ & $2.5\times10^{-12}$& 2.1  & $1.5\times10^{-9}$ & 1040 \\
-WienR, $10^{-9}$          & --                 & --   & $2.0\times10^{-8}$ & 103 \\
-rtdists       & $4.6\times10^{-3}$ & 0.45 & $9.2\times10^{-3}$ & 18 \\
-HDDM          & $3.9\times10^{-6}$ & 0.60 & $1.5\times10^{-7}$ & 46 \\
+Closed form   & --                 & 0.34 & $4.6\times10^{-11}$ & 14 \\
+WienR, $10^{-12}$ & $3.8\times10^{-13}$ & 2.2  & $4.6\times10^{-11}$ & 1070 \\
+rtdists       & $4.6\times10^{-3}$ & 0.43 & $8.9\times10^{-3}$ & 19 \\
+HDDM          & $3.9\times10^{-6}$ & 0.57 & $7.8\times10^{-7}$ & 46 \\
 \midrule
-Closed form $+$ 5 gradients$^{\dagger}$ & --      & 1.7  & & \\
-WienR, 5 gradients           & $3\times10^{-13}$ (abs.) & 15.7 & & \\
+Closed form $+$ 5 gradients$^{\dagger}$ & --      & 2.3  & & \\
+WienR, 5 gradients           & $3\times10^{-13}$ (abs.) & 15.9 & & \\
 \bottomrule
-\multicolumn{5}{l}{--: reference implementation, evaluated with $\varepsilon = 10^{-12}$ in~\eqref{eq:JK} (Section~\ref{sec:conv}).}\\
+\multicolumn{5}{l}{--: the reference, with series truncated at $\varepsilon = 10^{-12}$ (Section~\ref{sec:conv}).}\\
 \multicolumn{5}{l}{$^{\dagger}$Uncompiled array implementation, not comparable with the compiled density rows.}
 \end{tabular}
 \end{table*}
 
-Two features of Table~\ref{tab:timing} stand out. First, the closed form is the cheapest of the four at every entry and the only one that involves no numerical integration for six parameters. The rtdists package costs 1.4 times as much for six parameters and twice as much for seven, at errors of $0.5\%$ and $0.9\%$. HDDM costs 1.8 and 5 times as much at the differences shown in the table. WienR costs 6 times as much at its default precision for six parameters; for seven it costs 110 times as much at its default and 11 times as much at a requested precision of $10^{-9}$, the quadrature error of~\eqref{eq:seven}. The cost of the closed form at $\varepsilon = 10^{-12}$ is fixed, whereas that of the integrators is set by the precision asked of them, so these ratios apply at the settings shown. Second, all five partial derivatives of~\eqref{eq:result} share the exponential factors of the density itself; an uncompiled array implementation returns the density together with all five derivatives in $1.7~\mu$s, whereas WienR requires one further numerical integration per derivative. For reference, WienR's own closed form for drift variability alone \citep{Blurton2017} evaluates in $0.26~\mu$s on the same machine, so the closed form with starting-point variability costs 1.3 times the drift-only density.
+Two features of Table~\ref{tab:timing} stand out. First, the closed form is the cheapest of the four at every entry and the only one that involves no numerical integration for six parameters. The rtdists package costs 1.3 times as much for both six and seven parameters, at errors of $0.5\%$ and $0.9\%$. HDDM costs 1.7 and 3.3 times as much at the differences shown in the table. WienR costs 6 times as much for six parameters and 76 times as much for seven. The cost of the closed form at $\varepsilon = 10^{-12}$ is fixed, whereas that of the integrators is set by the precision asked of them, so these ratios apply at the settings shown. Second, all five partial derivatives of~\eqref{eq:result} share the exponential factors of the density itself; an uncompiled array implementation returns the density together with all five derivatives in $2.3~\mu$s, whereas WienR requires one further numerical integration per derivative. For reference, WienR's own closed form for drift variability alone \citep{Blurton2017} evaluates in $0.26~\mu$s on the same machine, so the closed form with starting-point variability costs 1.3 times the drift-only density.
 
 \section{Discussion}
 
 We have shown that the first-passage time density of the diffusion model with normally distributed drift and uniformly distributed starting point has a closed form, and that what makes the integral a Gaussian moment is the factor $\exp(-r_j^2/(2t))$ of the small-time series, which the large-time series lacks. The result completes the analytic treatment of the drift and starting-point integrals of the seven-parameter model.
 
-For the seven-parameter model itself, with the non-decision time uniformly distributed on $[t_0, t_0 + s_t]$, the likelihood is the integral of~\eqref{eq:result} over the non-decision window, Eq.~\eqref{eq:seven} in \ref{app:seven}. We have not found a closed form for that integral, but the reduction is from a two-dimensional numerical integration over starting point and non-decision time to a one-dimensional quadrature of a smooth closed-form integrand on a short interval; a fixed 32-node rule is accurate to nine digits on our test sets (\ref{app:seven}). Because every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phi$, and $W$, the derivatives of $g$ with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are in closed form (\ref{app:grad}), where \citet{HartmannKlauer2021} derived them for the constant-parameter model and WienR obtains those involving the variability parameters by one numerical integration per derivative.
+For the seven-parameter model itself, with the non-decision time uniformly distributed on $[t_0, t_0 + s_t]$, the likelihood is the integral of~\eqref{eq:result} over the non-decision window, Eq.~\eqref{eq:seven} in \ref{app:seven}. We have not found a closed form for that integral, but the reduction is from a two-dimensional numerical integration over starting point and non-decision time to a one-dimensional quadrature of a smooth closed-form integrand on a short interval; a fixed 48-node rule is accurate to ten digits on our test sets (\ref{app:seven}). Because every term of~\eqref{eq:result} and~\eqref{eq:result_large} is a composition of $\exp$, $\Phi$, and $W$, the derivatives of $g$ with respect to $\nu$, $\eta$, $a$, $w_1$, and $w_2$ are in closed form (\ref{app:grad}), where \citet{HartmannKlauer2021} derived them for the constant-parameter model and WienR obtains those involving the variability parameters by one numerical integration per derivative.
 
 For practice the consequences are threefold. The density is exact up to a series truncation error that is controlled by~\eqref{eq:JK} and was checked empirically (Section~\ref{sec:conv}); it is evaluated at a fixed cost that, in our benchmark, is below that of each of the three packages timed at their own fitting settings; and its partial derivatives are closed form and reuse the exponential factors of the density, which is what contemporary Bayesian Data Analysis \citep{Wiecki2013, Henrich2024} need. The across-trial variability parameters are the hardest of the model to estimate \citep{Boehm2018} so a likelihood free of integration over the starting point, with closed-form gradients, removes one source of integration error and gradient noise from that problem, though not its statistical difficulty. The result is directly usable in the packages built on the drift-integrated density~\eqref{eq:geta}, which already contain it as a building block; replacing the quadrature over $w$ by~\eqref{eq:lemma} covers the small-time regime, and a complete implementation also needs the large-time form~\eqref{eq:result_large}, the switch at $t/a^2 = 1$, the stable evaluation of Section~\ref{sec:result}, and the truncation rule~\eqref{eq:JK}.
 
@@ -260,11 +280,11 @@ With the non-decision time uniformly distributed on $[t_0, t_0 + s_t]$, the dens
 f(t) = \frac{1}{s_t}\int_{t - t_0 - s_t}^{t - t_0} \gbar\left(u \mid \nu, \eta^2, a, w_1, w_2\right)\dd u ,
 \label{eq:seven}
 \end{equation}
-where the lower limit is replaced by $0$ if negative and $f(t) = 0$ for $t \le t_0$. We have not found a closed form for this integral. In the small-time form the non-decision time shifts the time argument, which enters every term of~\eqref{eq:result} through $\sqrt t$ and $1/t$; in the large-time form it enters through $S$, and only for $\eta = 0$ does the window integrate \citep[Eq.~9]{Tuerlinckx2004}. What~\eqref{eq:result} achieves is to reduce the seven-parameter likelihood from a two-dimensional numerical integration over $(w, u)$ to a one-dimensional quadrature over $u$ of a smooth closed-form integrand on a short interval. Because $g(u)$ rises steeply from zero at $u = 0$ and the window may include that region, a plain Gauss--Legendre rule converges slowly; the substitution $u = u_{\mathrm{lo}} + (u_{\mathrm{hi}} - u_{\mathrm{lo}})\,\xi^3$, $\xi \in [0, 1]$, with $u_{\mathrm{lo}} = \max(t - t_0 - s_t, 0)$, $u_{\mathrm{hi}} = t - t_0$, and Jacobian $3(u_{\mathrm{hi}} - u_{\mathrm{lo}})\xi^2$, which clusters nodes at the lower limit, fixes this. Table~\ref{tab:nodes} gives the maximum relative error of the rule against adaptive quadrature over the 200 seven-parameter sets of Section~\ref{sec:verify}. A 32-node rule with the cubic map is accurate to nine digits at a fixed cost of 32 evaluations of~\eqref{eq:result}. That figure is over sets with $w_1 \ge 0.2$. The rule is hardest not where the window is clamped but where $w_1$ is small, since the peak of $\gbar$ sits at a time of order $(aw_1)^2$ and moves inside the window. Table~\ref{tab:w1} gives the error there. Nine digits should be read as holding for $w_1 \ge 0.2$ and seven for $w_1 \ge 0.05$. Smaller $w_1$ needs more nodes, which cost only evaluations of a closed form. The gradient of~\eqref{eq:seven} with respect to the five parameters of $g$ is the same rule applied to the closed-form gradient of $g$ (\ref{app:grad}), and $\partial f/\partial t_0 = [g(u_{\mathrm{lo}}) - g(u_{\mathrm{hi}})]/s_t$ and $\partial f/\partial s_t = [g(u_{\mathrm{lo}}) - f]/s_t$ follow from the endpoints when both limits move with the parameters; when the lower limit has been replaced by $0$ it no longer moves, and since $g(0) = 0$ for $w_1 > 0$ the same expressions give the correct values $-g(u_{\mathrm{hi}})/s_t$ and $-f/s_t$. All seven derivatives of~\eqref{eq:seven} agree with central finite differences to ten digits, on a window that lies inside $u > 0$ and on one whose lower limit is replaced by $0$.
+where the lower limit is replaced by $0$ if negative and $f(t) = 0$ for $t \le t_0$. We have not found a closed form for this integral. In the small-time form the non-decision time shifts the time argument, which enters every term of~\eqref{eq:result} through $\sqrt t$ and $1/t$; in the large-time form it enters through $S$, and only for $\eta = 0$ does the window integrate \citep[Eq.~9]{Tuerlinckx2004}. What~\eqref{eq:result} achieves is to reduce the seven-parameter likelihood from a two-dimensional numerical integration over $(w, u)$ to a one-dimensional quadrature over $u$ of a smooth closed-form integrand on a short interval. Because $g(u)$ rises steeply from zero at $u = 0$ and the window may include that region, a plain Gauss--Legendre rule converges slowly; the substitution $u = u_{\mathrm{lo}} + (u_{\mathrm{hi}} - u_{\mathrm{lo}})\,\xi^3$, $\xi \in [0, 1]$, with $u_{\mathrm{lo}} = \max(t - t_0 - s_t, 0)$, $u_{\mathrm{hi}} = t - t_0$, and Jacobian $3(u_{\mathrm{hi}} - u_{\mathrm{lo}})\xi^2$, which clusters nodes at the lower limit, fixes this. Table~\ref{tab:nodes} gives the maximum relative error of the rule against adaptive quadrature over the 400 seven-parameter sets of Table~\ref{tab:grid}. A 48-node rule with the cubic map is accurate to ten digits on these sets, at a fixed cost of 48 evaluations of~\eqref{eq:result}. Their smallest $w_1$ is $0.1$. The rule is hardest not where the window is clamped but where $w_1$ is small, since the peak of $\gbar$ sits at a time of order $(aw_1)^2$ and moves inside the window. Table~\ref{tab:w1} gives the error there. Nine digits should be read as holding for $w_1 \ge 0.1$, eight for $w_1 \ge 0.05$, and seven for $w_1 \ge 0.02$. Smaller $w_1$ needs more nodes, which cost only evaluations of a closed form. The gradient of~\eqref{eq:seven} with respect to the five parameters of $g$ is the same rule applied to the closed-form gradient of $g$ (\ref{app:grad}), and $\partial f/\partial t_0 = [g(u_{\mathrm{lo}}) - g(u_{\mathrm{hi}})]/s_t$ and $\partial f/\partial s_t = [g(u_{\mathrm{lo}}) - f]/s_t$ follow from the endpoints when both limits move with the parameters; when the lower limit has been replaced by $0$ it no longer moves, and since $g(0) = 0$ for $w_1 > 0$ the same expressions give the correct values $-g(u_{\mathrm{hi}})/s_t$ and $-f/s_t$. All seven derivatives of~\eqref{eq:seven} agree with central finite differences to ten digits, on a window that lies inside $u > 0$ and on one whose lower limit is replaced by $0$.
 
 \begin{table}[t]
 \centering
-\caption{Maximum relative error of the 32-node rule with the cubic map for~\eqref{eq:seven}, against adaptive quadrature, at $a = 1.2$, $\nu = \eta = 1$, $w_2 = w_1 + 0.2$, $t_0 = 0.3$, $s_t = 0.25$.}
+\caption{Maximum relative error of the 48-node rule with the cubic map for~\eqref{eq:seven}, against adaptive quadrature, at $a = 1.2$, $\nu = \eta = 1$, $w_2 = w_1 + 0.2$, $t_0 = 0.3$, $s_t = 0.25$.}
 \label{tab:w1}
 \begin{tabular}{lccc}
 \toprule
@@ -272,26 +292,26 @@ where the lower limit is replaced by $0$ if negative and $f(t) = 0$ for $t \le t
 \cmidrule(lr){2-4}
 $w_1$ & $0.04$ & $0.2$ & $0.8$ \\
 \midrule
-$0.20$ & $5\times10^{-14}$ & $4\times10^{-11}$ & $7\times10^{-10}$ \\
-$0.10$ & $2\times10^{-11}$ & $5\times10^{-10}$ & $6\times10^{-8}$ \\
-$0.05$ & $4\times10^{-10}$ & $4\times10^{-8}$  & $2\times10^{-7}$ \\
-$0.02$ & $4\times10^{-9}$  & $3\times10^{-7}$  & $5\times10^{-6}$ \\
+$0.20$ & $2\times10^{-14}$ & $7\times10^{-15}$ & $2\times10^{-12}$ \\
+$0.10$ & $5\times10^{-15}$ & $10^{-12}$ & $2\times10^{-10}$ \\
+$0.05$ & $3\times10^{-13}$ & $10^{-10}$ & $4\times10^{-9}$ \\
+$0.02$ & $10^{-10}$ & $2\times10^{-9}$  & $10^{-7}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}[t]
 \centering
-\caption{Maximum relative error of Gauss--Legendre quadrature for~\eqref{eq:seven} against adaptive quadrature, 200 random parameter sets, densities above $10^{-3}$.}
+\caption{Maximum relative error of Gauss--Legendre quadrature for~\eqref{eq:seven} against adaptive quadrature, the 400 parameter sets of Table~\ref{tab:grid}, densities above $0.001$.}
 \label{tab:nodes}
 \begin{tabular}{rcc}
 \toprule
 Nodes & Plain & With cubic map \\
 \midrule
- 8 & $4.1\times10^{-3}$ & $4.3\times10^{-3}$ \\
-16 & $7.3\times10^{-5}$ & $3.5\times10^{-6}$ \\
-24 & $4.1\times10^{-6}$ & $2.7\times10^{-8}$ \\
-32 & $1.1\times10^{-8}$ & $1.5\times10^{-9}$ \\
+16 & $1.3\times10^{-3}$ & $5.4\times10^{-5}$ \\
+24 & $4.2\times10^{-4}$ & $1.5\times10^{-6}$ \\
+32 & $7.0\times10^{-5}$ & $8.4\times10^{-8}$ \\
+48 & $8.9\times10^{-6}$ & $4.6\times10^{-11}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -317,12 +337,12 @@ in which the identity noted at the end of Section~\ref{sec:result} has been used
 \ddx{\mathcal I}{\kappa} &= \frac{(w_2\mathcal E_2 - w_1\mathcal E_1) - \mathcal I - \mu\,\partial\mathcal I/\partial\mu}{2\kappa}.
 \label{eq:dlarge}
 \end{align}
-As $\kappa \to 0$ the numerators of~\eqref{eq:dlarge} are differences of order-one quantities that are themselves $O(\kappa)$, so in floating point the two divisions lose factors of $1/\kappa$ and $1/\kappa^2$ in relative precision; with $\kappa = \eta^2 a^2/(2S)$ this makes $\partial g/\partial\eta$ wrong in the third digit at $\eta = 10^{-3}$. For $\kappa < 0.1$ our implementation therefore expands $\exp(\kappa w^2) = \sum_m \kappa^m w^{2m}/m!$ and evaluates $\mathcal I$ and its two moments from $P_n := \int_{w_1}^{w_2} w^n \exp(\mu w)\dd w$, computed by the recurrence $\mu P_n = [w^n \exp(\mu w)]_{w_1}^{w_2} - n P_{n-1}$, which amplifies an error in $P_0$ by $n!/|\mu|^n$, ten orders of magnitude at $n = 22$ and $|\mu| \ge \pi$, but harmlessly, since $P_n$ enters weighted by $\kappa^m/m!$ with $n = 2m + i$ and $\kappa < 0.1$. Ten terms give double precision, the two routes agree to fourteen digits at the switch, and the first term is the $\eta = 0$ limit of Section~\ref{sec:large}.
+As $\kappa \to 0$ the numerators of~\eqref{eq:dlarge} are differences of order-one quantities that are themselves $O(\kappa)$, so in floating point the two divisions lose factors of $1/\kappa$ and $1/\kappa^2$ in relative precision; with $\kappa = \eta^2 a^2/(2S)$ this makes $\partial g/\partial\eta$ wrong in the third digit at $\eta = 0.001$. For $\kappa < 0.1$ our implementation therefore expands $\exp(\kappa w^2) = \sum_m \kappa^m w^{2m}/m!$ and evaluates $\mathcal I$ and its two moments from $P_n := \int_{w_1}^{w_2} w^n \exp(\mu w)\dd w$, computed by the recurrence $\mu P_n = [w^n \exp(\mu w)]_{w_1}^{w_2} - n P_{n-1}$, which amplifies an error in $P_0$ by $n!/|\mu|^n$, ten orders of magnitude at $n = 22$ and $|\mu| \ge \pi$, but harmlessly, since $P_n$ enters weighted by $\kappa^m/m!$ with $n = 2m + i$ and $\kappa < 0.1$. Ten terms give double precision, the two routes agree to fourteen digits at the switch, and the first term is the $\eta = 0$ limit of Section~\ref{sec:large}.
 
 \section{Verification grids}
 \label{app:grids}
 
-Section~\ref{sec:verify} checks the result on a fixed lattice of parameter values. We consider two further grids test what that lattice does not reach: the values that published fits of the model actually take, and the limit in which the starting-point range closes to a point.
+Section~\ref{sec:verify} checks the result on the lattice of Table~\ref{tab:grid}. Two further checks test what that lattice does not reach: the values that published fits of the model actually take, and the limit in which the starting-point range closes to a point.
 
 \emph{Published parameter values.} \citet{tran2021systematic} collected the parameter estimates reported in the diffusion model literature. We draw 2000 parameter sets from those distributions, truncated at the largest and smallest estimate the review records, rejecting any whose starting-point range would cross a barrier, and add 30 fixed points at those extremes. On the scale used here the resulting grid holds boundary separations from $0.11$ to $7.47$, drift rates up to $18.5$ in modulus, drift standard deviations up to $3.45$, mean starting points from $0.04$ to $0.96$, and starting-point ranges from $0.01$ to $0.85$.
 
@@ -362,7 +382,7 @@ $0.01$     & $5\times10^{-12}$ & $3\times10^{-15}$ \\
 $0.001$    & $7\times10^{-10}$ & $3\times10^{-15}$ \\
 $10^{-6}$  & $8\times10^{-4}$  & $3\times10^{-15}$ \\
 $10^{-8}$  & $4$               & $3\times10^{-15}$ \\
-$0$        & undefined         & $1\times10^{-13}$ \\
+$0$        & undefined         & $10^{-13}$ \\
 \bottomrule
 \end{tabular}
 \end{table}

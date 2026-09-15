@@ -1,8 +1,8 @@
-"""High-precision check (40 dps; second block re-runs the large-time form at 60 dps of both representations over their regimes.
+"""High-precision check (100 dps; second block re-runs the large-time form at 150 dps) of both representations over their regimes.
 Reference: numerical w-quadrature of Blurton Eq.1, which symbolic_proof.py L6
 verified exactly equals the drift integral of the constant-drift density."""
 import mpmath as mp
-mp.mp.dps = 40
+mp.mp.dps = 100   # 40 loses digits to the Phi differences at t/a^2 near 1 and above
 def rj(j,a,w): return j*a+a*w if j%2==0 else (j+1)*a-a*w
 def g_eta(t,nu,eta,a,w,J=40):
     S=1+eta**2*t
@@ -32,20 +32,21 @@ def closed_large(t,nu,eta,a,w1,w2,K=None,tol=mp.mpf(10)**-45):
 cases=[(0.30,1.0,1.2,1.2,0.25,0.75),(0.90,-0.5,0.8,1.0,0.40,0.60),
        (0.15,3.0,2.0,2.5,0.30,0.70),(2.00,0.0,1.5,1.5,0.45,0.55),
        (0.60,2.0,0.3,0.8,0.20,0.80),(3.00,-1.0,1.0,0.8,0.35,0.65)]
-print(f"{'t':>5}{'t/a^2':>7} {'closed (small-time)':>26} {'|small-ref|':>11} {'|large-ref|':>11}")
+print(f"{'t':>5}{'t/a^2':>7} {'closed (small-time)':>26} {'rel small':>11} {'rel large':>11}")
 for c in cases:
     t,nu,eta,a,w1,w2=map(mp.mpf,c); R=ref(t,nu,eta,a,w1,w2)
     cs=closed_small(t,nu,eta,a,w1,w2); cl,_=closed_large(t,nu,eta,a,w1,w2,K=120)
-    print(f"{float(t):5.2f}{float(t/a**2):7.2f} {mp.nstr(cs,22):>26} {mp.nstr(abs(cs-R),3):>11} {mp.nstr(abs(cl-R),3):>11}")
+    print(f"{float(t):5.2f}{float(t/a**2):7.2f} {mp.nstr(cs,22):>26} {mp.nstr(abs(cs-R)/R,3):>11} {mp.nstr(abs(cl-R)/R,3):>11}")
 
-# --- large-time form at 60 dps, truncated adaptively where the k-th damping factor < 1e-45
-mp.mp.dps = 60
+# --- large-time form at 150 dps (erfi loses ~pi^2 k^2/(4 kappa) nats; 60 dps is not enough at t/a^2 = 0.9),
+#     truncated adaptively where the k-th damping factor < 1e-45
+mp.mp.dps = 150
 print()
 for c in [(2.00,0.0,1.5,1.5,0.45,0.55),(3.00,-1.0,1.0,0.8,0.35,0.65),
           (0.90,-0.5,0.8,1.0,0.40,0.60),(1.50,2.0,1.0,1.0,0.30,0.70)]:
     t,nu,eta,a,w1,w2=map(mp.mpf,c)
     R=ref(t,nu,eta,a,w1,w2,J=60); cl,K=closed_large(t,nu,eta,a,w1,w2)
-    print(f"t={float(t):4.2f} t/a^2={float(t/a**2):5.2f}  K={K:3d}  large-time={mp.nstr(cl,20):>24}  |large-ref|={mp.nstr(abs(cl-R),3)}")
+    print(f"t={float(t):4.2f} t/a^2={float(t/a**2):5.2f}  K={K:3d}  large-time={mp.nstr(cl,20):>24}  rel err={mp.nstr(abs(cl-R)/R,3)}")
 
 # --- small-Delta branch (w2 - w1 < 1e-2, ddm_fast._avg): density and all five gradients vs a 40-dps
 #     reference (quadrature of g_eta over [w1, w2]; gradients by central differences with h = 1e-12)

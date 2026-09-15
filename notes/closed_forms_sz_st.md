@@ -93,7 +93,7 @@ formally an erfi of complex argument; this is what Tuerlinckx's route was missin
 the bracket reduces to (e^{μw₂} − e^{μw₁})/μ. Written with `erfi` instead of `w(z)` the form
 loses roughly π²k²/(4κ) nats to cancellation and returns garbage at fixed large K
 (`highprec2.py`, first block). Switch between the two representations at t/a² = 1
-(`g_full_sz`). The threshold is not tuned: at a=1, ν=η=1, w=[0.4,0.6] the two forms agree to
+(`grad_full_sz`). The threshold is not tuned: at a=1, ν=η=1, w=[0.4,0.6] the two forms agree to
 2e-16 at t/a²=0.1, 2e-15 at 0.5, 4e-14 at 1, 2e-12 at 2, then the small-time form degrades
 (3e-9 at 3, 4e-5 at 5) while the large-time one does not. Any threshold in [0.3, 2] would do;
 1 sits mid-band with few terms needed on both sides (`grad_check.py`, switch block).
@@ -120,17 +120,17 @@ a single 1-D integral of a closed-form smooth function over a short interval, ve
 numerical integrals over s_z and s_t in current software. This integral is not removable:
 s_t shifts the time argument inside √t and 1/t in every term. Gauss–Legendre after the
 map u = lo + (hi − lo)s³ (clusters nodes at the leading edge); max relative error against
-adaptive quadrature over the 200 seven-parameter sets (`grad_check.py`):
+adaptive quadrature over the 400 seven-parameter sets (`grad_check.py`):
 
 | nodes | plain Gauss–Legendre | with cubic edge map |
 |---|---|---|
-| 8 | 4.1e-3 | 4.3e-3 |
-| 16 | 7.3e-5 | 3.5e-6 |
-| 24 | 4.1e-6 | 2.7e-8 |
-| 32 | 1.1e-8 | 1.5e-9 |
+| 16 | 1.3e-3 | 5.4e-5 |
+| 24 | 4.2e-4 | 1.5e-6 |
+| 32 | 7.0e-5 | 8.4e-8 |
+| 48 | 8.9e-6 | 4.6e-11 |
 
-The leading edge (density rising from zero at u = 0) is what defeats the small rules; 32 mapped
-nodes is the fixed rule used (`f7` in `ddm_fast.py`). Its
+The leading edge (density rising from zero at u = 0) is what defeats the small rules; 48 mapped
+nodes is the fixed rule used (`grad_f7` in `ddm_fast.py`). Its
 gradient in all seven parameters is the same rule applied to the gradient rows, plus
 ∂f/∂t₀ = [g(lo) − g(hi)]/s_t and ∂f/∂s_t = [g(lo) − f]/s_t from the window endpoints
 (`grad_f7`; checked against finite differences to 3e-11, including the case where the window

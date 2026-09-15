@@ -4,24 +4,23 @@ import numpy as np, sys
 sys.path.insert(0, "src")
 from ddm_fast import grad_full_sz, _small, _large, PARAMS
 a0 = 1.2; h = 1e-6; th = dict(nu=0.7, eta=1.1, a=a0, w1=0.35, w2=0.65)
+fd = lambda f, th, pn: (f(**{pn: th[pn] + h})[0] - f(**{pn: th[pn] - h})[0]) / (2*h)   # central difference in pn
 for name, F, t in [("small", _small, np.linspace(0.05, a0*a0, 40)), ("large", _large, np.linspace(a0*a0, 6.0, 40))]:
     f = lambda **kw: F(t, **{**th, **kw})
     dg = f()[1]
     for i, pn in enumerate(PARAMS):
-        fd = (f(**{pn: th[pn] + h})[0] - f(**{pn: th[pn] - h})[0]) / (2*h)
-        m = np.abs(fd) > 1e-12
-        rel = np.abs(dg[i][m] - fd[m]) / np.abs(fd[m])
+        d = fd(f, th, pn); m = np.abs(d) > 1e-12
+        rel = np.abs(dg[i][m] - d[m]) / np.abs(d[m])
         print(f"{name:5s} d/d{pn:3s} vs FD  max rel {rel.max():.1e}")
         assert rel.max() < 1e-6
 # small eta, large-time branch, across the kappa switch: five gradients vs FD
 t0_ = np.linspace(a0*a0, 6.0, 20)
 for eta0 in [0.0, 1e-3, 1e-2, 0.1, 0.5, 0.6]:
     th0 = dict(nu=0.7, eta=eta0, a=a0, w1=0.35, w2=0.65)
-    dg0 = _large(t0_, **th0)[1]
+    f0 = lambda **kw: _large(t0_, **{**th0, **kw}); dg0 = f0()[1]
     for i, pn in enumerate(PARAMS):
-        fd = (_large(t0_, **{**th0, pn: th0[pn] + h})[0] - _large(t0_, **{**th0, pn: th0[pn] - h})[0]) / (2*h)
-        m = np.abs(fd) > 1e-12
-        if m.any(): assert np.max(np.abs(dg0[i][m] - fd[m]) / np.abs(fd[m])) < 1e-6, (eta0, pn)
+        d = fd(f0, th0, pn); m = np.abs(d) > 1e-12
+        if m.any(): assert np.max(np.abs(dg0[i][m] - d[m]) / np.abs(d[m])) < 1e-6, (eta0, pn)
 print("small-eta large-time gradients vs FD ok")
 csv = lambda p: np.genfromtxt(p, delimiter=",", names=True).view(np.recarray)
 g = csv("data/wienr_grad.csv")
@@ -72,38 +71,29 @@ for t_ in (np.linspace(0.05, a0*a0, 20), np.linspace(a0*a0, 6.0, 20)):
         f = lambda **kw: grad_full_sz(t_, **{**thD, **kw})
         dg = f()[1]
         for i, pn in enumerate(PARAMS[:3]):
-            fd = (f(**{pn: thD[pn] + h})[0] - f(**{pn: thD[pn] - h})[0]) / (2*h)
-            m = np.abs(fd) > 1e-12
-            assert np.max(np.abs(dg[i][m] - fd[m]) / np.abs(fd[m])) < 1e-6, (D, pn)
+            d = fd(f, thD, pn); m = np.abs(d) > 1e-12
+            assert np.max(np.abs(dg[i][m] - d[m]) / np.abs(d[m])) < 1e-6, (D, pn)
         if D == 0:
             fdw = (f(w1=0.5 + h, w2=0.5 + h)[0] - f(w1=0.5 - h, w2=0.5 - h)[0]) / (2*h)   # d/dwbar; even in Delta so dw1 = dw2
             assert np.allclose(dg[3], fdw/2, rtol=1e-6) and np.allclose(dg[4], fdw/2, rtol=1e-6)
         else:
             for i, pn in ((3, "w1"), (4, "w2")):
-                fd = (f(**{pn: thD[pn] + h})[0] - f(**{pn: thD[pn] - h})[0]) / (2*h)
-                assert np.allclose(dg[i], fd, rtol=1e-6, atol=1e-8*np.abs(fd).max()), (D, pn)
+                d = fd(f, thD, pn)
+                assert np.allclose(dg[i], d, rtol=1e-6, atol=1e-8*np.abs(d).max()), (D, pn)
 print("small-Delta branch: threshold continuity and gradients vs FD ok (Delta = 1e-3 and 0)")
 
 # --- seven-parameter density: closed-form gradient vs finite differences, both with and without
 #     the window clamped at t - t0 - st0 < 0
-from ddm_fast import grad_f7, f7, PARAMS7
+from ddm_fast import grad_f7, PARAMS7
 for t, th7 in [(1.1, dict(nu=0.7, eta=1.1, a=1.2, w1=0.35, w2=0.65, t0=0.3, st0=0.2)),
                (0.42, dict(nu=0.7, eta=1.1, a=1.2, w1=0.35, w2=0.65, t0=0.3, st0=0.2))]:   # second: clamped
     f = lambda **kw: grad_f7(t, **{**th7, **kw})
     df = f()[1]
     for i, pn in enumerate(PARAMS7):
-        fd = (f(**{pn: th7[pn] + h})[0] - f(**{pn: th7[pn] - h})[0]) / (2*h)
-        rel = abs(df[i] - fd) / max(abs(fd), 1e-12)
-        assert rel < 1e-6, (t, pn, df[i], fd)
+        d = fd(f, th7, pn)
+        rel = abs(df[i] - d) / max(abs(d), 1e-12)
+        assert rel < 1e-6, (t, pn, df[i], d)
     print(f"f7 t={t} all 7 gradients vs FD ok (max rel {rel:.1e})")
-
-# --- upper barrier = lower barrier under (nu, w1, w2) -> (-nu, 1-w2, 1-w1), gradient included
-tt = np.linspace(0.1, 3, 20)
-gu, dgu = grad_full_sz(tt, 0.7, 1.1, 1.2, 0.3, 0.5, upper=True)
-gl, dgl = grad_full_sz(tt, -0.7, 1.1, 1.2, 0.5, 0.7)
-assert np.allclose(gu, gl) and np.allclose(dgu[[0,1,2]], dgl[[0,1,2]] * np.array([[-1],[1],[1]]))
-assert np.allclose(dgu[3], -dgl[4]) and np.allclose(dgu[4], -dgl[3])
-print("upper barrier ok")
 
 # --- small-/large-time representations across the switch at t/a^2 = 1, and positivity of both
 for x in (0.1, 0.3, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0):
@@ -136,15 +126,13 @@ else:
     print("compiled kernel small-Delta branch vs numpy ok")
     f = csv("data/wienr_full.csv")
     k7 = np.array([K.f7(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0)[0] for r in f])
-    n7 = np.array([f7(r.t, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0) for r in f])
-    print(f"compiled kernel f7 vs numpy, 200 sets: max abs {np.abs(k7 - n7).max():.1e};  vs WienR {np.abs(k7 - f.wienr).max():.1e}")
+    n7 = np.array([grad_f7(r.t, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0)[0] for r in f])
+    print(f"compiled kernel f7 vs numpy, 400 sets: max abs {np.abs(k7 - n7).max():.1e};  vs WienR {np.abs(k7 - f.wienr).max():.1e}")
     assert np.abs(k7 - n7).max() < 1e-13
-    w9 = csv("data/wienr_full_p9.csv").w9; big7 = k7 > 1e-3
-    print(f"WienR at tolerance 1e-9 vs closed form, 200 sets: max rel {np.max(np.abs(w9 - k7)[big7] / k7[big7]):.1e}   (Table 2 row)")
     print("KERNEL CHECK PASS")
 
-# --- seven-parameter quadrature: 32-node rule with the cubic edge map vs adaptive quadrature of
-#     g_full_sz over the window, on the 200 seven-parameter sets; and why 32 mapped nodes
+# --- seven-parameter quadrature: 48-node rule with the cubic edge map vs adaptive quadrature of
+#     grad_full_sz over the window, on the 400 seven-parameter sets; and why 48 mapped nodes
 from scipy.integrate import quad
 def rule(n, p, r):
     x, wq = np.polynomial.legendre.leggauss(n)
@@ -156,18 +144,18 @@ ref = np.array([quad(lambda u: grad_full_sz(u, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r
                 for r in f])
 big = ref > 1e-3
 print("seven-parameter quadrature, max rel error vs adaptive reference (densities > 1e-3):")
-for n in (8, 16, 24, 32):
+for n in (16, 24, 32, 48):
     e_plain = max(abs(rule(n, 1, r) - ref[i]) / ref[i] for i, r in enumerate(f) if big[i])
     e_map = max(abs(rule(n, 3, r) - ref[i]) / ref[i] for i, r in enumerate(f) if big[i])
     print(f"  {n:2d} nodes: plain Gauss-Legendre {e_plain:.1e}   with cubic edge map {e_map:.1e}")
-print("32 mapped nodes, rel error by w1 (rows) and (t - t0)/st0 (cols 0.04, 0.2, 0.8), a = 1.2, nu = 1, eta = 1, w2 = w1 + 0.2, st0 = 0.25:")
+print("48 mapped nodes, rel error by w1 (rows) and (t - t0)/st0 (cols 0.04, 0.2, 0.8), a = 1.2, nu = 1, eta = 1, w2 = w1 + 0.2, st0 = 0.25:")
 for w1_ in (0.2, 0.1, 0.05, 0.02):
     row = []
     for frac in (0.04, 0.2, 0.8):
         r7 = np.rec.fromrecords([(0.3 + frac*0.25, 1.2, 1.0, w1_ + 0.1, 1.0, 0.2, 0.25)], names="t,a,v,w,sv,sw,st0")[0]
         R = quad(lambda u: grad_full_sz(u, 1.0, 1.0, 1.2, w1_, w1_ + 0.2)[0][0], max(r7.t-0.3-0.25, 0.0), r7.t-0.3, epsabs=0, epsrel=1e-13, limit=500)[0] / 0.25
-        row.append(abs(rule(32, 3, r7) - R) / R)
+        row.append(abs(rule(48, 3, r7) - R) / R)
     print(f"  w1 = {w1_:4.2f}: " + "  ".join(f"{e:.0e}" for e in row))
-e32 = max(abs(rule(32, 3, r) - ref[i]) / ref[i] for i, r in enumerate(f) if big[i])
-assert e32 < 1e-8
+e48 = max(abs(rule(48, 3, r) - ref[i]) / ref[i] for i, r in enumerate(f) if big[i])
+assert e48 < 1e-10
 print("QUADRATURE CHECK PASS")

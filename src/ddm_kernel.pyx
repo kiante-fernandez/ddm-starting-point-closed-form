@@ -90,7 +90,7 @@ def g_full_sz(double[::1] t, double nu, double eta, double a, double w1, double 
     for i in range(t.shape[0]): o[i] = g1(t[i], nu, eta, a, w1, w2, TOL)
     return out
 
-_X, _W = np.polynomial.legendre.leggauss(32)
+_X, _W = np.polynomial.legendre.leggauss(48)
 cdef double[::1] GX = _X, GW = _W
 
 def f7(double[::1] t, double nu, double eta, double a, double w1, double w2, double t0, double st0):
@@ -105,7 +105,7 @@ def f7(double[::1] t, double nu, double eta, double a, double w1, double w2, dou
         if st0 == 0: o[i] = g1(hi, nu, eta, a, w1, w2, TOL); continue
         lo = hi - st0 if hi > st0 else 0
         acc = 0
-        for n in range(32):
+        for n in range(48):
             s = (GX[n] + 1)/2
             acc += GW[n] * (hi-lo)*3*s*s/2 * g1(lo + (hi-lo)*s*s*s, nu, eta, a, w1, w2, TOL)
         o[i] = acc/st0

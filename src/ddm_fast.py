@@ -151,15 +151,11 @@ def _avg(pt, t, nu, eta, a, w1, w2, tol):
         dg = dg + om * np.vstack([d3, fw * (1 - x) / 2, fw * (1 + x) / 2])   # d/dw1, d/dw2 via (wbar, Delta)
     return g, dg
 
-def grad_full_sz(t, nu, eta, a, w1, w2, upper=False, tol=1e-12):
-    """(g, dg) for the density with drift ~ N(nu, eta^2) and start ~ U(w1, w2).
-    dg has shape (5, T), rows = d/d(nu, eta, a, w1, w2).  upper=True gives the upper-barrier
-    density via (nu, w1, w2) -> (-nu, 1-w2, 1-w1)."""
+def grad_full_sz(t, nu, eta, a, w1, w2, tol=1e-12):
+    """(g, dg) for the lower-barrier density with drift ~ N(nu, eta^2) and start ~ U(w1, w2).
+    dg has shape (5, T), rows = d/d(nu, eta, a, w1, w2).  Upper barrier: (nu, w1, w2) -> (-nu, 1-w2, 1-w1)."""
     if not (a > 0 and eta >= 0 and 0 < w1 <= w2 < 1):
         raise ValueError("need a > 0, eta >= 0, 0 < w1 <= w2 < 1")
-    if upper:
-        g, dg = grad_full_sz(t, -nu, eta, a, 1 - w2, 1 - w1, False, tol)
-        return g, -dg[[0, 1, 2, 4, 3]] * np.array([1, -1, -1, 1, 1])[:, None]
     t = np.atleast_1d(np.asarray(t, float))
     pos = t > 0                                   # density and gradient are 0 for t <= 0
     small = pos & (t / a**2 <= 1.0)             # small-/large-time switch at t/a^2 = 1
@@ -170,17 +166,13 @@ def grad_full_sz(t, nu, eta, a, w1, w2, upper=False, tol=1e-12):
             g[mask], dg[:, mask] = _avg(pt, t[mask], nu, eta, a, w1, w2, tol) if mid else F(t[mask], nu, eta, a, w1, w2, tol)
     return g, dg
 
-def g_full_sz(t, nu, eta, a, w1, w2, **kw):
-    """Result 1 with automatic small-/large-time switch on t/a^2."""
-    return grad_full_sz(t, nu, eta, a, w1, w2, **kw)[0]
-
 
 # ---------------------------------------------------------------------------
 # Seven-parameter density (sv, sw, st0): closed form in v and w, one 1-D
 # quadrature over the non-decision-time window with an edge-clustering map.
 # WienR convention: t0 ~ U(t0, t0 + st0).
 # ---------------------------------------------------------------------------
-_X, _W = np.polynomial.legendre.leggauss(32)   # fewer nodes fail near u = 0 (Table 1 of the manuscript)
+_X, _W = np.polynomial.legendre.leggauss(48)   # 32 nodes lose digits for w1 < 0.2 (Table tab:nodes of the manuscript)
 PARAMS7 = PARAMS + ("t0", "st0")
 
 def grad_f7(t, nu, eta, a, w1, w2, t0, st0, **kw):
@@ -202,6 +194,3 @@ def grad_f7(t, nu, eta, a, w1, w2, t0, st0, **kw):
     df = np.concatenate([np.sum(_W * jac * dg[:, :-2], axis=1) / st0,
                          [(g_lo - g_hi) / st0, (g_lo - f) / st0]])
     return float(f), df
-
-def f7(t, nu, eta, a, w1, w2, t0, st0, **kw):
-    return grad_f7(t, nu, eta, a, w1, w2, t0, st0, **kw)[0]
