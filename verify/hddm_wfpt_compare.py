@@ -4,17 +4,18 @@ sets of data/, and single-thread cost.  (The closed form itself matches WienR to
 pip install hddm-wfpt.  Run from the repo root with OMP_NUM_THREADS=1.
 hddm-wfpt conventions: signed RT (negative = lower barrier), relative z and sz, window t +- st/2."""
 import sys; sys.path.insert(0, "src")
-import numpy as np, pandas as pd, timeit
+import numpy as np, timeit
 from hddm_wfpt import wfpt
 import ddm_kernel as K
-g = pd.read_csv("data/wienr_grid.csv"); f = pd.read_csv("data/wienr_full.csv")
+csv = lambda p: np.genfromtxt(p, delimiter=",", names=True).view(np.recarray)
+g = csv("data/wienr_grid.csv"); f = csv("data/wienr_full.csv")
 # reference = the closed form
-k6 = np.array([K.g_full_sz(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2)[0] for r in g.itertuples()])
-k7 = np.array([K.f7(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0)[0] for r in f.itertuples()])
+k6 = np.array([K.g_full_sz(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2)[0] for r in g])
+k7 = np.array([K.f7(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0)[0] for r in f])
 b6 = k6 > 1e-3; b7 = k7 > 1e-3
 def acc(**kw):
-    h6 = np.array([wfpt.full_pdf(-r.t, r.v, r.sv, r.a, r.w, r.sw, 0.0, 0.0, 1e-4, **kw) for r in g.itertuples()])
-    h7 = np.array([wfpt.full_pdf(-r.t, r.v, r.sv, r.a, r.w, r.sw, 0.3 + r.st0/2, r.st0, 1e-4, **kw) for r in f.itertuples()])
+    h6 = np.array([wfpt.full_pdf(-r.t, r.v, r.sv, r.a, r.w, r.sw, 0.0, 0.0, 1e-4, **kw) for r in g])
+    h7 = np.array([wfpt.full_pdf(-r.t, r.v, r.sv, r.a, r.w, r.sw, 0.3 + r.st0/2, r.st0, 1e-4, **kw) for r in f])
     return (np.abs(h6-k6).max(), np.max(np.abs(h6-k6)[b6]/k6[b6]),
             np.abs(h7-k7).max(), np.max(np.abs(h7-k7)[b7]/k7[b7]))
 tt = np.random.default_rng(1).uniform(0.1, 3, 2000)

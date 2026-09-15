@@ -38,9 +38,6 @@ def Phi (x : ℝ) : ℝ := ∫ u in Iic x, phi u
 
 @[simp] lemma phi_neg (x : ℝ) : phi (-x) = phi x := by simp [phi]
 
-lemma phi_pos (x : ℝ) : 0 < phi x :=
-  div_pos (Real.exp_pos _) (Real.sqrt_pos.mpr (by positivity))
-
 
 /-- `φ` is continuous. -/
 @[continuity, fun_prop]

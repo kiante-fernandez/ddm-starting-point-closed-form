@@ -188,16 +188,4 @@ theorem result1 (nu eta a t w₁ w₂ : ℝ) (ha : 0 < a) (ht : 0 < t)
   have hK : (0:ℝ) < sqrt (2 * π * t ^ 3 * Svar eta t) := by positivity
   field_simp
 
-/-- **Consequence for the full model likelihood** (note `notes/closed_forms_sz_st.md`,
-Result 1).  With the non-decision time uniform on `[T_er − s_t/2, T_er + s_t/2]`, the response
-time density is the average of the closed-form density over that window, i.e. a single
-one-dimensional integral of a closed-form function:
-
-    f_RT(t) = (1/s_t) ∫_{t − T_er − s_t/2}^{t − T_er + s_t/2} g(u | ν, η, a, [w₁,w₂]) du. -/
-theorem density_nondecision_window (nu eta a w₁ w₂ Ter st t : ℝ) :
-    (∫ τ in (Ter - st / 2)..(Ter + st / 2), densGEtaSz nu eta a w₁ w₂ (t - τ))
-      = ∫ u in (t - Ter - st / 2)..(t - Ter + st / 2), densGEtaSz nu eta a w₁ w₂ u := by
-  rw [intervalIntegral.integral_comp_sub_left (fun u => densGEtaSz nu eta a w₁ w₂ u) t]
-  congr 1 <;> ring
-
 end DDM

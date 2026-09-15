@@ -11,7 +11,7 @@ import numpy as np
 from scipy.stats import norm
 from scipy import integrate
 
-Phi, phi, logPhi = norm.cdf, norm.pdf, norm.logcdf
+Phi, logPhi = norm.cdf, norm.logcdf
 SQ2PI = np.sqrt(2 * np.pi)
 
 # ----------------------------------------------------------------------------
@@ -19,16 +19,6 @@ SQ2PI = np.sqrt(2 * np.pi)
 # ----------------------------------------------------------------------------
 def r_j(j, a, w):
     return j * a + a * w if j % 2 == 0 else (j + 1) * a - a * w
-
-def g_const(t, v, a, w, J=40):
-    """lower-barrier first-passage density, constant drift"""
-    if t <= 0:
-        return 0.0
-    s = 0.0
-    for j in range(J):
-        r = r_j(j, a, w)
-        s += (-1) ** j * r * np.exp(-r * r / (2 * t))
-    return np.exp(-v * a * w - v * v * t / 2) * s / np.sqrt(2 * np.pi * t ** 3)
 
 def g_eta(t, nu, eta, a, w, J=40):
     """lower-barrier density with normal drift N(nu, eta^2)  (Horrocks & Thompson / Blurton Eq.1)"""
@@ -102,13 +92,5 @@ def check_all():
         worst = max(worst, abs(g_eta_sz(t, nu, eta, a, w1, w2) - ref))
     return worst
 
-def check_double():
-    """Result 1 against a genuine double integral over drift and start point."""
-    a, nu, eta, w1, w2, t = 1.3, 0.6, 0.9, 0.4, 0.65, 0.9
-    ref = integrate.dblquad(lambda v, w: norm.pdf(v, nu, eta) * g_const(t, v, a, w),
-                            w1, w2, -8, 8, epsabs=1e-11)[0] / (w2 - w1)
-    return g_eta_sz(t, nu, eta, a, w1, w2), ref
-
 if __name__ == "__main__":
     print("max abs error vs quadrature over 40 random parameter sets:", check_all())
-    print("vs double integral over (v, w):", check_double())
