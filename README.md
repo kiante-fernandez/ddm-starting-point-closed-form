@@ -3,15 +3,17 @@
 > <sup>1</sup>Department of Psychology, University of California, Los Angeles, CA, USA
 
 ## Abstract
-The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. The drift integral of the first-passage time density has been evaluated in closed form at fixed starting point, and the starting-point and non-decision-time integrals at fixed drift, but the drift and starting-point integrals have not been evaluated together; in particular, every implementation we are aware of that starts from the drift-integrated density integrates the starting point numerically. We show that in the small-time series representation the starting-point integral of the drift-integrated density is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form in exponentials and the normal distribution function, together with a large-time counterpart in terms of the Faddeeva function. Where these implementations required two numerical integrations, over the starting point and the non-decision time, the seven-parameter likelihood now requires a single one-dimensional quadrature; the derivatives of the decision density with respect to all of its parameters follow in closed form, and the likelihood gradient reuses that one quadrature. The result is verified symbolically, against three reference implementations, and is machine-checked in Lean.
+The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. The drift integral of the first-passage time density has been evaluated in closed form at fixed starting point, and the starting-point and non-decision-time integrals at fixed drift, but the drift and starting-point integrals have not been evaluated together; in particular, existing software implementations integrate at least one of these two numerically. We show that in the small-time series representation the starting-point integral of the drift-integrated density is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form in exponentials and the normal distribution function, together with a large-time counterpart in terms of the Faddeeva function. Where these implementations required two numerical integrations, over the starting point and the non-decision time, the seven-parameter likelihood now requires a single one-dimensional quadrature; the derivatives of the decision density with respect to all of its parameters follow in closed form, and the likelihood gradient reuses that one quadrature. The result is verified symbolically and against three reference implementations, and is machine-checked in Lean.
 
 This repository holds the code, reference data, manuscript source, and Lean proof.
 
 ## Layout
 
 ```
+fddm-fpt/core/           C++ density and gradient, six and seven parameters (MIT Faddeeva)
+fddm-fpt/python/         Cython wrapper, HSSM-compatible full_ddm, benchmarks
+fddm-fpt/R/              .Call wrapper (no Rcpp), WienR- and rtdists-compatible calls
 src/ddm_fast.py          density, gradient, seven-parameter likelihood (numpy)
-src/ddm_kernel.pyx       compiled density and seven-parameter likelihood (Cython)
 src/ddm_closed.py        independent scalar reference implementation
 verify/                  every check and every number in the manuscript (see below)
 data/                    WienR and rtdists reference values used by verify/
@@ -20,16 +22,28 @@ RequestProject/DDM/      Lean formalization
 paper/                   manuscript source
 ```
 
+## Use
+
+`fddm-fpt/` is the implementation to call from other software: one C++ core, thin R and Python
+wrappers, drop-in parametrizations for HSSM, rtdists and WienR, density and gradient in the
+same call.  See [fddm-fpt/README.md](fddm-fpt/README.md).
+
+```python
+import ddmsz                                   # after: make -C fddm-fpt
+f, df = ddmsz.full_ddm(rt, response, v=1.2, a=0.75, z=0.45, t=0.3, sz=0.1, sv=0.8, st=0.12)
+```
+
 ## Reproduce
 
 ```bash
 pip install -r requirements.txt
-cythonize -3 -i src/ddm_kernel.pyx        # compiled implementation
+make -C fddm-fpt                          # C++ core and both wrappers, each self-checked
 python verify/symbolic_proof.py           # 38 exact identities
-python verify/grad_check.py               # gradients, small-Delta branch, quadrature, kernel, scalar reference, WienR comparisons
-python verify/timing.py                   # Table 2, closed-form rows (single thread)
-Rscript verify/timing.R                   # Table 2, WienR and rtdists rows
-python verify/hddm_wfpt_compare.py        # Table 2, HDDM row (pip install hddm-wfpt)
+python verify/grad_check.py               # gradients, small-Delta branch, quadrature, compiled core, scalar reference, WienR comparisons
+OMP_NUM_THREADS=1 python fddm-fpt/python/bench.py   # cost and accuracy vs hddm-wfpt, 25 published parameter sets
+OMP_NUM_THREADS=1 Rscript fddm-fpt/R/bench.R        # same vs rtdists and WienR (slow: rtdists at precision 8)
+cd fddm-fpt/python && python curve.py && cd ../R && Rscript curve.R   # cost vs trials per evaluation
+cd fddm-fpt/python && python plot_fig.py            # fig_speed_accuracy.png
 python verify/highprec2.py                # 40–60 digit checks (minutes)
 lake exe cache get && lake build          # Lean proof (Mathlib v4.28.0)
 ```

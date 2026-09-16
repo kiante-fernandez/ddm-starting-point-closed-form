@@ -111,25 +111,27 @@ print(f"truncation tol=1e-12 vs tol=1e-40: max abs {np.abs(loose-tight).max():.1
 assert np.abs(loose - tight).max() < 1e-12
 print("ALL CHECKS PASS")
 
-# --- compiled kernel (optional: cythonize -3 -i src/ddm_kernel.pyx): same values as numpy
+# --- compiled core (fddm-fpt/core/ddm_sz.cpp via its Cython wrapper: make -C fddm-fpt py)
+sys.path.insert(0, "fddm-fpt/python")
 try:
-    import ddm_kernel as K
+    import ddmsz
 except ImportError:
-    print("ddm_kernel not built; skipping kernel check")
+    print("ddmsz not built (make -C fddm-fpt py); skipping compiled-core check")
 else:
-    kg = np.array([K.g_full_sz(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2)[0] for r in g])
-    print(f"compiled kernel vs numpy, 400 sets: max abs {np.abs(kg - loose).max():.1e}")
-    assert np.abs(kg - loose).max() < 1e-13
-    for D in (9e-3, 1e-3, 0.0):     # small-Delta branch of the kernel
+    kg = np.array([ddmsz.density(np.array([r.t]), r.v, r.sv, r.a, r.w, r.sw)[0][0] for r in g])
+    print(f"compiled core vs numpy, 400 sets: max abs {np.abs(kg - loose).max():.1e}")
+    assert np.abs(kg - loose).max() < 1e-12
+    for D in (9e-3, 1e-3, 0.0):     # small-Delta branch
         tt_ = np.linspace(0.05, 4, 50)
-        assert np.abs(K.g_full_sz(tt_, 0.7, 1.1, a0, 0.5 - D/2, 0.5 + D/2) - grad_full_sz(tt_, 0.7, 1.1, a0, 0.5 - D/2, 0.5 + D/2)[0]).max() < 1e-13
-    print("compiled kernel small-Delta branch vs numpy ok")
+        assert np.abs(ddmsz.density(tt_, 0.7, 1.1, a0, 0.5, D)[0]
+                      - grad_full_sz(tt_, 0.7, 1.1, a0, 0.5 - D/2, 0.5 + D/2)[0]).max() < 1e-12
+    print("compiled core small-Delta branch vs numpy ok")
     f = csv("data/wienr_full.csv")
-    k7 = np.array([K.f7(np.array([r.t]), r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0)[0] for r in f])
+    k7 = np.array([ddmsz.density7(np.array([r.t]), r.v, r.sv, r.a, r.w, r.sw, 0.3, r.st0)[0][0] for r in f])
     n7 = np.array([grad_f7(r.t, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, 0.3, r.st0)[0] for r in f])
-    print(f"compiled kernel f7 vs numpy, 400 sets: max abs {np.abs(k7 - n7).max():.1e};  vs WienR {np.abs(k7 - f.wienr).max():.1e}")
-    assert np.abs(k7 - n7).max() < 1e-13
-    print("KERNEL CHECK PASS")
+    print(f"compiled core f7 vs numpy, 400 sets: max abs {np.abs(k7 - n7).max():.1e};  vs WienR {np.abs(k7 - f.wienr).max():.1e}")
+    assert np.abs(k7 - n7).max() < 1e-12
+    print("CORE CHECK PASS")
 
 # --- seven-parameter quadrature: 48-node rule with the cubic edge map vs adaptive quadrature of
 #     grad_full_sz over the window, on the 400 seven-parameter sets; and why 48 mapped nodes
