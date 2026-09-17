@@ -154,10 +154,10 @@ for n in (16, 24, 32, 48):
     e_plain = max(abs(rule(n, 1, r) - ref[i]) / ref[i] for i, r in enumerate(f) if big[i])
     e_map = max(abs(rule(n, 3, r) - ref[i]) / ref[i] for i, r in enumerate(f) if big[i])
     print(f"  {n:2d} nodes: plain Gauss-Legendre {e_plain:.1e}   with cubic edge map {e_map:.1e}")
-print("48 mapped nodes, rel error by w1 (rows) and (t - t0)/st0 (cols 0.04, 0.2, 0.8), a = 1.2, nu = 1, eta = 1, w2 = w1 + 0.2, st0 = 0.25:")
+print("48 mapped nodes, rel error by w1 (rows) and (t - t0)/st0 (cols 0.04, 0.2, 0.8 clamped; 1.5, 3 not), a = 1.2, nu = 1, eta = 1, w2 = w1 + 0.2, st0 = 0.25:")
 for w1_ in (0.2, 0.1, 0.05, 0.02):
     row = []
-    for frac in (0.04, 0.2, 0.8):
+    for frac in (0.04, 0.2, 0.8, 1.5, 3.0):
         r7 = np.rec.fromrecords([(0.3 + frac*0.25, 1.2, 1.0, w1_ + 0.1, 1.0, 0.2, 0.25)], names="t,a,v,w,sv,sw,st0")[0]
         R = quad(lambda u: grad_full_sz(u, 1.0, 1.0, 1.2, w1_, w1_ + 0.2)[0][0], max(r7.t-0.3-0.25, 0.0), r7.t-0.3, epsabs=0, epsrel=1e-13, limit=500)[0] / 0.25
         row.append(abs(rule(48, 3, r7) - R) / R)
