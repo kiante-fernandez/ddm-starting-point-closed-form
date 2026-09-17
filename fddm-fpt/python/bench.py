@@ -91,16 +91,12 @@ for name, _, _ in METHODS:
 
 # anchor: the reference above is ours at 1e-12, so check it against mpmath at 30 digits
 import mpmath as mp
+sys.path.insert(0, "../../verify"); from highprec2 import g_eta
 mp.mp.dps = 30
 
 def hp(rt, P):                       # f = (1/st) int_u (1/sz) int_w g_eta(u, w) dw du
     v, a, z, t, sz, sv, st = (mp.mpf(P[k]) for k in ddmsz.PARAMS)
-    a2 = 2*a
-    def g(u, w):
-        S = 1 + sv**2*u
-        s = sum((-1)**j * (j*a2 + a2*w if j % 2 == 0 else (j+1)*a2 - a2*w)
-                * mp.e**(-(j*a2 + a2*w if j % 2 == 0 else (j+1)*a2 - a2*w)**2/(2*u)) for j in range(60))
-        return mp.e**((-v**2*u - 2*v*a2*w + sv**2*(a2*w)**2)/(2*S)) * s/mp.sqrt(2*mp.pi*u**3*S)
+    g = lambda u, w: g_eta(u, v, sv, 2*a, w, J=60)
     gb = lambda u: mp.quad(lambda w: g(u, w), [z - sz/2, z + sz/2])/sz if sz > 0 else g(u, z)
     hi = mp.mpf(rt) - (t - st/2)
     lo = max(hi - st, mp.mpf(0))

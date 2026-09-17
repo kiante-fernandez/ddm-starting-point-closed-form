@@ -29,47 +29,48 @@ def closed_large(t,nu,eta,a,w1,w2,K=None,tol=mp.mpf(10)**-45):
         pref=mp.sqrt(mp.pi)/(2*sk)*mp.e**(-mu**2/(4*kap))
         tot+=k*damp*mp.im(pref*(mp.erfi(sk*w2+mu/(2*sk))-mp.erfi(sk*w1+mu/(2*sk)))); k+=1
     return mp.pi/a**2/mp.sqrt(S)*mp.e**(-nu**2*t/(2*S))*tot/(w2-w1), k-1
-cases=[(0.30,1.0,1.2,1.2,0.25,0.75),(0.90,-0.5,0.8,1.0,0.40,0.60),
-       (0.15,3.0,2.0,2.5,0.30,0.70),(2.00,0.0,1.5,1.5,0.45,0.55),
-       (0.60,2.0,0.3,0.8,0.20,0.80),(3.00,-1.0,1.0,0.8,0.35,0.65)]
-print(f"{'t':>5}{'t/a^2':>7} {'closed (small-time)':>26} {'rel small':>11} {'rel large':>11}")
-for c in cases:
-    t,nu,eta,a,w1,w2=map(mp.mpf,c); R=ref(t,nu,eta,a,w1,w2)
-    cs=closed_small(t,nu,eta,a,w1,w2); cl,_=closed_large(t,nu,eta,a,w1,w2,K=120)
-    print(f"{float(t):5.2f}{float(t/a**2):7.2f} {mp.nstr(cs,22):>26} {mp.nstr(abs(cs-R)/R,3):>11} {mp.nstr(abs(cl-R)/R,3):>11}")
+if __name__ == "__main__":
+    cases=[(0.30,1.0,1.2,1.2,0.25,0.75),(0.90,-0.5,0.8,1.0,0.40,0.60),
+           (0.15,3.0,2.0,2.5,0.30,0.70),(2.00,0.0,1.5,1.5,0.45,0.55),
+           (0.60,2.0,0.3,0.8,0.20,0.80),(3.00,-1.0,1.0,0.8,0.35,0.65)]
+    print(f"{'t':>5}{'t/a^2':>7} {'closed (small-time)':>26} {'rel small':>11} {'rel large':>11}")
+    for c in cases:
+        t,nu,eta,a,w1,w2=map(mp.mpf,c); R=ref(t,nu,eta,a,w1,w2)
+        cs=closed_small(t,nu,eta,a,w1,w2); cl,_=closed_large(t,nu,eta,a,w1,w2,K=120)
+        print(f"{float(t):5.2f}{float(t/a**2):7.2f} {mp.nstr(cs,22):>26} {mp.nstr(abs(cs-R)/R,3):>11} {mp.nstr(abs(cl-R)/R,3):>11}")
 
-# --- large-time form at 150 dps (erfi loses ~pi^2 k^2/(4 kappa) nats; 60 dps is not enough at t/a^2 = 0.9),
-#     truncated adaptively where the k-th damping factor < 1e-45
-mp.mp.dps = 150
-print()
-for c in [(2.00,0.0,1.5,1.5,0.45,0.55),(3.00,-1.0,1.0,0.8,0.35,0.65),
-          (0.90,-0.5,0.8,1.0,0.40,0.60),(1.50,2.0,1.0,1.0,0.30,0.70)]:
-    t,nu,eta,a,w1,w2=map(mp.mpf,c)
-    R=ref(t,nu,eta,a,w1,w2,J=60); cl,K=closed_large(t,nu,eta,a,w1,w2)
-    print(f"t={float(t):4.2f} t/a^2={float(t/a**2):5.2f}  K={K:3d}  large-time={mp.nstr(cl,20):>24}  rel err={mp.nstr(abs(cl-R)/R,3)}")
+    # --- large-time form at 150 dps (erfi loses ~pi^2 k^2/(4 kappa) nats; 60 dps is not enough at t/a^2 = 0.9),
+    #     truncated adaptively where the k-th damping factor < 1e-45
+    mp.mp.dps = 150
+    print()
+    for c in [(2.00,0.0,1.5,1.5,0.45,0.55),(3.00,-1.0,1.0,0.8,0.35,0.65),
+              (0.90,-0.5,0.8,1.0,0.40,0.60),(1.50,2.0,1.0,1.0,0.30,0.70)]:
+        t,nu,eta,a,w1,w2=map(mp.mpf,c)
+        R=ref(t,nu,eta,a,w1,w2,J=60); cl,K=closed_large(t,nu,eta,a,w1,w2)
+        print(f"t={float(t):4.2f} t/a^2={float(t/a**2):5.2f}  K={K:3d}  large-time={mp.nstr(cl,20):>24}  rel err={mp.nstr(abs(cl-R)/R,3)}")
 
-# --- small-Delta branch (w2 - w1 < 1e-2, ddm_fast._avg): density and all five gradients vs a 40-dps
-#     reference (quadrature of g_eta over [w1, w2]; gradients by central differences with h = 1e-12)
-import sys, numpy as np
-sys.path.insert(0, "src")
-from ddm_fast import grad_full_sz
-mp.mp.dps = 40
-def gbar(t, nu, eta, a, wb, D):
-    return g_eta(t, nu, eta, a, wb, J=60) if D == 0 else mp.quad(lambda w: g_eta(t, nu, eta, a, w, J=60), [wb - D/2, wb + D/2])/D
-def ref6(t, nu, eta, a, wb, D):
-    h = mp.mpf("1e-12"); P = dict(t=t, nu=nu, eta=eta, a=a, wb=wb, D=D)
-    d = lambda k: (gbar(**{**P, k: P[k] + h}) - gbar(**{**P, k: P[k] - h}))/(2*h)
-    dwb, dD = d("wb"), (0 if D == 0 else d("D"))
-    return [float(x) for x in (gbar(**P), d("nu"), d("eta"), d("a"), dwb/2 - dD, dwb/2 + dD)]
-print("\nsmall-Delta branch vs 40-dps reference: worst rel err over density and five gradients")
-worst = 0
-for (t, nu, eta, a, wb) in [(0.5, 1, 1, 1, 0.5), (2.5, 1, 1, 1, 0.5), (0.05, -3, 2, 2.5, 0.3), (3, 4, 2, 0.6, 0.7)]:
-    row = []
-    for D in (2e-2, 1e-2, 1e-3, 1e-6, 0.0):
-        R = np.array(ref6(*map(mp.mpf, (t, nu, eta, a, wb, D))))
-        g, dg = grad_full_sz(np.array([t]), nu, eta, a, wb - D/2, wb + D/2)
-        e = np.max(np.abs(np.concatenate([g, dg[:, 0]]) - R)/np.maximum(np.abs(R), abs(R[0])))
-        worst = max(worst, e); row.append(f"Delta={D:.0e}: {e:.0e}")
-    print(f"  t={t} nu={nu} eta={eta} a={a}:  " + "  ".join(row))
-print(f"worst {worst:.1e}"); assert worst < 1e-11
-print("SMALL-DELTA CHECK PASS")
+    # --- small-Delta branch (w2 - w1 < 1e-2, ddm_fast._avg): density and all five gradients vs a 40-dps
+    #     reference (quadrature of g_eta over [w1, w2]; gradients by central differences with h = 1e-12)
+    import sys, numpy as np
+    sys.path.insert(0, "src")
+    from ddm_fast import grad_full_sz
+    mp.mp.dps = 40
+    def gbar(t, nu, eta, a, wb, D):
+        return g_eta(t, nu, eta, a, wb, J=60) if D == 0 else mp.quad(lambda w: g_eta(t, nu, eta, a, w, J=60), [wb - D/2, wb + D/2])/D
+    def ref6(t, nu, eta, a, wb, D):
+        h = mp.mpf("1e-12"); P = dict(t=t, nu=nu, eta=eta, a=a, wb=wb, D=D)
+        d = lambda k: (gbar(**{**P, k: P[k] + h}) - gbar(**{**P, k: P[k] - h}))/(2*h)
+        dwb, dD = d("wb"), (0 if D == 0 else d("D"))
+        return [float(x) for x in (gbar(**P), d("nu"), d("eta"), d("a"), dwb/2 - dD, dwb/2 + dD)]
+    print("\nsmall-Delta branch vs 40-dps reference: worst rel err over density and five gradients")
+    worst = 0
+    for (t, nu, eta, a, wb) in [(0.5, 1, 1, 1, 0.5), (2.5, 1, 1, 1, 0.5), (0.05, -3, 2, 2.5, 0.3), (3, 4, 2, 0.6, 0.7)]:
+        row = []
+        for D in (2e-2, 1e-2, 1e-3, 1e-6, 0.0):
+            R = np.array(ref6(*map(mp.mpf, (t, nu, eta, a, wb, D))))
+            g, dg = grad_full_sz(np.array([t]), nu, eta, a, wb - D/2, wb + D/2)
+            e = np.max(np.abs(np.concatenate([g, dg[:, 0]]) - R)/np.maximum(np.abs(R), abs(R[0])))
+            worst = max(worst, e); row.append(f"Delta={D:.0e}: {e:.0e}")
+        print(f"  t={t} nu={nu} eta={eta} a={a}:  " + "  ".join(row))
+    print(f"worst {worst:.1e}"); assert worst < 1e-11
+    print("SMALL-DELTA CHECK PASS")

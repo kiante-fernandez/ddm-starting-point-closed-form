@@ -1,4 +1,4 @@
-"""ddmsz (Cython wrapper) vs ../../src/ddm_fast.py and ../R/fddm_fixed.csv.
+"""ddmsz (Cython wrapper) vs ../../src/ddm_fast.py, hddm-wfpt, and finite differences.
   cythonize -3 -i ddmsz.pyx && python check.py"""
 import sys
 import numpy as np
@@ -50,21 +50,6 @@ g, dg = grad_full_sz(np.array([0.7 - t0]), 0.7, 1.1, 1.2, 0.35, 0.65)
 assert abs(f[0]/g[0] - 1) < 1e-14 and np.allclose(df[:5, 0], dg[:, 0], rtol=1e-12)
 print(f"F7 CHECK PASS (worst {worst7:.1e}; st0 = 0 returns the six-parameter density)")
 
-# fixed start (w1 = w2) vs fddm (fddm_ref.R)
-r = np.genfromtxt("../R/fddm_fixed.csv", delimiter=",", names=True)
-big = r["f"] > 1e-10                    # below this fddm's err_tol dominates
-res = [core(np.array([x["t"]]), x["v"], x["sv"], x["a"], x["w"], x["w"]) for x in r]
-dg = np.array([q[1][:, 0] for q in res])
-ours = {"f": np.array([q[0][0] for q in res]), "dv": dg[:, 0], "dsv": dg[:, 1],
-        "da": dg[:, 2], "dw": dg[:, 3] + dg[:, 4]}
-worstf = {k: np.max(np.abs(v - r[k])[big] / np.maximum(np.abs(r[k]), r["f"])[big])
-          for k, v in ours.items()}
-print(f"vs fddm at w1 = w2, {big.sum()} sets: "
-      + "  ".join(f"{k} {v:.1e}" for k, v in worstf.items()))
-# loose on derivatives: fddm's dw is off 2e-4 where a 40-digit reference matches this core to 12 digits
-assert worstf.pop("f") < 1e-7 and max(worstf.values()) < 1e-1, worstf
-print("FDDM CHECK PASS (density strict, derivatives to fddm's own accuracy)")
-
 # HSSM/HDDM parametrization vs hddm-wfpt's full_pdf, and its gradient vs finite differences
 from hddm_wfpt import wfpt
 
@@ -85,3 +70,12 @@ e = np.max(np.abs(df - fd)/np.maximum(np.abs(fd), f[:, None]))
 print(f"full_ddm gradient vs finite differences: max rel {e:.1e}")
 assert e < 1e-6, e
 print("FULL_DDM CHECK PASS")
+
+# Table 3 of the manuscript: hddm-wfpt at its fitting settings on the fixed grid, densities above 1e-3
+g = np.genfromtxt("../../data/wienr_grad.csv", delimiter=",", names=True)
+hd = np.array([wfpt.full_pdf(-r["t"], r["v"], r["sv"], r["a"], r["w"], r["sw"], 0, 0, 1e-4, 10, 10, 1, 1e-8) for r in g])
+ours = np.concatenate([ddmsz.density(np.array([r["t"]]), r["v"], r["sv"], r["a"], r["w"], r["sw"])[0] for r in g])
+big = g["wienr"] > 1e-3
+e = np.max(np.abs(hd/ours - 1)[big])
+print(f"hddm-wfpt (series 1e-4, Simpson 1e-8, depth 10) vs closed form, {big.sum()} sets above 1e-3: max rel {e:.1e}")
+assert e < 1e-5, e

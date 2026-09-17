@@ -6,16 +6,11 @@ import sys
 sys.path.insert(0, 'src')
 import numpy as np
 import mpmath as mp
-from ddm_fast import grad_full_sz, PARAMS
+from ddm_fast import grad_full_sz
+from highprec2 import g_eta                          # the mpmath Blurton Eq. 1 (same directory)
 
 mp.mp.dps = 50
 H = mp.mpf('1e-12')                                  # finite-difference step, 50 digits
-
-def g_eta(t, nu, eta, a, w, J=40):
-    S = 1 + eta**2*t
-    r = lambda j: j*a + a*w if j % 2 == 0 else (j + 1)*a - a*w
-    s = sum((-1)**j*r(j)*mp.exp(-r(j)**2/(2*t)) for j in range(J))
-    return mp.exp((-nu**2*t - 2*nu*a*w + eta**2*(a*w)**2)/(2*S))*s/mp.sqrt(2*mp.pi*t**3*S)
 
 def ref(t, nu, eta, a, w1, w2, check=False):
     f = lambda w: g_eta(t, nu, eta, a, w)        # scaled to O(1): mp.quad's stopping rule is absolute

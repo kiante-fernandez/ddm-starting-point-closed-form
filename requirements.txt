@@ -1,6 +1,5 @@
 numpy>=1.24
 scipy>=1.10
-sympy>=1.12
-mpmath>=1.3
+sympy>=1.12        # brings mpmath, used by verify/highprec*.py
 cython>=3.0        # builds fddm-fpt/python/ddmsz.pyx (make -C fddm-fpt py)
 # optional, for fddm-fpt/python/bench.py:  hddm-wfpt

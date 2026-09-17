@@ -109,6 +109,10 @@ loose = np.array([grad_full_sz(r.t, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, tol=
 tight = np.array([grad_full_sz(r.t, r.v, r.sv, r.a, r.w-r.sw/2, r.w+r.sw/2, tol=1e-40)[0][0] for r in g])
 print(f"truncation tol=1e-12 vs tol=1e-40: max abs {np.abs(loose-tight).max():.1e}; vs WienR {np.abs(loose-g.wienr).max():.1e}")
 assert np.abs(loose - tight).max() < 1e-12
+# Table 3 of the manuscript: rtdists at precision 3 (data/rtdists_prec.csv) on the same grid, densities above 1e-3
+p3 = csv("data/rtdists_prec.csv").p3; bigd = g.wienr > 1e-3
+print(f"rtdists precision 3 vs closed form, {bigd.sum()} sets above 1e-3: max rel {np.abs(p3/loose - 1)[bigd].max():.1e}")
+assert np.abs(p3/loose - 1)[bigd].max() < 1e-2
 print("ALL CHECKS PASS")
 
 # --- compiled core (fddm-fpt/core/ddm_sz.cpp via its Cython wrapper: make -C fddm-fpt py)

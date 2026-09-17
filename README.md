@@ -38,9 +38,9 @@ f, df = ddmsz.full_ddm(rt, response, v=1.2, a=0.75, z=0.45, t=0.3, sz=0.1, sv=0.
 ```bash
 pip install -r requirements.txt
 make -C fddm-fpt                          # C++ core and both wrappers, each self-checked
-python verify/symbolic_proof.py           # 38 exact identities
+python verify/symbolic_proof.py           # 52 exact identities
 python verify/grad_check.py               # gradients, small-Delta branch, quadrature, compiled core, scalar reference, WienR comparisons
-OMP_NUM_THREADS=1 python fddm-fpt/python/bench.py   # cost and accuracy vs hddm-wfpt, 25 published parameter sets
+OMP_NUM_THREADS=1 python fddm-fpt/python/bench.py   # cost and accuracy vs hddm-wfpt, 100 published parameter sets
 OMP_NUM_THREADS=1 Rscript fddm-fpt/R/bench.R        # same vs rtdists and WienR (slow: rtdists at precision 8)
 cd fddm-fpt/python && SWEEP=1 python bench.py && cd ../R && SWEEP=1 Rscript bench.R   # cost vs trials per evaluation
 cd fddm-fpt/python && python plot_fig.py            # fig_speed_accuracy.png

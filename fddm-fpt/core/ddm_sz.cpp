@@ -23,17 +23,16 @@ struct Term {
 };
 static inline Term term_j(int j, double t, double nu, double eta, double a, double S) {
     Term T;
-    int even = (j % 2 == 0), k = even ? j : j + 1;
-    double sj = even ? -1.0 : 1.0;
-    T.p = k * a;
+    int even = (j % 2 == 0);
+    T.p = (even ? j : j + 1) * a;
     T.q = even ? a : -a;
-    T.B = -nu * a / S + sj * k * a * a / t;
-    T.C = -nu * nu * t / (2 * S) - (k * a) * (k * a) / (2 * t);
+    T.B = -nu * a / S - T.p * T.q / t;
+    T.C = -nu * nu * t / (2 * S) - T.p * T.p / (2 * t);
     T.sgn = even ? 1.0 : -1.0;
     const double d[3][5] = {
         {0, -a / S, -nu * t / S, 0, 0},
         {-2 * a * a * eta / (S * S), 2 * nu * a * eta * t / (S * S), nu * nu * eta * t * t / (S * S), 0, 0},
-        {2 * a / (t * S), -nu / S + 2 * sj * k * a / t, -(double)k * k * a / t, (double)k, even ? 1.0 : -1.0}};
+        {2 * a / (t * S), -nu / S - 2 * T.p * T.q / (a * t), -T.p * T.p / (a * t), T.p / a, T.q / a}};
     std::memcpy(T.d, d, sizeof d);
     return T;
 }

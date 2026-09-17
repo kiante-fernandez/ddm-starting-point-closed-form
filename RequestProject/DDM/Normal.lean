@@ -36,9 +36,6 @@ def phi (x : ℝ) : ℝ := Real.exp (-x ^ 2 / 2) / Real.sqrt (2 * π)
 This is the function written `Φ` throughout the note `notes/closed_forms_sz_st.md`. -/
 def Phi (x : ℝ) : ℝ := ∫ u in Iic x, phi u
 
-@[simp] lemma phi_neg (x : ℝ) : phi (-x) = phi x := by simp [phi]
-
-
 /-- `φ` is continuous. -/
 @[continuity, fun_prop]
 lemma continuous_phi : Continuous phi := by

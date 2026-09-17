@@ -26,15 +26,13 @@ def _coef(t, nu, eta, a, tol):
     S = 1 + eta**2 * t
     A = a*a/(t*S)
     even = (j % 2 == 0)
-    k = np.where(even, j, j+1)
-    sj = np.where(even, -1.0, 1.0)
-    p = k*a
+    p = np.where(even, j, j+1)*a
     q = np.where(even, a, -a)
-    B = -nu*a/S + sj*k*a*a/t
-    C = -nu**2*t/(2*S) - (k*a)**2/(2*t)
+    B = -nu*a/S - p*q/t
+    C = -nu**2*t/(2*S) - p*p/(2*t)
     dth = [dict(dB=-a/S, dC=-nu*t/S),                                                       # nu
            dict(dA=-2*a*a*eta/S**2, dB=2*nu*a*eta*t/S**2, dC=nu**2*eta*t*t/S**2),           # eta
-           dict(dA=2*a/(t*S), dB=-nu/S + 2*sj*k*a/t, dC=-k*k*a/t, dp=k, dq=np.sign(q))]     # a
+           dict(dA=2*a/(t*S), dB=-nu/S - 2*p*q/(a*t), dC=-p*p/(a*t), dp=p/a, dq=q/a)]       # a
     return j, S, A, p, q, B, C, dth
 
 def _small(t, nu, eta, a, w1, w2, tol=1e-12):

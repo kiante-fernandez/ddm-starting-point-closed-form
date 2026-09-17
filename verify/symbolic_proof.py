@@ -155,6 +155,7 @@ results['L8b large-time gradient: int w^2 e^{kw^2+mu w}'] = sp.simplify(sp.diff(
 # ---------------------------------------------------------------------------
 ap, ep, kp = sp.symbols('a eta k', positive=True)
 sjs = sp.Symbol('s_j')
+pp, qq = kp*ap, -sjs*ap                      # p_j = k a, q_j = -s_j a: the code's coefficient form
 Sd = 1 + ep**2*tp
 A_d = ap**2/(tp*Sd); B_d = -nu*ap/Sd + sjs*kp*ap**2/tp; C_d = -nu**2*tp/(2*Sd) - (kp*ap)**2/(2*tp)
 P_small = 1/((w2s - w1s)*sp.sqrt(2*sp.pi*tp**3*Sd))
@@ -164,8 +165,8 @@ coded = {  # (expression, variable, coefficient as written in ddm_fast)
  'dB/dnu':     (B_d, nu, -ap/Sd),            'dC/dnu':  (C_d, nu, -nu*tp/Sd),
  'dA/deta':    (A_d, ep, -2*ap*ap*ep/Sd**2),  'dB/deta': (B_d, ep, 2*nu*ap*ep*tp/Sd**2),
  'dC/deta':    (C_d, ep, nu**2*ep*tp*tp/Sd**2),
- 'dA/da':      (A_d, ap, 2*ap/(tp*Sd)),       'dB/da':   (B_d, ap, -nu/Sd + 2*sjs*kp*ap/tp),
- 'dC/da':      (C_d, ap, -kp*kp*ap/tp),
+ 'dA/da':      (A_d, ap, 2*ap/(tp*Sd)),       'dB/da':   (B_d, ap, -nu/Sd - 2*pp*qq/(ap*tp)),
+ 'dC/da':      (C_d, ap, -pp*pp/(ap*tp)),      'dp/da':   (pp, ap, pp/ap),   'dq/da': (qq, ap, qq/ap),
  'dlogP/deta (small)': (sp.log(P_small), ep, -ep*tp/Sd),
  'dlogP/dw1 (small)':  (sp.log(P_small), w1s, 1/(w2s-w1s)),
  'dkappa/deta': (kap_d, ep, ep*ap*ap/Sd**2),  'dkappa/da': (kap_d, ap, ep**2*ap/Sd),
