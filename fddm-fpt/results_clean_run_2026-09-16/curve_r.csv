@@ -1,0 +1,49 @@
+"method","n","ms"
+"ours, density + 7 gradients (R)",30,0.316643
+"ours, density + 7 gradients (R)",100,1.030289
+"ours, density + 7 gradients (R)",300,3.11108
+"ours, density + 7 gradients (R)",1000,10.327121
+"ours, density + 7 gradients (R)",3000,30.75082
+"ours, density + 7 gradients (R)",10000,103.681989
+"ours, density + 7 gradients (R)",30000,312.006064
+"ours, density + 7 gradients (R)",1e+05,1044.193043
+"rtdists, precision 3",30,0.718853
+"rtdists, precision 3",100,2.764097
+"rtdists, precision 3",300,6.703336
+"rtdists, precision 3",1000,22.19084
+"rtdists, precision 3",3000,68.675615
+"rtdists, precision 3",10000,231.203551
+"rtdists, precision 3",30000,695.02708
+"rtdists, precision 3",1e+05,2686.115861
+"rtdists, precision 5",30,41.09348
+"rtdists, precision 5",100,135.929719
+"rtdists, precision 5",300,417.566796
+"rtdists, precision 5",1000,1419.897937
+"rtdists, precision 5",3000,4232.098392
+"rtdists, precision 5",10000,14196.6477
+"WienR, 5e-3 (EMC2 default)",30,0.376421
+"WienR, 5e-3 (EMC2 default)",100,1.205113
+"WienR, 5e-3 (EMC2 default)",300,2.898372
+"WienR, 5e-3 (EMC2 default)",1000,10.046025
+"WienR, 5e-3 (EMC2 default)",3000,31.714402
+"WienR, 5e-3 (EMC2 default)",10000,98.506846
+"WienR, 5e-3 (EMC2 default)",30000,381.75141
+"WienR, 5e-3 (EMC2 default)",1e+05,1000.17901
+"WienR, 1e-8",30,20.329522
+"WienR, 1e-8",100,58.539677
+"WienR, 1e-8",300,174.826911
+"WienR, 1e-8",1000,610.688358
+"WienR, 1e-8",3000,1861.492783
+"WienR, 1e-8",10000,5819.670585
+"WienR, 1e-8",30000,17410.979927
+"WienR, 1e-12",30,38.947335
+"WienR, 1e-12",100,133.11101
+"WienR, 1e-12",300,381.094426
+"WienR, 1e-12",1000,1299.718532
+"WienR, 1e-12",3000,3873.361389
+"WienR, 1e-12",10000,12950.488944
+"WienR, 1e-12 + 5 gradients",30,293.800793
+"WienR, 1e-12 + 5 gradients",100,938.366467
+"WienR, 1e-12 + 5 gradients",300,2876.799686
+"WienR, 1e-12 + 5 gradients",1000,9978.811322
+"WienR, 1e-12 + 5 gradients",3000,30449.488409

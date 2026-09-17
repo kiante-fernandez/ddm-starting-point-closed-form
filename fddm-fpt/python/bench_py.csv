@@ -1,0 +1,401 @@
+set,method,us_per_trial,rel_diff
+1,ours 1e-12 (density + 7 grads),8.8065,0.000e+00
+1,ours 1e-8,8.2539,0.000e+00
+1,hddm-wfpt err=1e-8,549.2386,2.210e-08
+1,hddm-wfpt err=1e-4,507.5612,4.440e-08
+2,ours 1e-12 (density + 7 grads),9.1727,0.000e+00
+2,ours 1e-8,8.3868,1.998e-15
+2,hddm-wfpt err=1e-8,722.0509,3.251e-08
+2,hddm-wfpt err=1e-4,689.0655,3.520e-08
+3,ours 1e-12 (density + 7 grads),11.3366,0.000e+00
+3,ours 1e-8,10.1034,1.773e-11
+3,hddm-wfpt err=1e-8,3350.2390,5.484e-08
+3,hddm-wfpt err=1e-4,3189.1989,5.491e-08
+4,ours 1e-12 (density + 7 grads),10.0254,0.000e+00
+4,ours 1e-8,9.0646,7.842e-13
+4,hddm-wfpt err=1e-8,596.0418,3.060e-08
+4,hddm-wfpt err=1e-4,561.6704,7.561e-08
+5,ours 1e-12 (density + 7 grads),10.3323,0.000e+00
+5,ours 1e-8,9.2999,2.017e-11
+5,hddm-wfpt err=1e-8,1354.4437,4.356e-07
+5,hddm-wfpt err=1e-4,1296.0220,4.378e-07
+6,ours 1e-12 (density + 7 grads),8.8937,0.000e+00
+6,ours 1e-8,8.2684,7.625e-13
+6,hddm-wfpt err=1e-8,2651.9917,1.311e-06
+6,hddm-wfpt err=1e-4,2569.0469,1.311e-06
+7,ours 1e-12 (density + 7 grads),9.0539,0.000e+00
+7,ours 1e-8,8.2829,5.238e-12
+7,hddm-wfpt err=1e-8,216.1773,2.861e-07
+7,hddm-wfpt err=1e-4,204.0765,2.861e-07
+8,ours 1e-12 (density + 7 grads),9.9389,0.000e+00
+8,ours 1e-8,8.9661,1.673e-13
+8,hddm-wfpt err=1e-8,848.1016,6.164e-08
+8,hddm-wfpt err=1e-4,800.7670,6.164e-08
+9,ours 1e-12 (density + 7 grads),10.6026,0.000e+00
+9,ours 1e-8,9.6038,1.954e-13
+9,hddm-wfpt err=1e-8,6491.7407,5.220e-07
+9,hddm-wfpt err=1e-4,6216.3955,4.462e-08
+10,ours 1e-12 (density + 7 grads),9.3850,0.000e+00
+10,ours 1e-8,8.5204,1.732e-12
+10,hddm-wfpt err=1e-8,216.2956,4.637e-07
+10,hddm-wfpt err=1e-4,202.5669,4.687e-07
+11,ours 1e-12 (density + 7 grads),10.0539,0.000e+00
+11,ours 1e-8,9.1079,1.557e-11
+11,hddm-wfpt err=1e-8,680.8158,6.949e-07
+11,hddm-wfpt err=1e-4,649.5103,7.008e-07
+12,ours 1e-12 (density + 7 grads),10.7495,0.000e+00
+12,ours 1e-8,9.7230,3.900e-12
+12,hddm-wfpt err=1e-8,218.0677,5.409e-07
+12,hddm-wfpt err=1e-4,206.6357,5.409e-07
+13,ours 1e-12 (density + 7 grads),10.8362,0.000e+00
+13,ours 1e-8,9.6894,5.159e-11
+13,hddm-wfpt err=1e-8,313.6398,1.904e-06
+13,hddm-wfpt err=1e-4,296.9360,1.904e-06
+14,ours 1e-12 (density + 7 grads),11.0135,0.000e+00
+14,ours 1e-8,9.8173,1.601e-11
+14,hddm-wfpt err=1e-8,46.2837,1.245e-07
+14,hddm-wfpt err=1e-4,42.9321,1.770e-07
+15,ours 1e-12 (density + 7 grads),10.4699,0.000e+00
+15,ours 1e-8,9.4257,7.631e-12
+15,hddm-wfpt err=1e-8,2094.0000,1.708e-07
+15,hddm-wfpt err=1e-4,1979.9407,1.706e-07
+16,ours 1e-12 (density + 7 grads),10.5227,0.000e+00
+16,ours 1e-8,9.4069,4.324e-11
+16,hddm-wfpt err=1e-8,1333.5846,6.228e-08
+16,hddm-wfpt err=1e-4,1301.7562,8.491e-08
+17,ours 1e-12 (density + 7 grads),10.4830,0.000e+00
+17,ours 1e-8,9.7145,7.344e-12
+17,hddm-wfpt err=1e-8,954.1093,1.553e-08
+17,hddm-wfpt err=1e-4,901.7242,1.553e-08
+18,ours 1e-12 (density + 7 grads),10.3335,0.000e+00
+18,ours 1e-8,9.2486,4.885e-11
+18,hddm-wfpt err=1e-8,473.9179,5.276e-07
+18,hddm-wfpt err=1e-4,448.9684,5.276e-07
+19,ours 1e-12 (density + 7 grads),9.5144,0.000e+00
+19,ours 1e-8,8.6337,8.763e-13
+19,hddm-wfpt err=1e-8,520.8271,1.161e-07
+19,hddm-wfpt err=1e-4,499.2597,1.161e-07
+20,ours 1e-12 (density + 7 grads),10.8567,0.000e+00
+20,ours 1e-8,9.7321,1.439e-11
+20,hddm-wfpt err=1e-8,1046.0698,4.696e-07
+20,hddm-wfpt err=1e-4,1002.9852,4.696e-07
+21,ours 1e-12 (density + 7 grads),11.2899,0.000e+00
+21,ours 1e-8,10.0276,1.253e-11
+21,hddm-wfpt err=1e-8,205.2159,4.926e-07
+21,hddm-wfpt err=1e-4,197.3560,4.926e-07
+22,ours 1e-12 (density + 7 grads),10.5334,0.000e+00
+22,ours 1e-8,9.4781,5.386e-12
+22,hddm-wfpt err=1e-8,1184.7661,4.977e-08
+22,hddm-wfpt err=1e-4,1116.7732,5.759e-08
+23,ours 1e-12 (density + 7 grads),10.3970,0.000e+00
+23,ours 1e-8,9.3541,6.319e-12
+23,hddm-wfpt err=1e-8,1154.0005,1.068e-07
+23,hddm-wfpt err=1e-4,1091.9176,1.124e-07
+24,ours 1e-12 (density + 7 grads),10.8767,0.000e+00
+24,ours 1e-8,9.6569,6.771e-13
+24,hddm-wfpt err=1e-8,7.6250,4.514e-08
+24,hddm-wfpt err=1e-4,6.9744,4.514e-08
+25,ours 1e-12 (density + 7 grads),12.9202,0.000e+00
+25,ours 1e-8,11.5553,1.649e-11
+25,hddm-wfpt err=1e-8,5280.4593,5.207e-04
+25,hddm-wfpt err=1e-4,4917.1428,5.207e-04
+26,ours 1e-12 (density + 7 grads),9.7644,0.000e+00
+26,ours 1e-8,8.9747,2.975e-11
+26,hddm-wfpt err=1e-8,2730.1910,1.110e-05
+26,hddm-wfpt err=1e-4,2675.3976,1.110e-05
+27,ours 1e-12 (density + 7 grads),11.5838,0.000e+00
+27,ours 1e-8,10.2801,8.725e-12
+27,hddm-wfpt err=1e-8,175.2416,1.320e-05
+27,hddm-wfpt err=1e-4,164.1893,1.320e-05
+28,ours 1e-12 (density + 7 grads),10.9411,0.000e+00
+28,ours 1e-8,9.7382,2.515e-11
+28,hddm-wfpt err=1e-8,488.6347,3.548e-07
+28,hddm-wfpt err=1e-4,464.5174,3.652e-07
+29,ours 1e-12 (density + 7 grads),9.4286,0.000e+00
+29,ours 1e-8,8.6643,4.033e-13
+29,hddm-wfpt err=1e-8,508.9670,1.957e-07
+29,hddm-wfpt err=1e-4,483.0992,1.971e-07
+30,ours 1e-12 (density + 7 grads),8.8225,0.000e+00
+30,ours 1e-8,8.1041,5.085e-14
+30,hddm-wfpt err=1e-8,180.9888,5.532e-08
+30,hddm-wfpt err=1e-4,170.5115,1.175e-07
+31,ours 1e-12 (density + 7 grads),10.8046,0.000e+00
+31,ours 1e-8,9.7301,7.535e-12
+31,hddm-wfpt err=1e-8,1810.0593,1.539e-07
+31,hddm-wfpt err=1e-4,1722.2353,1.539e-07
+32,ours 1e-12 (density + 7 grads),10.0178,0.000e+00
+32,ours 1e-8,8.9799,2.100e-11
+32,hddm-wfpt err=1e-8,152.9091,2.943e-07
+32,hddm-wfpt err=1e-4,144.5410,2.943e-07
+33,ours 1e-12 (density + 7 grads),10.0841,0.000e+00
+33,ours 1e-8,9.0650,1.389e-11
+33,hddm-wfpt err=1e-8,144.6749,2.206e-07
+33,hddm-wfpt err=1e-4,134.7151,2.170e-07
+34,ours 1e-12 (density + 7 grads),10.2649,0.000e+00
+34,ours 1e-8,9.5193,5.159e-13
+34,hddm-wfpt err=1e-8,1129.2078,1.363e-07
+34,hddm-wfpt err=1e-4,1084.1013,1.363e-07
+35,ours 1e-12 (density + 7 grads),8.5081,0.000e+00
+35,ours 1e-8,7.8545,2.517e-12
+35,hddm-wfpt err=1e-8,1198.9551,2.131e-08
+35,hddm-wfpt err=1e-4,1161.8078,2.608e-08
+36,ours 1e-12 (density + 7 grads),10.7832,0.000e+00
+36,ours 1e-8,10.0135,3.747e-11
+36,hddm-wfpt err=1e-8,1915.4651,2.011e-05
+36,hddm-wfpt err=1e-4,1835.3815,2.011e-05
+37,ours 1e-12 (density + 7 grads),9.8035,0.000e+00
+37,ours 1e-8,8.9032,7.186e-12
+37,hddm-wfpt err=1e-8,860.8510,2.713e-07
+37,hddm-wfpt err=1e-4,813.5029,2.728e-07
+38,ours 1e-12 (density + 7 grads),10.6515,0.000e+00
+38,ours 1e-8,9.6089,2.659e-11
+38,hddm-wfpt err=1e-8,2440.8412,1.578e-06
+38,hddm-wfpt err=1e-4,2310.1799,1.578e-06
+39,ours 1e-12 (density + 7 grads),10.6168,0.000e+00
+39,ours 1e-8,9.5437,1.679e-12
+39,hddm-wfpt err=1e-8,5766.1366,2.310e-07
+39,hddm-wfpt err=1e-4,5472.7444,2.292e-07
+40,ours 1e-12 (density + 7 grads),8.7251,0.000e+00
+40,ours 1e-8,8.0327,1.554e-15
+40,hddm-wfpt err=1e-8,384.6429,2.348e-07
+40,hddm-wfpt err=1e-4,367.7365,2.348e-07
+41,ours 1e-12 (density + 7 grads),10.6491,0.000e+00
+41,ours 1e-8,9.5771,1.500e-11
+41,hddm-wfpt err=1e-8,545.9948,1.072e-07
+41,hddm-wfpt err=1e-4,521.1522,1.072e-07
+42,ours 1e-12 (density + 7 grads),9.7455,0.000e+00
+42,ours 1e-8,8.8815,2.783e-13
+42,hddm-wfpt err=1e-8,1796.7084,6.091e-08
+42,hddm-wfpt err=1e-4,1709.2378,6.091e-08
+43,ours 1e-12 (density + 7 grads),11.6558,0.000e+00
+43,ours 1e-8,10.3447,8.355e-12
+43,hddm-wfpt err=1e-8,960.5481,5.414e-08
+43,hddm-wfpt err=1e-4,916.7867,5.414e-08
+44,ours 1e-12 (density + 7 grads),9.8550,0.000e+00
+44,ours 1e-8,8.9793,3.997e-15
+44,hddm-wfpt err=1e-8,1068.6783,8.230e-08
+44,hddm-wfpt err=1e-4,1024.2576,8.377e-08
+45,ours 1e-12 (density + 7 grads),10.9941,0.000e+00
+45,ours 1e-8,9.7925,9.717e-12
+45,hddm-wfpt err=1e-8,52.9056,7.048e-08
+45,hddm-wfpt err=1e-4,49.5862,8.720e-08
+46,ours 1e-12 (density + 7 grads),10.3145,0.000e+00
+46,ours 1e-8,9.3851,2.941e-12
+46,hddm-wfpt err=1e-8,4056.7000,5.447e-07
+46,hddm-wfpt err=1e-4,3928.1647,5.447e-07
+47,ours 1e-12 (density + 7 grads),11.0231,0.000e+00
+47,ours 1e-8,9.7492,9.273e-12
+47,hddm-wfpt err=1e-8,176.3716,9.976e-08
+47,hddm-wfpt err=1e-4,164.8270,9.976e-08
+48,ours 1e-12 (density + 7 grads),11.4082,0.000e+00
+48,ours 1e-8,10.1169,6.399e-12
+48,hddm-wfpt err=1e-8,1050.1666,4.079e-07
+48,hddm-wfpt err=1e-4,988.2338,6.829e-08
+49,ours 1e-12 (density + 7 grads),11.2231,0.000e+00
+49,ours 1e-8,10.0050,1.513e-11
+49,hddm-wfpt err=1e-8,419.1191,2.611e-06
+49,hddm-wfpt err=1e-4,396.2384,2.611e-06
+50,ours 1e-12 (density + 7 grads),10.5460,0.000e+00
+50,ours 1e-8,9.4911,9.308e-12
+50,hddm-wfpt err=1e-8,1090.5453,1.674e-06
+50,hddm-wfpt err=1e-4,1041.3752,1.674e-06
+51,ours 1e-12 (density + 7 grads),9.9847,0.000e+00
+51,ours 1e-8,8.9849,8.086e-13
+51,hddm-wfpt err=1e-8,81.3759,2.422e-07
+51,hddm-wfpt err=1e-4,77.0459,2.422e-07
+52,ours 1e-12 (density + 7 grads),10.0974,0.000e+00
+52,ours 1e-8,9.1006,5.700e-13
+52,hddm-wfpt err=1e-8,18.1204,6.849e-08
+52,hddm-wfpt err=1e-4,17.0609,6.849e-08
+53,ours 1e-12 (density + 7 grads),9.8669,0.000e+00
+53,ours 1e-8,8.9229,3.070e-11
+53,hddm-wfpt err=1e-8,483.6958,1.439e-07
+53,hddm-wfpt err=1e-4,457.3954,1.493e-07
+54,ours 1e-12 (density + 7 grads),9.2990,0.000e+00
+54,ours 1e-8,8.5593,9.570e-14
+54,hddm-wfpt err=1e-8,1412.0099,2.233e-06
+54,hddm-wfpt err=1e-4,1366.5636,2.233e-06
+55,ours 1e-12 (density + 7 grads),11.0107,0.000e+00
+55,ours 1e-8,9.8549,7.401e-11
+55,hddm-wfpt err=1e-8,1246.5711,2.006e-08
+55,hddm-wfpt err=1e-4,1215.4656,1.969e-08
+56,ours 1e-12 (density + 7 grads),10.5130,0.000e+00
+56,ours 1e-8,9.3942,4.741e-11
+56,hddm-wfpt err=1e-8,294.4283,1.464e-06
+56,hddm-wfpt err=1e-4,278.4904,1.464e-06
+57,ours 1e-12 (density + 7 grads),9.9128,0.000e+00
+57,ours 1e-8,9.0526,2.640e-11
+57,hddm-wfpt err=1e-8,4375.8689,9.299e-08
+57,hddm-wfpt err=1e-4,4245.5276,9.882e-08
+58,ours 1e-12 (density + 7 grads),11.2731,0.000e+00
+58,ours 1e-8,10.0047,2.543e-11
+58,hddm-wfpt err=1e-8,1793.8573,4.363e-05
+58,hddm-wfpt err=1e-4,1729.0449,4.363e-05
+59,ours 1e-12 (density + 7 grads),10.5611,0.000e+00
+59,ours 1e-8,9.5280,1.297e-11
+59,hddm-wfpt err=1e-8,1325.8268,5.632e-07
+59,hddm-wfpt err=1e-4,1253.8575,5.632e-07
+60,ours 1e-12 (density + 7 grads),10.3050,0.000e+00
+60,ours 1e-8,9.5170,3.446e-11
+60,hddm-wfpt err=1e-8,1746.0149,1.580e-06
+60,hddm-wfpt err=1e-4,1681.0266,1.580e-06
+61,ours 1e-12 (density + 7 grads),11.1497,0.000e+00
+61,ours 1e-8,9.9042,3.779e-12
+61,hddm-wfpt err=1e-8,380.1870,3.645e-07
+61,hddm-wfpt err=1e-4,360.4094,3.630e-07
+62,ours 1e-12 (density + 7 grads),10.6251,0.000e+00
+62,ours 1e-8,9.5948,5.423e-11
+62,hddm-wfpt err=1e-8,1610.6469,2.828e-07
+62,hddm-wfpt err=1e-4,1560.7055,2.828e-07
+63,ours 1e-12 (density + 7 grads),9.6557,0.000e+00
+63,ours 1e-8,8.7803,6.412e-13
+63,hddm-wfpt err=1e-8,604.6135,4.370e-07
+63,hddm-wfpt err=1e-4,574.6109,4.370e-07
+64,ours 1e-12 (density + 7 grads),10.0964,0.000e+00
+64,ours 1e-8,9.1484,9.690e-13
+64,hddm-wfpt err=1e-8,313.0163,2.377e-07
+64,hddm-wfpt err=1e-4,291.4974,2.377e-07
+65,ours 1e-12 (density + 7 grads),11.1445,0.000e+00
+65,ours 1e-8,10.0894,8.459e-12
+65,hddm-wfpt err=1e-8,782.2631,1.662e-07
+65,hddm-wfpt err=1e-4,747.7239,1.662e-07
+66,ours 1e-12 (density + 7 grads),11.1153,0.000e+00
+66,ours 1e-8,9.9105,8.118e-12
+66,hddm-wfpt err=1e-8,955.6209,6.621e-08
+66,hddm-wfpt err=1e-4,897.8860,6.021e-08
+67,ours 1e-12 (density + 7 grads),9.9474,0.000e+00
+67,ours 1e-8,9.0430,1.403e-12
+67,hddm-wfpt err=1e-8,1341.5423,2.138e-05
+67,hddm-wfpt err=1e-4,1283.8476,2.138e-05
+68,ours 1e-12 (density + 7 grads),9.0654,0.000e+00
+68,ours 1e-8,8.3065,5.127e-12
+68,hddm-wfpt err=1e-8,2990.0109,8.941e-07
+68,hddm-wfpt err=1e-4,2913.5607,8.941e-07
+69,ours 1e-12 (density + 7 grads),7.5072,0.000e+00
+69,ours 1e-8,7.0125,1.633e-11
+69,hddm-wfpt err=1e-8,3736.6516,3.310e-09
+69,hddm-wfpt err=1e-4,3725.1186,4.843e-07
+70,ours 1e-12 (density + 7 grads),11.3257,0.000e+00
+70,ours 1e-8,10.0461,8.527e-12
+70,hddm-wfpt err=1e-8,214.6951,9.171e-08
+70,hddm-wfpt err=1e-4,202.7164,9.171e-08
+71,ours 1e-12 (density + 7 grads),10.8154,0.000e+00
+71,ours 1e-8,9.7725,7.293e-12
+71,hddm-wfpt err=1e-8,661.0281,3.692e-07
+71,hddm-wfpt err=1e-4,623.3616,2.587e-07
+72,ours 1e-12 (density + 7 grads),9.3859,0.000e+00
+72,ours 1e-8,8.4875,5.103e-12
+72,hddm-wfpt err=1e-8,402.2837,3.669e-07
+72,hddm-wfpt err=1e-4,386.0532,3.691e-07
+73,ours 1e-12 (density + 7 grads),11.1601,0.000e+00
+73,ours 1e-8,9.9237,1.938e-11
+73,hddm-wfpt err=1e-8,421.5991,2.179e-06
+73,hddm-wfpt err=1e-4,401.2541,2.179e-06
+74,ours 1e-12 (density + 7 grads),10.4069,0.000e+00
+74,ours 1e-8,9.3342,3.877e-11
+74,hddm-wfpt err=1e-8,515.9948,6.201e-07
+74,hddm-wfpt err=1e-4,489.6632,6.201e-07
+75,ours 1e-12 (density + 7 grads),8.8821,0.000e+00
+75,ours 1e-8,8.1610,2.003e-13
+75,hddm-wfpt err=1e-8,1663.0383,1.056e-06
+75,hddm-wfpt err=1e-4,1573.1368,1.056e-06
+76,ours 1e-12 (density + 7 grads),10.0867,0.000e+00
+76,ours 1e-8,9.1467,1.612e-11
+76,hddm-wfpt err=1e-8,1858.5022,2.025e-06
+76,hddm-wfpt err=1e-4,1774.9969,2.025e-06
+77,ours 1e-12 (density + 7 grads),10.9453,0.000e+00
+77,ours 1e-8,9.7559,1.030e-11
+77,hddm-wfpt err=1e-8,760.3136,1.303e-06
+77,hddm-wfpt err=1e-4,712.5200,1.303e-06
+78,ours 1e-12 (density + 7 grads),10.1037,0.000e+00
+78,ours 1e-8,9.1576,1.885e-11
+78,hddm-wfpt err=1e-8,1368.5466,8.448e-07
+78,hddm-wfpt err=1e-4,1311.3720,8.461e-07
+79,ours 1e-12 (density + 7 grads),9.4505,0.000e+00
+79,ours 1e-8,8.6458,2.510e-12
+79,hddm-wfpt err=1e-8,1989.2772,2.392e-07
+79,hddm-wfpt err=1e-4,1878.4301,2.343e-07
+80,ours 1e-12 (density + 7 grads),8.8123,0.000e+00
+80,ours 1e-8,8.1631,1.240e-13
+80,hddm-wfpt err=1e-8,2489.5606,2.701e-07
+80,hddm-wfpt err=1e-4,2370.6668,2.697e-07
+81,ours 1e-12 (density + 7 grads),9.4849,0.000e+00
+81,ours 1e-8,8.7596,2.864e-13
+81,hddm-wfpt err=1e-8,1838.2142,4.806e-08
+81,hddm-wfpt err=1e-4,1756.5215,4.623e-08
+82,ours 1e-12 (density + 7 grads),10.6115,0.000e+00
+82,ours 1e-8,9.4541,1.050e-12
+82,hddm-wfpt err=1e-8,339.7120,3.750e-07
+82,hddm-wfpt err=1e-4,317.0635,3.750e-07
+83,ours 1e-12 (density + 7 grads),10.6877,0.000e+00
+83,ours 1e-8,9.6256,1.390e-11
+83,hddm-wfpt err=1e-8,886.4457,1.160e-06
+83,hddm-wfpt err=1e-4,830.2459,1.160e-06
+84,ours 1e-12 (density + 7 grads),9.9511,0.000e+00
+84,ours 1e-8,8.9767,1.321e-11
+84,hddm-wfpt err=1e-8,281.6238,7.856e-08
+84,hddm-wfpt err=1e-4,266.8090,7.856e-08
+85,ours 1e-12 (density + 7 grads),11.0499,0.000e+00
+85,ours 1e-8,9.7686,1.290e-11
+85,hddm-wfpt err=1e-8,3153.4482,6.361e-07
+85,hddm-wfpt err=1e-4,2988.2565,6.373e-07
+86,ours 1e-12 (density + 7 grads),8.6674,0.000e+00
+86,ours 1e-8,7.9418,3.797e-14
+86,hddm-wfpt err=1e-8,448.3685,2.421e-07
+86,hddm-wfpt err=1e-4,426.4939,2.421e-07
+87,ours 1e-12 (density + 7 grads),10.0591,0.000e+00
+87,ours 1e-8,9.0895,8.194e-12
+87,hddm-wfpt err=1e-8,1293.8812,3.140e-07
+87,hddm-wfpt err=1e-4,1236.9225,3.140e-07
+88,ours 1e-12 (density + 7 grads),10.8942,0.000e+00
+88,ours 1e-8,9.7136,4.031e-11
+88,hddm-wfpt err=1e-8,211.2442,8.770e-07
+88,hddm-wfpt err=1e-4,202.1650,8.770e-07
+89,ours 1e-12 (density + 7 grads),10.3982,0.000e+00
+89,ours 1e-8,9.3746,1.042e-11
+89,hddm-wfpt err=1e-8,3224.1959,1.064e-07
+89,hddm-wfpt err=1e-4,3068.1704,1.070e-07
+90,ours 1e-12 (density + 7 grads),9.1826,0.000e+00
+90,ours 1e-8,8.4508,9.504e-14
+90,hddm-wfpt err=1e-8,3024.9530,3.191e-07
+90,hddm-wfpt err=1e-4,2921.4800,3.176e-07
+91,ours 1e-12 (density + 7 grads),9.9742,0.000e+00
+91,ours 1e-8,9.0370,1.299e-12
+91,hddm-wfpt err=1e-8,664.0752,1.942e-07
+91,hddm-wfpt err=1e-4,630.7420,1.942e-07
+92,ours 1e-12 (density + 7 grads),10.7374,0.000e+00
+92,ours 1e-8,9.7051,9.638e-12
+92,hddm-wfpt err=1e-8,307.3109,2.498e-06
+92,hddm-wfpt err=1e-4,289.6118,2.498e-06
+93,ours 1e-12 (density + 7 grads),10.1572,0.000e+00
+93,ours 1e-8,9.0936,5.729e-14
+93,hddm-wfpt err=1e-8,53.3438,1.490e-06
+93,hddm-wfpt err=1e-4,49.8337,1.490e-06
+94,ours 1e-12 (density + 7 grads),10.3049,0.000e+00
+94,ours 1e-8,9.2756,2.936e-11
+94,hddm-wfpt err=1e-8,1040.2405,3.277e-07
+94,hddm-wfpt err=1e-4,972.2895,3.277e-07
+95,ours 1e-12 (density + 7 grads),11.0390,0.000e+00
+95,ours 1e-8,9.8285,2.814e-11
+95,hddm-wfpt err=1e-8,204.0647,2.169e-08
+95,hddm-wfpt err=1e-4,191.3338,8.188e-08
+96,ours 1e-12 (density + 7 grads),11.8730,0.000e+00
+96,ours 1e-8,10.5155,1.625e-11
+96,hddm-wfpt err=1e-8,743.6064,8.902e-08
+96,hddm-wfpt err=1e-4,705.2691,8.733e-08
+97,ours 1e-12 (density + 7 grads),10.8653,0.000e+00
+97,ours 1e-8,9.6868,1.399e-11
+97,hddm-wfpt err=1e-8,428.5133,4.539e-06
+97,hddm-wfpt err=1e-4,407.5871,4.539e-06
+98,ours 1e-12 (density + 7 grads),10.1328,0.000e+00
+98,ours 1e-8,9.2537,2.664e-12
+98,hddm-wfpt err=1e-8,1854.6191,4.147e-07
+98,hddm-wfpt err=1e-4,1769.8813,4.147e-07
+99,ours 1e-12 (density + 7 grads),10.6954,0.000e+00
+99,ours 1e-8,9.6052,1.118e-11
+99,hddm-wfpt err=1e-8,399.0030,1.065e-06
+99,hddm-wfpt err=1e-4,382.0171,1.065e-06
+100,ours 1e-12 (density + 7 grads),9.3990,0.000e+00
+100,ours 1e-8,8.5013,4.292e-12
+100,hddm-wfpt err=1e-8,73.7953,1.478e-07
+100,hddm-wfpt err=1e-4,70.8903,1.478e-07

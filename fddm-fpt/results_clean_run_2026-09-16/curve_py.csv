@@ -1,0 +1,16 @@
+method,n,ms
+"ours, density + 7 gradients",30,0.33783301478251815
+"ours, density + 7 gradients",100,1.0476659517735243
+"ours, density + 7 gradients",300,3.1172920134849846
+"ours, density + 7 gradients",1000,10.460124991368502
+"ours, density + 7 gradients",3000,31.72495897160843
+"ours, density + 7 gradients",10000,107.01362497638911
+"ours, density + 7 gradients",30000,308.38425003457814
+"ours, density + 7 gradients",100000,1047.5744169671088
+hddm-wfpt (HSSM blackbox),30,22.185249952599406
+hddm-wfpt (HSSM blackbox),100,76.78066601511091
+hddm-wfpt (HSSM blackbox),300,226.31787502905354
+hddm-wfpt (HSSM blackbox),1000,772.2939170198515
+hddm-wfpt (HSSM blackbox),3000,2098.599583026953
+hddm-wfpt (HSSM blackbox),10000,7122.0675419899635
+hddm-wfpt (HSSM blackbox),30000,22957.592708989978
