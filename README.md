@@ -1,5 +1,7 @@
 > **The first-passage time density for the diffusion model with variable drift and variable starting point**
+> 
 > Kianté Fernandez<sup>1</sup>
+>
 > <sup>1</sup>Department of Psychology, University of California, Los Angeles, CA, USA
 
 ## Abstract
@@ -33,7 +35,7 @@ import ddmsz                                   # after: make -C fddm-fpt
 f, df = ddmsz.full_ddm(rt, response, v=1.2, a=0.75, z=0.45, t=0.3, sz=0.1, sv=0.8, st=0.12)
 ```
 
-## Reproduce
+## Computational Reproducibility
 
 ```bash
 pip install -r requirements.txt
@@ -68,3 +70,17 @@ relative `w` and `w2-w1`.
 | `Exchange.lean` | exchange of summation and integration |
 | `Result1.lean` | the closed-form density and the non-decision window |
 | `Faddeeva.lean`, `LargeTime.lean` | the Faddeeva function and the large-time starting-point integral |
+
+## Citation
+
+If you use this software or the closed-form density in your work, please cite:
+```bibtex
+@article{fernandez_fpt_ddm,
+  author  = {Fernandez, Kiant{\'e}},
+  title   = {The first-passage time density for the diffusion model
+             with variable drift and variable starting point},
+  journal = {},
+  year    = {2026},
+  note    = {Manuscript under review},
+  url     = {}
+}
