@@ -42,7 +42,7 @@ python verify/symbolic_proof.py           # 38 exact identities
 python verify/grad_check.py               # gradients, small-Delta branch, quadrature, compiled core, scalar reference, WienR comparisons
 OMP_NUM_THREADS=1 python fddm-fpt/python/bench.py   # cost and accuracy vs hddm-wfpt, 25 published parameter sets
 OMP_NUM_THREADS=1 Rscript fddm-fpt/R/bench.R        # same vs rtdists and WienR (slow: rtdists at precision 8)
-cd fddm-fpt/python && python curve.py && cd ../R && Rscript curve.R   # cost vs trials per evaluation
+cd fddm-fpt/python && SWEEP=1 python bench.py && cd ../R && SWEEP=1 Rscript bench.R   # cost vs trials per evaluation
 cd fddm-fpt/python && python plot_fig.py            # fig_speed_accuracy.png
 python verify/highprec2.py                # 40–60 digit checks (minutes)
 lake exe cache get && lake build          # Lean proof (Mathlib v4.28.0)

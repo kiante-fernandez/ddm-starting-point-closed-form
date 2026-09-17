@@ -30,17 +30,12 @@ ddm_rtdists <- function(rt, response, a, v, t0, z = a/2, sz = 0, sv = 0, st0 = 0
   r
 }
 
-if (sys.nframe() == 0L) {
-  g <- read.csv("../../data/wienr_grad.csv")
-  g <- g[g$wienr > 1e-10, ]
-  o <- mapply(function(t, v, sv, a, w, sw) {
-    r <- ddm_sz(t, v, sv, a, w, sw)
-    c(r$density, r$gradient)
-  }, g$t, g$v, g$sv, g$a, g$w, g$sw)
+if (sys.nframe() == 0L) {                        # the binding: core/check covers the grid itself
+  g <- head(read.csv("../../data/wienr_grad.csv"), 20)
+  o <- sapply(seq_len(nrow(g)), function(i) with(g[i, ], unlist(ddm_sz(t, v, sv, a, w, sw))))
   ref <- t(as.matrix(g[, c("wienr", "dv", "dsv", "da", "dw", "dsw")]))
-  err <- apply(abs(o - ref) / pmax(abs(ref), rep(o[1, ], each = 6)), 1, max)
-  cat(sprintf("vs WienR, %d sets: %s\n", nrow(g),
-              paste(sprintf("%s %.1e", c("f", "dv", "dsv", "da", "dw", "dsw"), err), collapse = "  ")))
+  err <- max(abs(o - ref) / pmax(abs(ref), rep(o[1, ], each = 6)))
+  cat(sprintf("vs WienR, %d rows through the R binding: max rel %.1e\n", nrow(g), err))
   stopifnot(err < 1e-8)
   cat("R CHECK PASS\n")
 

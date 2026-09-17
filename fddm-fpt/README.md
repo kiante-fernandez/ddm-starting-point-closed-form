@@ -70,7 +70,7 @@ range below 0.01 switches to a five-node average of the fixed-start density, whi
 | `python/check.py` | `../src/ddm_fast.py`, both series, range down to zero | 9.0e-10 |
 | `python/check.py` | `fddm` at fixed start (`R/fddm_ref.R`) | 1.1e-8 density |
 | `python/check.py` | `hddm_wfpt.full_pdf`, HSSM parametrization | 1.5e-11 |
-| `R/ddmsz.R` | WienR from R | 4.8e-10 |
+| `R/ddmsz.R` | WienR, 20 rows through the R binding | 9.4e-13 |
 | `R/ddmsz.R` | `rtdists::ddiffusion` at precision 8 | 1.1e-7 |
 
 Where a reference is looser than the core, the paper's high-precision checks decide: at the
@@ -78,14 +78,31 @@ worst rows a 40- to 50-digit mpmath reference agrees with this core to ten to tw
 
 ## Benchmarks
 
+100 parameter sets drawn from the priors of Tran et al. (2021, Table 1), all seven parameters
+(`R/bench_sets.R`), response times simulated from each set, single thread, every method on
+every set:
+
 ```bash
-OMP_NUM_THREADS=1 python python/bench.py    # vs hddm-wfpt over 25 published parameter sets
-OMP_NUM_THREADS=1 Rscript R/bench.R         # vs rtdists and WienR (slow: rtdists at precision 8)
-cd python && python curve.py && cd ../R && Rscript curve.R && cd ../python && python plot_fig.py
+OMP_NUM_THREADS=1 python python/bench.py    # vs hddm-wfpt
+OMP_NUM_THREADS=1 Rscript R/bench.R         # vs rtdists and WienR (hours: rtdists at precision 8)
+cd python && SWEEP=1 python bench.py && cd ../R && SWEEP=1 Rscript bench.R && cd ../python && python plot_fig.py
 ```
 
-Cost and accuracy always travel together: every package here is fast at three digits and slow
-at ten, while this one runs at a fixed truncation of 1e-12 and returns the gradient as well.
+| method | µs per trial, median | relative error, median / worst |
+|---|---|---|
+| **this package, density + 7 gradients** | **10.4** | reference (1.4e-11 vs 30-digit mpmath) |
+| WienR at 5e-3 (EMC2's default) | 10.6 | 2.9e-2 / 3.8e-1 |
+| rtdists at precision 3 (its default) | 28.8 | 1.5e-2 / 1.0 |
+| WienR at 1e-8 | 553 | 7.0e-8 / 2.7e-1 |
+| hddm-wfpt (HSSM's `full_ddm`) | 815 | 2.9e-7 / 5.2e-4 |
+| WienR at 1e-12 | 1,179 | 1.4e-9 / 8.0e-5 |
+| rtdists at precision 5 | 1,779 | 5.2e-5 / 1.1e-3 |
+| WienR at 1e-12, density + 5 gradients | 8,852 | 1.4e-9 / 8.0e-5 |
+| rtdists at precision 8 | 861,107 | 7.4e-8 / 9.1e-7 |
+
+Full per-set results are in `python/bench_py.csv` and `R/bench_r.csv`, the figure in
+`python/fig_speed_accuracy.png`. `results_clean_run_2026-09-16/` holds an earlier independent
+run of the scaling sweep, which the committed one reproduces within 8% at the median.
 
 ## Licence
 

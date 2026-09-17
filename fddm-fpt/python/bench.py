@@ -1,7 +1,10 @@
 """full_ddm cost and accuracy vs hddm-wfpt (HSSM's blackbox likelihood) over parameter sets
 drawn from the priors of Tran et al. (2021); see ../R/bench_sets.R.
-  OMP_NUM_THREADS=1 python bench.py  ->  bench_py.csv"""
+  OMP_NUM_THREADS=1 python bench.py           ->  bench_py.csv
+  SWEEP=1 OMP_NUM_THREADS=1 python bench.py   ->  curve_py.csv  (cost vs trials per evaluation)"""
+import csv
 import os
+import sys
 import time
 import numpy as np
 import ddmsz
@@ -47,6 +50,19 @@ METHODS = [("ours 1e-12 (density + 7 grads)", ours, 1e-12),
            ("ours 1e-8", ours, 1e-8),
            ("hddm-wfpt err=1e-8", hddm, 1e-8),
            ("hddm-wfpt err=1e-4", hddm, 1e-4)]
+
+if os.environ.get("SWEEP"):              # median over the first 5 sets, stop once a call passes 10 s
+    rows = []
+    for name, mk, prec in (METHODS[0], METHODS[2]):
+        for n in (30, 100, 300, 1000, 3000, 10_000, 30_000, 100_000):
+            ms = float(np.median([timed(mk(P, prec), draw(n, P), reps=3) * n / 1e3 for P in sets[:5]]))
+            rows.append((name, n, ms))
+            print(f"{name:30s} n={n:7d}  {ms:10.3f} ms", flush=True)
+            if ms > 1e4:
+                break
+    with open("curve_py.csv", "w", newline="") as fh:
+        csv.writer(fh).writerows([("method", "n", "ms")] + rows)
+    sys.exit()
 
 rows = []
 for i, P in enumerate(sets, 1):
