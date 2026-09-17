@@ -79,8 +79,6 @@ If you use this software or the closed-form density in your work, please cite:
   author  = {Fernandez, Kiant{\'e}},
   title   = {The first-passage time density for the diffusion model
              with variable drift and variable starting point},
-  journal = {},
   year    = {2026},
-  note    = {Manuscript under review},
-  url     = {}
+  note    = {Manuscript under review}
 }
