@@ -72,6 +72,10 @@ C_o = -nu**2*tp/(2*S) - (kk*a)**2/(2*tp)
 claim_o = (p_o + q_o*w)*sp.exp(-Acoef*w**2/2 + B_o*w + C_o)
 checks_L5['L5o odd-j coefficients'] = sp.simplify(
     sp.expand(sp.log(sp.simplify(eta_density_term(rj_odd)/claim_o))))
+# paper Eq. (coef) writes both parities as  B_j = -nu a/S - p_j q_j/t,  C_j = -nu^2 t/(2S) - p_j^2/(2t)
+for tag, pj, qj, Bj, Cj in [('even', p_e, q_e, B_e, C_e), ('odd', p_o, q_o, B_o, C_o)]:
+    checks_L5[f'L5p {tag}-j B_j in p,q form'] = sp.simplify(Bj - (-nu*a/S - pj*qj/tp))
+    checks_L5[f'L5p {tag}-j C_j in p,q form'] = sp.simplify(Cj - (-nu**2*tp/(2*S) - pj**2/(2*tp)))
 results.update(checks_L5)
 
 # ---------------------------------------------------------------------------
@@ -114,6 +118,21 @@ def dI(dA=0, dB=0, dC=0, dp=0, dq=0, dw1=0, dw2=0):          # verbatim from ddm
 for name, var, kw in [('A', Apos, dict(dA=1)), ('B', B, dict(dB=1)), ('C', C, dict(dC=1)), ('p', p, dict(dp=1)),
                       ('q', q, dict(dq=1)), ('w1', w1s, dict(dw1=1)), ('w2', w2s, dict(dw2=1))]:
     results[f'L7  small-time gradient: dI/d{name}'] = sp.simplify(sp.diff(I_closed, var) - dI(**kw))
+
+# L7m  Paper Appendix D states the same gradient through the moments M_n = int w^n E dw,
+#      E = exp(-A w^2/2 + B w + C):  A M_{n+1} = B M_n + n M_{n-1} - [w^n E]  (checked as the
+#      derivative identity behind it), dE/dA = -(1/2) d^2E/dB^2, and dI/dB, dI/dA from M_0..M_3.
+Ew = sp.exp(-Apos*w**2/2 + B*w + C)
+for n in range(4):
+    results[f'L7m moment recurrence n={n}'] = sp.simplify(
+        sp.diff(w**n*Ew, w) - ((n*w**(n-1)*Ew if n else 0) + B*w**n*Ew - Apos*w**(n+1)*Ew))
+results['L7m dE/dA = -(1/2) d2E/dB2'] = sp.simplify(sp.diff(Ew, Apos) + sp.diff(Ew, B, 2)/2)
+Mom = [G]
+for n in range(3):
+    Mom.append((B*Mom[n] + (n*Mom[n-1] if n else 0) - (w2s**n*E2 - w1s**n*E1))/Apos)
+results['L7m I = p M0 + q M1'] = sp.simplify(I_closed - (p*Mom[0] + q*Mom[1]))
+results['L7m dI/dB = p M1 + q M2'] = sp.simplify(sp.diff(I_closed, B) - (p*Mom[1] + q*Mom[2]))
+results['L7m dI/dA = -(p M2 + q M3)/2'] = sp.simplify(sp.diff(I_closed, Apos) + (p*Mom[2] + q*Mom[3])/2)
 
 # ---------------------------------------------------------------------------
 # L8.  Gradient of Result 1, large-time term.  With e(w) = exp(kappa w^2 + mu w) and
