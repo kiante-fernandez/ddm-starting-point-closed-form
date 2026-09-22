@@ -6,8 +6,8 @@ same call. One C++ core, thin R and Python wrappers, drop-in parametrizations fo
 rtdists and WienR.
 
 The six-parameter density needs no numerical integration; only the non-decision window keeps a
-single fixed 1-D quadrature. See `../paper/main.tex` for the derivation and `../notes/` for the
-working note.
+single fixed 1-D quadrature. The derivation is in the manuscript,
+https://doi.org/10.2139/ssrn.7507587.
 
 ```
 core/     ddm_sz.{cpp,h}   the whole implementation; Faddeeva.{cc,hh} vendored from

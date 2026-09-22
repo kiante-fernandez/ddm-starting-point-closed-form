@@ -7,7 +7,7 @@
 ## Abstract
 The Ratcliff diffusion model is fitted with across-trial variability in drift rate, starting point, and non-decision time. The drift integral of the first-passage time density has been evaluated in closed form at fixed starting point, and the starting-point and non-decision-time integrals at fixed drift, but the drift and starting-point integrals have not been evaluated together; in particular, existing software implementations integrate at least one of these two numerically. We show that in the small-time series representation the starting-point integral of the drift-integrated density is a Gaussian moment, and we give the density with normally distributed drift and uniformly distributed starting point in closed form in exponentials and the normal distribution function, together with a large-time counterpart in terms of the Faddeeva function. Where these implementations required two numerical integrations, over the starting point and the non-decision time, the seven-parameter likelihood now requires a single one-dimensional quadrature; the derivatives of the decision density with respect to all of its parameters follow in closed form, and the likelihood gradient reuses that one quadrature. The result is verified symbolically and against three reference implementations, and is machine-checked in Lean.
 
-This repository holds the code, reference data, manuscript source, and Lean proof.
+This repository holds the code, reference data, and Lean proof behind the manuscript, which is available as a preprint at https://doi.org/10.2139/ssrn.7507587.
 
 ## Layout
 
@@ -19,9 +19,7 @@ src/ddm_fast.py          density, gradient, seven-parameter likelihood (numpy)
 src/ddm_closed.py        independent scalar reference implementation
 verify/                  every check and every number in the manuscript (see below)
 data/                    WienR and rtdists reference values used by verify/
-notes/                   working note the Lean files cite
 RequestProject/DDM/      Lean formalization
-paper/                   manuscript source
 ```
 
 ## Use
@@ -47,6 +45,7 @@ OMP_NUM_THREADS=1 Rscript fddm-fpt/R/bench.R        # same vs rtdists and WienR 
 cd fddm-fpt/python && SWEEP=1 python bench.py && cd ../R && SWEEP=1 Rscript bench.R   # cost vs trials per evaluation
 cd fddm-fpt/python && python plot_fig.py            # fig_speed_accuracy.png
 python verify/highprec2.py                # 40–60 digit checks (minutes)
+python verify/highprec_grid.py            # both implementations vs a 50-digit reference on 1000 adversarial sets (~10 min)
 lake exe cache get && lake build          # Lean proof (Mathlib v4.28.0)
 ```
 
@@ -59,7 +58,9 @@ relative `w` and `w2-w1`.
 ## Lean
 
 `lake build` checks every theorem with no `sorry`. `#print axioms DDM.result1` reports
-`propext, Classical.choice, Quot.sound` and nothing else.
+`propext, Classical.choice, Quot.sound` and nothing else. The docstrings cite a working note
+(`notes/closed_forms_sz_st.md`) that is not part of this repository; the manuscript contains the
+same material, with the note's Result 1 as its Eq. 7 and Lemma L1 as its Eq. 6.
 
 | file | content |
 |---|---|
@@ -75,10 +76,12 @@ relative `w` and `w2-w1`.
 
 If you use this software or the closed-form density in your work, please cite:
 ```bibtex
-@article{fernandez_fpt_ddm,
+@article{fernandez_firstpassage,
   author  = {Fernandez, Kiant{\'e}},
-  title   = {The first-passage time density for the diffusion model
-             with variable drift and variable starting point},
+  title   = {The first-passage time density for the diffusion model with variable drift and variable starting point},
+  journal = {Manuscript in review},
   year    = {2026},
-  note    = {Manuscript under review}
+  doi     = {10.2139/ssrn.7507587},
+  url     = {https://ssrn.com/abstract=7507587}
 }
+```

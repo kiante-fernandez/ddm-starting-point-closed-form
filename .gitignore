@@ -2,16 +2,9 @@
 __pycache__/
 *.so
 *.c
-paper/main.aux
-paper/main.bbl
-paper/main.blg
-paper/main.log
-paper/main.out
-paper/main.fdb_latexmk
-paper/main.fls
-paper/main.spl
+paper/
+notes/
 .DS_Store
-paper/main.pdf
 docs/
 CLAUDE.md
 

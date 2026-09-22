@@ -1,6 +1,6 @@
 /* Result 1: lower-barrier first-passage density with drift ~ N(nu, eta^2) and relative
    starting point ~ U(w1, w2), unit diffusion.  Closed form plus its five derivatives;
-   see ../notes/closed_forms_sz_st.md and ../paper/main.tex.
+   see the manuscript, https://doi.org/10.2139/ssrn.7507587.
    Upper barrier: (nu, w1, w2) -> (-nu, 1 - w2, 1 - w1). */
 #ifndef DDM_SZ_H
 #define DDM_SZ_H
