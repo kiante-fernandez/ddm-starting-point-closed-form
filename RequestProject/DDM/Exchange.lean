@@ -3,7 +3,7 @@ import RequestProject.DDM.Setup
 /-!
 # Exchanging summation and integration
 
-The note `notes/closed_forms_sz_st.md` states, in its Setup section, that
+The manuscript states (Appendix B) that
 
 > In every series the `j`-th term is `O(exp(−j²a²/(2t)))`, so summation and integration may be
 > exchanged freely (dominated convergence).
@@ -11,7 +11,7 @@ The note `notes/closed_forms_sz_st.md` states, in its Setup section, that
 This file contains the general dominated-convergence tool used to carry out those exchanges
 (a specialization of Mathlib's `MeasureTheory.integral_tsum_of_summable_integral_norm` to
 interval integrals), together with the elementary summability facts used to check its
-hypotheses for the Gaussian-type bounds `exp(−j²a²/(2t))` appearing in the note.
+hypotheses for the Gaussian-type bounds `exp(−j²a²/(2t))` appearing in the manuscript (Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587).
 -/
 
 noncomputable section
@@ -33,7 +33,7 @@ theorem intervalIntegral_tsum_of_summable {f : ℕ → ℝ → ℝ} {w₁ w₂ :
   rw [this]
   exact (integral_tsum_of_summable_integral_norm hint hsum).symm
 
-/-- The Gaussian-type bounds `(j+1) e^{−j²c}` of the note `notes/closed_forms_sz_st.md`
+/-- The Gaussian-type bounds `(j+1) e^{−j²c}` of the manuscript
 are summable for every `c > 0`. -/
 theorem summable_poly_gaussian (c : ℝ) (hc : 0 < c) :
     Summable fun j : ℕ => ((j : ℝ) + 1) * exp (-(j : ℝ) ^ 2 * c) := by

@@ -1,9 +1,9 @@
 import RequestProject.DDM.Setup
 
 /-!
-# The algebraic lemmas L4, L5, L6 of the note
+# The algebraic identities: Eqs. (4), (5), and the drift integral of Eq. (1)
 
-This file formalizes the remaining symbolic checks of the note `notes/closed_forms_sz_st.md`
+This file formalizes the remaining symbolic checks of the manuscript (Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587)
 (the table of `verify/symbolic_proof.py`):
 
 | check | content |
@@ -21,7 +21,7 @@ namespace DDM
 
 /-! ## Lemma L4 -/
 
-/-- **Lemma L4 of the note `notes/closed_forms_sz_st.md`, the identity part.**
+/-- **Eq. (5) of the manuscript, the identity part.**
 
     a²/(2t) − η²a²/(2S) = a² (S − η²t) / (2tS) = a²/(2tS),      S = 1 + η² t. -/
 theorem lemma_L4_identity (a eta t : ℝ) (ht : 0 < t) :
@@ -31,7 +31,7 @@ theorem lemma_L4_identity (a eta t : ℝ) (ht : 0 < t) :
   field_simp
   ring
 
-/-- **Lemma L4 of the note `notes/closed_forms_sz_st.md`, the positivity part.**
+/-- **Eq. (5) of the manuscript, the positivity part.**
 
 The combined exponent of the `j`-th term of Result 1 is a *decaying* Gaussian in `w` for every
 `j` and every `t`, because `a²/(2t) − η²a²/(2S) = a²/(2tS) > 0`. -/
@@ -44,25 +44,25 @@ theorem lemma_L4_pos (a eta t : ℝ) (ha : a ≠ 0) (ht : 0 < t) :
 
 /-! ## Lemma L5: the coefficient tables -/
 
-/-- The coefficient `A = a²/(tS)` of Result 1 of the note `notes/closed_forms_sz_st.md`
+/-- The coefficient `A = a²/(tS)` of Eq. (7) of the manuscript
 (the same for all `j`, always `> 0`). -/
 def Acoef (a eta t : ℝ) : ℝ := a ^ 2 / (t * Svar eta t)
 
-/-- The coefficient `p_j` of Result 1 of the note `notes/closed_forms_sz_st.md`:
+/-- The coefficient `p_j` of Eq. (7) of the manuscript:
 `p_j = j a` for even `j`, `p_j = (j+1) a` for odd `j`. -/
 def pcoef (a : ℝ) (j : ℕ) : ℝ := if Even j then (j : ℝ) * a else ((j : ℝ) + 1) * a
 
-/-- The coefficient `q_j` of Result 1 of the note `notes/closed_forms_sz_st.md`:
+/-- The coefficient `q_j` of Eq. (7) of the manuscript:
 `q_j = a` for even `j`, `q_j = −a` for odd `j`. -/
 def qcoef (a : ℝ) (j : ℕ) : ℝ := if Even j then a else -a
 
-/-- The coefficient `B_j` of Result 1 of the note `notes/closed_forms_sz_st.md`:
+/-- The coefficient `B_j` of Eq. (7) of the manuscript:
 `B_j = −νa/S − j a²/t` for even `j`, `B_j = −νa/S + (j+1) a²/t` for odd `j`. -/
 def Bcoef (nu eta a t : ℝ) (j : ℕ) : ℝ :=
   if Even j then -nu * a / Svar eta t - (j : ℝ) * a ^ 2 / t
   else -nu * a / Svar eta t + ((j : ℝ) + 1) * a ^ 2 / t
 
-/-- The coefficient `C_j` of Result 1 of the note `notes/closed_forms_sz_st.md`:
+/-- The coefficient `C_j` of Eq. (7) of the manuscript:
 `C_j = −ν²t/(2S) − j²a²/(2t)` for even `j`, `C_j = −ν²t/(2S) − (j+1)²a²/(2t)` for odd `j`. -/
 def Ccoef (nu eta a t : ℝ) (j : ℕ) : ℝ :=
   if Even j then -nu ^ 2 * t / (2 * Svar eta t) - (j : ℝ) ^ 2 * a ^ 2 / (2 * t)
@@ -73,7 +73,7 @@ lemma Acoef_pos {a eta t : ℝ} (ha : a ≠ 0) (ht : 0 < t) : 0 < Acoef a eta t 
   have : 0 < a ^ 2 := by positivity
   unfold Acoef; positivity
 
-/-- **Lemma L5e of the note `notes/closed_forms_sz_st.md`** (check `L5e` of
+/-- **The even case of Eq. (4) of the manuscript** (check `L5e` of
 `verify/symbolic_proof.py`): the even-`j` coefficient table of Result 1.  For even `j`, the
 `w`-dependent part of the `j`-th term of `(gη)` is
 
@@ -93,7 +93,7 @@ theorem lemma_L5_even (nu eta a t w : ℝ) (ht : 0 < t) {j : ℕ} (hj : Even j) 
   field_simp
   ring_nf
 
-/-- **Lemma L5o of the note `notes/closed_forms_sz_st.md`** (check `L5o` of
+/-- **The odd case of Eq. (4) of the manuscript** (check `L5o` of
 `verify/symbolic_proof.py`): the odd-`j` coefficient table of Result 1. -/
 theorem lemma_L5_odd (nu eta a t w : ℝ) (ht : 0 < t) {j : ℕ} (hj : ¬ Even j) :
     r a w j * exp ((-nu ^ 2 * t - 2 * nu * a * w + eta ^ 2 * a ^ 2 * w ^ 2) / (2 * Svar eta t)
@@ -110,7 +110,7 @@ theorem lemma_L5_odd (nu eta a t w : ℝ) (ht : 0 < t) {j : ℕ} (hj : ¬ Even j
   field_simp
   ring_nf
 
-/-- The coefficient table of Result 1 of the note `notes/closed_forms_sz_st.md`, both
+/-- The coefficient table of Eq. (7) of the manuscript, both
 parities at once (`L5e` and `L5o` combined). -/
 theorem lemma_L5 (nu eta a t w : ℝ) (ht : 0 < t) (j : ℕ) :
     r a w j * exp ((-nu ^ 2 * t - 2 * nu * a * w + eta ^ 2 * a ^ 2 * w ^ 2) / (2 * Svar eta t)
@@ -123,7 +123,7 @@ theorem lemma_L5 (nu eta a t w : ℝ) (ht : 0 < t) (j : ℕ) :
 
 /-! ## Lemma L6: the drift integral -/
 
-/-- The Gaussian integral behind Lemma L6 of the note `notes/closed_forms_sz_st.md`:
+/-- The Gaussian integral behind the drift integral of Eq. (1) of the manuscript:
 averaging `e^{−vc − v²t/2}` over `v ~ N(ν, η²)` gives
 
     S^{−1/2} exp[(−ν²t − 2νc + η²c²)/(2S)],     S = 1 + η² t. -/
@@ -162,7 +162,7 @@ theorem drift_gaussian_average (nu eta c t : ℝ) (heta : 0 < eta) (ht : 0 ≤ t
   rw [hsq]
   field_simp
 
-/-- **Lemma L6 of the note `notes/closed_forms_sz_st.md`** (check `L6` of
+/-- **The drift integral of Eq. (1) of the manuscript** (check `L6` of
 `verify/symbolic_proof.py`): integrating the constant-drift density `(g)` against the
 `N(ν, η²)` drift density reproduces the normal-drift density `(gη)` (Blurton et al. 2017,
 Eq. 1). -/

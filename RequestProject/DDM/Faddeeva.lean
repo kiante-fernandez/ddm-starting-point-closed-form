@@ -3,17 +3,17 @@ import Mathlib
 /-!
 # The complex error function and the Faddeeva function
 
-The section *"Large-time representation of Result 1"* of the note `notes/closed_forms_sz_st.md`
+Section 3 of the manuscript (Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587)
 writes the `w`-integral of the large-time series in terms of the **Faddeeva function** `w(z)`
 (the scaled complex complementary error function).  Mathlib contains neither `erf` nor `w(z)`,
 so both are introduced here:
 
 * `DDM.cerf` — the complex error function `erf(z) = (2/√π) ∫₀^z e^{−s²} ds`, written as an
   integral over the straight segment from `0` to `z`;
-* `DDM.hasDerivAt_cerf` — `erf'(z) = (2/√π) e^{−z²}`, the only property of `erf` the note's
+* `DDM.hasDerivAt_cerf` — `erf'(z) = (2/√π) e^{−z²}`, the only property of `erf` the manuscript's
   derivation uses;
 * `DDM.faddeeva` — the Faddeeva function `w(z) = e^{−z²} erfc(−i z) = e^{−z²} (1 − erf(−i z))`
-  of the note;
+  of the manuscript;
 * `DDM.hasDerivAt_faddeeva` — its derivative.
 -/
 
@@ -24,7 +24,7 @@ open Real MeasureTheory Set Filter intervalIntegral
 namespace DDM
 
 /-- The complex error function `erf(z) = (2/√π) ∫₀^z e^{−s²} ds`, the `erf` implicit in the
-Faddeeva function `w(z)` of the note `notes/closed_forms_sz_st.md`.  The contour integral from
+Faddeeva function `w(z)` of the manuscript.  The contour integral from
 `0` to `z` is written as an integral over the straight segment, i.e. over the real parameter
 `s ∈ [0,1]` of `z e^{−(z s)²}`. -/
 def cerf (z : ℂ) : ℂ :=
@@ -76,8 +76,7 @@ lemma hasDerivAt_cerfIntegrand (s : ℝ) (z : ℂ) :
 
 /-- **The derivative of the complex error function**, `erf'(z) = (2/√π) e^{−z²}`.
 
-This is the only property of `erf` used in the large-time representation of Result 1 in the
-note `notes/closed_forms_sz_st.md`. -/
+This is the only property of `erf` used in the large-time representation of Result 1 in the manuscript. -/
 theorem hasDerivAt_cerf (z₀ : ℂ) :
     HasDerivAt cerf ((2 / (Real.sqrt π : ℂ)) * Complex.exp (-z₀ ^ 2)) z₀ := by
   have hkey : HasDerivAt (fun z : ℂ => ∫ s in (0:ℝ)..1, z * Complex.exp (-(z * (s : ℂ)) ^ 2))
@@ -166,8 +165,8 @@ theorem hasDerivAt_cerf (z₀ : ℂ) :
   have hfinal := hkey.const_mul (2 / (Real.sqrt π : ℂ))
   exact hfinal.congr_of_eventuallyEq (Filter.Eventually.of_forall fun z => rfl)
 
-/-- The **Faddeeva function** `w(z) = e^{−z²} erfc(−i z) = e^{−z²} (1 − erf(−i z))` of the note
-`notes/closed_forms_sz_st.md`. -/
+/-- The **Faddeeva function** `w(z) = e^{−z²} erfc(−i z) = e^{−z²} (1 − erf(−i z))` of the manuscript
+the manuscript. -/
 def faddeeva (z : ℂ) : ℂ := Complex.exp (-z ^ 2) * (1 - cerf (-Complex.I * z))
 
 /-- The derivative of the Faddeeva function:

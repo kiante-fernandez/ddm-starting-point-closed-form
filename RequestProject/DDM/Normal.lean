@@ -3,19 +3,18 @@ import Mathlib
 /-!
 # The standard normal density and CDF
 
-This file provides the two special functions `φ` and `Φ` that appear throughout the note
-`notes/closed_forms_sz_st.md` ("Closed forms for starting-point and non-decision-time
-variability in the Ratcliff diffusion model").
+This file provides the two special functions `φ` and `Φ` that appear throughout the manuscript
+(Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587).
 
-The note uses, without definition, the standard normal density `φ` and the standard normal
+The manuscript uses, without definition, the standard normal density `φ` and the standard normal
 distribution function `Φ`.  Mathlib has neither `erf` nor a Gaussian CDF, so both are
-introduced here together with the analytic facts the note's derivations rely on:
+introduced here together with the analytic facts the manuscript's derivations rely on:
 
 * `DDM.phi` — the standard normal density `φ(x) = e^{-x²/2}/√(2π)`;
 * `DDM.Phi` — the standard normal CDF `Φ(x) = ∫_{-∞}^x φ`;
-* `DDM.hasDerivAt_Phi` — `Φ' = φ`, the fact used every time the note verifies an
-  antiderivative claim as `dF/dx − f = 0` (checks L1, L2, L3 of the note);
-* `DDM.hasDerivAt_phi` — `φ'(x) = −x φ(x)`, used in the `c = 0` branch of L2.
+* `DDM.hasDerivAt_Phi` — `Φ' = φ`, the fact used every time the manuscript verifies an
+  antiderivative claim as `dF/dx − f = 0` (check `L1` of `verify/symbolic_proof.py`);
+* `DDM.hasDerivAt_phi` — `φ'(x) = −x φ(x)`, used in the antiderivative proofs.
 -/
 
 noncomputable section
@@ -26,14 +25,13 @@ namespace DDM
 
 /-- The standard normal density `φ(x) = e^{-x²/2}/√(2π)`.
 
-This is the function written `φ` in the note `notes/closed_forms_sz_st.md` (it appears e.g. in
-the small-time density series `(g)` through `r_j φ(r_j/√t)`, and in the antiderivatives of
-Results 2 and 3). -/
+This is the function written `φ` in the manuscript (it appears e.g. in
+the small-time density series `(g)` through `r_j φ(r_j/√t)`, and in the antiderivative of Eq. (6)). -/
 def phi (x : ℝ) : ℝ := Real.exp (-x ^ 2 / 2) / Real.sqrt (2 * π)
 
 /-- The standard normal distribution function `Φ(x) = ∫_{-∞}^x φ(u) du`.
 
-This is the function written `Φ` throughout the note `notes/closed_forms_sz_st.md`. -/
+This is the function written `Φ` throughout the manuscript. -/
 def Phi (x : ℝ) : ℝ := ∫ u in Iic x, phi u
 
 /-- `φ` is continuous. -/
@@ -43,7 +41,7 @@ lemma continuous_phi : Continuous phi := by
 
 /-- The derivative of the standard normal density: `φ'(x) = −x φ(x)`.
 
-This is the elementary fact behind the `c = 0` branch of the note's Lemma L2. -/
+This is the elementary fact behind the `c = 0` branch of the antiderivative identities. -/
 lemma hasDerivAt_phi (x : ℝ) : HasDerivAt phi (-x * phi x) x := by
   have h : HasDerivAt (fun y : ℝ => Real.exp (-y ^ 2 / 2)) (Real.exp (-x ^ 2 / 2) * (-x)) x := by
     have h1 : HasDerivAt (fun y : ℝ => -y ^ 2 / 2) (-x) x := by
@@ -74,7 +72,7 @@ lemma Phi_sub_Phi (a b : ℝ) : Phi b - Phi a = ∫ u in a..b, phi u :=
 
 /-- **`Φ' = φ`.**  The standard normal CDF differentiates to the standard normal density.
 
-Every antiderivative claim of the note `notes/closed_forms_sz_st.md` (Lemmas L1, L2, L3, each
+Every antiderivative claim of the manuscript (Eq. (6) and its relatives, each
 verified there by SymPy as `simplify(dF/dx − f) == 0`) is proved here by differentiating the
 claimed antiderivative, and this lemma is what makes those differentiations possible. -/
 lemma hasDerivAt_Phi (x : ℝ) : HasDerivAt Phi (phi x) x := by

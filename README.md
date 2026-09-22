@@ -58,9 +58,8 @@ relative `w` and `w2-w1`.
 ## Lean
 
 `lake build` checks every theorem with no `sorry`. `#print axioms DDM.result1` reports
-`propext, Classical.choice, Quot.sound` and nothing else. The docstrings cite a working note
-(`notes/closed_forms_sz_st.md`) that is not part of this repository; the manuscript contains the
-same material, with the note's Result 1 as its Eq. 7 and Lemma L1 as its Eq. 6.
+`propext, Classical.choice, Quot.sound` and nothing else. The docstrings cite the manuscript's
+equation numbers; "Result 1" in the file and theorem names is its Eq. 7.
 
 | file | content |
 |---|---|

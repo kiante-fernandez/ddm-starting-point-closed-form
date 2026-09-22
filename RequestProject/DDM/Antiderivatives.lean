@@ -1,9 +1,9 @@
 import RequestProject.DDM.Setup
 
 /-!
-# The antiderivative lemma L1 of the note
+# The antiderivative, Eq. (6) of the manuscript (Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587)
 
-This file formalizes the antiderivative claim of the note `notes/closed_forms_sz_st.md`,
+This file formalizes the antiderivative claim of the manuscript,
 listed there in the table of symbolic checks (`verify/symbolic_proof.py`) as
 
 | check | content |
@@ -11,7 +11,7 @@ listed there in the table of symbolic checks (`verify/symbolic_proof.py`) as
 | L1 | `∫ (p+qw) e^{−Aw²/2+Bw+C} dw` antiderivative (core of Result 1) |
 
 It is proved as an honest theorem about the interval integral, by exhibiting the
-antiderivative and differentiating it (which is exactly what the note's symbolic check
+antiderivative and differentiating it (which is exactly what the manuscript's symbolic check
 `simplify(dF/dx − f) == 0` verifies), and then applying the fundamental theorem of calculus.
 -/
 
@@ -24,7 +24,7 @@ namespace DDM
 /-! ## Lemma L1 -/
 
 /-- The closed form of `I = ∫_{w₁}^{w₂} (p + q w) exp(−A w²/2 + B w + C) dw` claimed in
-Result 1 of the note `notes/closed_forms_sz_st.md`:
+Eq. (7) of the manuscript:
 
     I = e^{C + B²/(2A)} (p + q m) √(2π/A) [ Φ(√A (w₂ − m)) − Φ(√A (w₁ − m)) ]
         − (q/A) [ e^{C + B w₂ − A w₂²/2} − e^{C + B w₁ − A w₁²/2} ],     m = B/A. -/
@@ -38,7 +38,7 @@ def L1anti (p q A B C : ℝ) (w : ℝ) : ℝ :=
   exp (C + B ^ 2 / (2 * A)) * (p + q * (B / A)) * sqrt (2 * π / A) * Phi (sqrt A * (w - B / A))
     - (q / A) * exp (C + B * w - A * w ^ 2 / 2)
 
-/-- **Lemma L1 of the note `notes/closed_forms_sz_st.md`, in differentiated form.**
+/-- **Eq. (6) of the manuscript, in differentiated form.**
 The stated antiderivative of `(p + q w) exp(−A w²/2 + B w + C)` is correct. -/
 theorem hasDerivAt_L1anti (p q A B C : ℝ) (hA : 0 < A) (w : ℝ) :
     HasDerivAt (L1anti p q A B C)
@@ -89,7 +89,7 @@ theorem hasDerivAt_L1anti (p q A B C : ℝ) (hA : 0 < A) (w : ℝ) :
   field_simp
   ring
 
-/-- **Lemma L1 of the note `notes/closed_forms_sz_st.md`** (check `L1` of
+/-- **Eq. (6) of the manuscript** (check `L1` of
 `verify/symbolic_proof.py`, the core of Result 1):
 
     ∫_{w₁}^{w₂} (p + q w) exp(−A w²/2 + B w + C) dw

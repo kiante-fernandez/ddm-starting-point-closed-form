@@ -5,7 +5,8 @@ import RequestProject.DDM.Exchange
 /-!
 # Result 1: density with normal drift AND uniform starting point
 
-This file formalizes **Result 1** of the note `notes/closed_forms_sz_st.md`:
+This file formalizes **Result 1**, the closed-form density that is Eq. (7) of the manuscript
+(Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587):
 
 > ## Result 1 — Density with normal drift AND uniform starting point (closed form)
 >
@@ -14,9 +15,9 @@ This file formalizes **Result 1** of the note `notes/closed_forms_sz_st.md`:
 >     g(t | ν, η, a, [w₁,w₂]) = 1 / ((w₂ − w₁) √(2π t³ S)) · Σ_j (−1)^j I_j
 >
 > where `I_j = ∫_{w₁}^{w₂} (p_j + q_j w) exp(−A w²/2 + B_j w + C_j) dw` with the coefficient
-> table of the note and the closed form `I` given there.
+> table of the manuscript and the closed form `I` given there.
 
-together with the note's remark on the resulting likelihood ("Consequence for the full model
+together with the manuscript's remark on the resulting likelihood (Appendix C, "The seven-parameter likelihood
 likelihood"), which reduces the seven-parameter likelihood to a single one-dimensional integral
 over the non-decision-time window.
 -/
@@ -27,7 +28,7 @@ open Real MeasureTheory Set Filter
 
 namespace DDM
 
-/-- The quantity `I_j` of Result 1 of the note `notes/closed_forms_sz_st.md`: the closed form
+/-- The quantity `I_j` of Eq. (7) of the manuscript: the closed form
 of `∫_{w₁}^{w₂} (p_j + q_j w) exp(−A w²/2 + B_j w + C_j) dw` given by Lemma L1 with the
 coefficient table of Result 1. -/
 def Iterm (nu eta a t w₁ w₂ : ℝ) (j : ℕ) : ℝ :=
@@ -36,11 +37,11 @@ def Iterm (nu eta a t w₁ w₂ : ℝ) (j : ℕ) : ℝ :=
 
 /-- The density with normal drift and uniform starting point,
 `g(t | ν, η, a, [w₁,w₂]) = (1/(w₂−w₁)) ∫_{w₁}^{w₂} g(t | ν, η, a, w) dw`, the left-hand side
-of Result 1 of the note `notes/closed_forms_sz_st.md`. -/
+of Eq. (7) of the manuscript. -/
 def densGEtaSz (nu eta a w₁ w₂ t : ℝ) : ℝ :=
   (1 / (w₂ - w₁)) * ∫ w in w₁..w₂, densGEta nu eta a w t
 
-/-- The `j`-th term of Result 1 of the note `notes/closed_forms_sz_st.md` integrates in `w` to
+/-- The `j`-th term of Eq. (7) of the manuscript integrates in `w` to
 `I_j`: this is Lemma L5 (the coefficient table) followed by Lemma L1 (the Gaussian moment). -/
 theorem result1_term (nu eta a t w₁ w₂ : ℝ) (ha : a ≠ 0) (ht : 0 < t) (j : ℕ) :
     (∫ w in w₁..w₂, r a w j
@@ -52,7 +53,7 @@ theorem result1_term (nu eta a t w₁ w₂ : ℝ) (ha : a ≠ 0) (ht : 0 < t) (j
     (fun w _ => lemma_L5 nu eta a t w ht j)]
   exact lemma_L1 _ _ _ _ _ _ _ (Acoef_pos ha ht)
 
-/-- The density series bound of the note `notes/closed_forms_sz_st.md`: for `w ∈ [0,1]` the
+/-- The density series bound of the manuscript: for `w ∈ [0,1]` the
 `j`-th term of the common series is bounded by `(j+1) a e^{−j²a²/(2t)}`. -/
 theorem densSeries_term_abs_le {a w t : ℝ} (ha : 0 < a) (hw0 : 0 ≤ w) (hw1 : w ≤ 1) (ht : 0 < t)
     (j : ℕ) :
@@ -79,7 +80,7 @@ theorem densSeries_term_abs_le {a w t : ℝ} (ha : 0 < a) (hw0 : 0 ≤ w) (hw1 :
   nlinarith [Real.exp_pos (-(j : ℝ) ^ 2 * (a ^ 2 / (2 * t))),
     Real.exp_pos (-(r a w j) ^ 2 / (2 * t))]
 
-/-- The normal-drift density `(gη)` of the note `notes/closed_forms_sz_st.md` written with the
+/-- The normal-drift density `(gη)` of the manuscript written with the
 `w`-dependent prefactor absorbed into the series, the form in which the `w`-integral of
 Result 1 is taken term by term. -/
 theorem densGEta_eq_tsum (nu eta a w t : ℝ) :
@@ -95,7 +96,7 @@ theorem densGEta_eq_tsum (nu eta a w t : ℝ) :
     Real.exp_neg]
   field_simp
 
-/-- **Result 1 of the note `notes/closed_forms_sz_st.md`.**
+/-- **Eq. (7) of the manuscript.**
 
 The first-passage density with normally distributed drift `N(ν, η²)` and starting point
 uniform on `[w₁, w₂]` has the closed form
@@ -103,7 +104,7 @@ uniform on `[w₁, w₂]` has the closed form
     g(t | ν, η, a, [w₁,w₂]) = 1 / ((w₂ − w₁) √(2π t³ S)) · Σ_j (−1)^j I_j ,
 
 with `I_j` the closed-form Gaussian moment of Lemma L1 evaluated at the coefficient table of
-the note. -/
+the manuscript. -/
 theorem result1 (nu eta a t w₁ w₂ : ℝ) (ha : 0 < a) (ht : 0 < t)
     (hw0 : 0 ≤ w₁) (hw : w₁ < w₂) (hw1 : w₂ ≤ 1) :
     densGEtaSz nu eta a w₁ w₂ t

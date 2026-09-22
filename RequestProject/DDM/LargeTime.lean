@@ -3,8 +3,8 @@ import RequestProject.DDM.Faddeeva
 /-!
 # The Faddeeva bracket of the large-time representation
 
-The note `notes/closed_forms_sz_st.md`, in the section *"Large-time representation of
-Result 1"*, writes the starting-point integral of each term of the large-time series as
+Section 3 of the manuscript (Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587)
+writes the starting-point integral of each term of the large-time series as
 
     Im{ (−i)(√π/(2√κ)) [ e^{κw₂² + μ_k w₂} w(z_k(w₂)) − e^{κw₁² + μ_k w₁} w(z_k(w₁)) ] },
     z_k(w) = √κ w + μ_k/(2√κ),
@@ -19,11 +19,11 @@ This file proves both statements as exact identities about the underlying `w`-in
       ∫_{w₁}^{w₂} e^{κ w² + μ w} dw
         = (−i)(√π/(2√κ)) [ e^{κ w² + μ w} w(√κ w + μ/(2√κ)) ]_{w₁}^{w₂};
 
-  taking imaginary parts gives the note's formula term by term.
-* `DDM.integral_cexp_linear` — the degenerate case `κ = 0` (i.e. `η = 0`) of the note.
+  taking imaginary parts gives the manuscript (Fernandez, 2026, https://doi.org/10.2139/ssrn.7507587)'s formula term by term.
+* `DDM.integral_cexp_linear` — the degenerate case `κ = 0` (i.e. `η = 0`) of the manuscript.
 
-The remaining ingredients of the note's large-time formula — the large-time (Ratcliff 1978)
-series itself, which the note takes from the literature, and the boundedness of `w(z)` in the
+The remaining ingredients of the manuscript's large-time formula — the large-time (Ratcliff 1978)
+series itself, which the manuscript takes from the literature, and the boundedness of `w(z)` in the
 upper half plane which underlies its numerical remark — are not formalized here.
 -/
 
@@ -33,7 +33,7 @@ open Real MeasureTheory Set Filter
 
 namespace DDM
 
-/-- The Faddeeva bracket of the note `notes/closed_forms_sz_st.md`,
+/-- The Faddeeva bracket of the manuscript,
 
     (−i)(√π/(2√κ)) e^{κ w² + μ w} w(√κ w + μ/(2√κ)),
 
@@ -44,8 +44,8 @@ def gaussBracket (kappa mu sk : ℂ) (w : ℝ) : ℂ :=
     * faddeeva (sk * (w : ℂ) + mu / (2 * sk))
 
 /-- **The Faddeeva bracket is an antiderivative of `e^{κ w² + μ w}`** in the real variable `w`.
-This is the computation behind the large-time representation of Result 1 in the note
-`notes/closed_forms_sz_st.md`: the `w`-dependent terms cancel because `2√κ z(w) = 2κ w + μ`. -/
+This is the computation behind the large-time representation of Eq. (7) in the manuscript
+the manuscript: the `w`-dependent terms cancel because `2√κ z(w) = 2κ w + μ`. -/
 theorem hasDerivAt_gaussBracket (kappa mu sk : ℂ) (hsk : sk ≠ 0) (hk : sk ^ 2 = kappa) (w : ℝ) :
     HasDerivAt (gaussBracket kappa mu sk)
       (Complex.exp (kappa * (w : ℂ) ^ 2 + mu * (w : ℂ))) w := by
@@ -81,13 +81,13 @@ theorem hasDerivAt_gaussBracket (kappa mu sk : ℂ) (hsk : sk ≠ 0) (hk : sk ^ 
   rw [Complex.I_sq]
   ring
 
-/-- **The `w`-integral of the large-time representation** of Result 1 in the note
-`notes/closed_forms_sz_st.md`:
+/-- **The `w`-integral of the large-time representation** of Eq. (7) in the manuscript
+the manuscript:
 
     ∫_{w₁}^{w₂} e^{κ w² + μ w} dw
       = (−i)(√π/(2√κ)) [ e^{κ w² + μ w} w(√κ w + μ/(2√κ)) ]_{w₁}^{w₂},
 
-for any complex square root `√κ ≠ 0` of `κ`.  The note's formula is the imaginary part of this
+for any complex square root `√κ ≠ 0` of `κ`.  The manuscript's formula is the imaginary part of this
 identity, applied to `μ_k = λ + i k π`. -/
 theorem integral_cexp_quadratic (kappa mu sk : ℂ) (hsk : sk ≠ 0) (hk : sk ^ 2 = kappa)
     (w₁ w₂ : ℝ) :
@@ -99,8 +99,8 @@ theorem integral_cexp_quadratic (kappa mu sk : ℂ) (hsk : sk ≠ 0) (hk : sk ^ 
     (fun w _ => hasDerivAt_gaussBracket kappa mu sk hsk hk w)
     (hcont.intervalIntegrable w₁ w₂))
 
-/-- **The `η = 0` degeneration** of the bracket, as recorded in the note
-`notes/closed_forms_sz_st.md`: for `κ = 0` the `w`-integral reduces to
+/-- **The `η = 0` degeneration** of the bracket, as recorded in the manuscript
+the manuscript: for `κ = 0` the `w`-integral reduces to
 `(e^{μ w₂} − e^{μ w₁})/μ`. -/
 theorem integral_cexp_linear (mu : ℂ) (hmu : mu ≠ 0) (w₁ w₂ : ℝ) :
     (∫ w in w₁..w₂, Complex.exp (mu * (w : ℂ)))
